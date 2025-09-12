@@ -1,8 +1,10 @@
 import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../prisma/prisma.service';
 import { HealthResponseDto } from './dto/health-response.dto';
 
 @Injectable()
 export class HealthService {
+  constructor(private readonly prisma: PrismaService) {}
   getHealth(): HealthResponseDto {
     return {
       status: 'ok',
@@ -16,7 +18,7 @@ export class HealthService {
     };
   }
 
-  getReadiness(): HealthResponseDto {
+  async getReadiness(): Promise<HealthResponseDto> {
     // In a real application, you would check:
     // - Database connectivity
     // - Redis connectivity
@@ -24,12 +26,11 @@ export class HealthService {
     // - Required environment variables
     
     const checks = {
-      database: 'healthy', // TODO: Implement actual database check
-      redis: 'healthy',    // TODO: Implement actual Redis check
+      database: await this.checkDatabase(),
+      redis: 'healthy',    // TODO: Implement actual Redis check when needed
       api: 'healthy'
     };
 
-    // For now, we'll simulate all checks passing
     const allHealthy = Object.values(checks).every(status => status === 'healthy');
 
     return {
@@ -40,6 +41,17 @@ export class HealthService {
       version: '1.0.0',
       checks
     };
+  }
+
+  private async checkDatabase(): Promise<string> {
+    try {
+      // Test database connection by performing a simple query
+      await this.prisma.$queryRaw`SELECT 1`;
+      return 'healthy';
+    } catch (error) {
+      console.error('Database health check failed:', error);
+      return 'unhealthy';
+    }
   }
 
   getLiveness(): HealthResponseDto {

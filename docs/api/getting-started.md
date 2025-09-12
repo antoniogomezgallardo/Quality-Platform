@@ -44,6 +44,14 @@ The API will be available at:
 |--------|----------|-------------|
 | GET | `/api` | API information and welcome message |
 
+### Authentication Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/auth/register` | Register a new user account |
+| POST | `/api/auth/login` | Login with email and password |
+| GET | `/api/auth/me` | Get current user profile (requires JWT) |
+
 ## API Documentation
 
 The API uses OpenAPI 3.0 (Swagger) for documentation. You can access the interactive documentation at http://localhost:3000/api/docs when the server is running.
@@ -154,11 +162,11 @@ pnpm nx test api --watch
 
 This API setup provides the foundation for:
 
-1. **Authentication Module**: JWT-based authentication system
-2. **Database Integration**: Prisma ORM with PostgreSQL
-3. **Product Management**: CRUD operations for products
-4. **Order System**: Complete order processing workflow
-5. **User Management**: User registration and profile management
+1. **Authentication System**: ✅ JWT-based authentication with user registration and login
+2. **Database Integration**: ✅ Prisma ORM with SQLite (development) / PostgreSQL (production)
+3. **Product Management**: CRUD operations for products (coming next)
+4. **Order System**: Complete order processing workflow (coming next)
+5. **User Management**: ✅ User registration and profile management
 
 Each module will follow the same patterns established in this foundation:
 - Comprehensive documentation with Swagger

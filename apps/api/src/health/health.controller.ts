@@ -36,8 +36,8 @@ export class HealthController {
     status: 503, 
     description: 'API is not ready' 
   })
-  getReadiness(): HealthResponseDto {
-    return this.healthService.getReadiness();
+  async getReadiness(): Promise<HealthResponseDto> {
+    return await this.healthService.getReadiness();
   }
 
   @Get('live')

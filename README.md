@@ -85,19 +85,24 @@ pnpm nx test api           # Run API unit tests
 pnpm nx e2e api-e2e        # Run API e2e tests
 
 # API Endpoints Available
-GET /api                   # API welcome message  
-GET /api/health           # Health check
-GET /api/health/ready     # Readiness probe
-GET /api/health/live      # Liveness probe
-GET /api/docs             # Swagger documentation
+GET  /api                  # API welcome message  
+GET  /api/health          # Health check
+GET  /api/health/ready    # Readiness probe
+GET  /api/health/live     # Liveness probe
+GET  /api/docs            # Swagger documentation
+
+# Authentication Endpoints
+POST /api/auth/register   # User registration
+POST /api/auth/login      # User login
+GET  /api/auth/me         # Current user profile (JWT required)
 ```
 
 ### Next Phase Tasks
 
-**Phase 2B: Database & Authentication** (In Progress)
-- [ ] Database setup with Prisma
-- [ ] JWT authentication system
-- [ ] User registration and login
+**Phase 2B: Database & Authentication** ✅
+- [x] Database setup with Prisma (SQLite for training, PostgreSQL for production)
+- [x] JWT authentication system with Passport.js
+- [x] User registration and login endpoints
 
 **Phase 3: Quality Tools** (Weeks 5-6)
 
