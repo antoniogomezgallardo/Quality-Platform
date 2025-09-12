@@ -28,6 +28,7 @@ PORT=3000
 # Initialize database
 npx prisma generate
 npx prisma migrate dev
+pnpm run db:seed
 
 # Start the development server
 pnpm nx serve api
@@ -61,6 +62,34 @@ The API will be available at:
 | POST | `/api/auth/register` | Register a new user account |
 | POST | `/api/auth/login` | Login with email and password |
 | GET | `/api/auth/me` | Get current user profile (requires JWT) |
+
+### Product Management Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/products` | List products with pagination & filters |
+| GET | `/api/products/:id` | Get single product details |
+| GET | `/api/products/categories` | Get all product categories |
+| GET | `/api/products/category/:category` | Get products by category |
+| GET | `/api/products/search/:term` | Search products by term |
+| POST | `/api/products` | Create new product (Admin only) |
+| PATCH | `/api/products/:id` | Update product (Admin only) |
+| PATCH | `/api/products/:id/stock` | Update product stock (Admin only) |
+| DELETE | `/api/products/:id` | Delete product (Admin only) |
+
+### Order Management Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/orders` | List all orders with filtering (Admin only) |
+| GET | `/api/orders/my-orders` | Get current user's orders with pagination |
+| GET | `/api/orders/:id` | Get single order details (own orders or admin) |
+| GET | `/api/orders/stats` | Get order statistics (user or global admin stats) |
+| GET | `/api/orders/user/:userId` | Get orders for specific user (Admin only) |
+| POST | `/api/orders` | Create new order with stock validation |
+| PATCH | `/api/orders/:id` | Update order notes (own orders or admin) |
+| PATCH | `/api/orders/:id/status` | Update order status (Admin only) |
+| POST | `/api/orders/:id/cancel` | Cancel order and restore stock |
 
 ## API Documentation
 
@@ -188,14 +217,17 @@ This API foundation provides a production-ready base for:
 1. **Authentication System**: Complete JWT-based authentication with secure user registration and login
 2. **Database Integration**: Prisma ORM with SQLite (development) / PostgreSQL (production) support
 3. **User Management**: Full user registration, profile management, and role-based access
-4. **Health Monitoring**: Production-ready health checks with database connectivity testing
-5. **API Documentation**: Interactive Swagger UI with comprehensive endpoint documentation
+4. **Product Management**: Complete CRUD operations with advanced filtering, search, and category management
+5. **Order Management**: Complete order processing system with stock management and status workflow
+6. **Health Monitoring**: Production-ready health checks with database connectivity testing
+7. **API Documentation**: Interactive Swagger UI with comprehensive endpoint documentation
+8. **Database Seeding**: Sample data including 10 products, 4 sample orders, and test users
 
 ### 🚀 **Coming Next**
-1. **Product Management**: CRUD operations for products with category management
-2. **Order System**: Complete order processing workflow with status tracking
-3. **Shopping Cart**: Session-based and persistent cart functionality
-4. **Admin Dashboard**: Management interface for products and orders
+1. **Shopping Cart**: Session-based cart functionality with multi-step checkout
+2. **Payment Integration**: Structure for payment processor integration
+3. **Advanced Order Features**: Bulk operations, order export, and reporting
+4. **Frontend Application**: Next.js web interface for the API
 5. **Advanced Testing**: Unit tests, integration tests, and e2e test suites
 
 ### 🏗️ **Architecture Patterns**
