@@ -1,4 +1,8 @@
 {
+  "name": "quality-platform",
+  "version": "1.0.0",
+  "description": "A reusable quality platform for accelerating projects with built-in QA/QE best practices and ISTQB alignment",
+  "private": true,
   "devDependencies": {
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.1.6",
