@@ -49,6 +49,7 @@ For a 50-person engineering team:
 - [API Getting Started](./docs/api/getting-started.md) - Quick start guide for the NestJS API
 - [Product Management API](./docs/api/products.md) - Complete product catalog documentation
 - [Order Management API](./docs/api/orders.md) - Complete order processing documentation
+- [Shopping Cart API](./docs/api/cart.md) - Complete shopping cart and checkout documentation
 - [Authentication Guide](./docs/api/authentication.md) - Complete JWT authentication documentation
 - [Interactive API Docs](http://localhost:3000/api/docs) - Swagger UI (when server is running)
 
@@ -68,7 +69,7 @@ This platform demonstrates concepts from:
 
 ## 🏗️ Project Status
 
-**Current Phase**: Phase 3B - Order Management API ✅ **COMPLETED**
+**Current Phase**: Phase 3C - Shopping Cart & Checkout ✅ **COMPLETED**
 
 ### Completed Implementation ✅
 
@@ -120,6 +121,18 @@ This platform demonstrates concepts from:
 - [x] User order history and admin order management
 - [x] Comprehensive OpenAPI documentation with business rules
 - [x] Database transactions for data integrity and consistency
+
+**Phase 3C: Shopping Cart & Checkout** (Completed) ✅
+- [x] Complete shopping cart management with 9 REST endpoints
+- [x] Session-based carts for guest users with automatic creation
+- [x] Persistent carts for authenticated users with cross-device sync
+- [x] Cart merging functionality when guest users log in
+- [x] Real-time stock validation and automatic inventory management
+- [x] Cart-to-order checkout conversion with transaction safety
+- [x] Cart summary, validation, and cleanup operations
+- [x] Support for both authenticated and guest user workflows
+- [x] Comprehensive cart API documentation with business rules
+- [x] Database models optimized with proper relationships and constraints
 
 ### 🚀 Quick Start
 
@@ -193,20 +206,27 @@ pnpm run db:seed         # Seed database with sample products and users
 - `PATCH /api/orders/:id/status` - Update order status (Admin only)
 - `POST /api/orders/:id/cancel` - Cancel order and restore stock
 
+**Shopping Cart API**
+- `GET /api/cart` - Get current cart (user or guest session)
+- `GET /api/cart/summary` - Get cart totals and summary information
+- `POST /api/cart/items` - Add item to cart with stock validation
+- `PATCH /api/cart/items/:id` - Update cart item quantity
+- `DELETE /api/cart/items/:id` - Remove item from cart
+- `DELETE /api/cart` - Clear entire cart
+- `POST /api/cart/validate` - Validate cart stock availability
+- `POST /api/cart/merge` - Merge guest cart with user cart (auth required)
+- `POST /api/cart/checkout` - Convert cart to order (auth required)
+
 ### 🎯 Next Development Phases
 
-**Phase 3C: Shopping Cart & Checkout** (Current Priority)
-- [ ] Shopping cart functionality with session management
-- [ ] Multi-step checkout process with validation
-- [ ] Order preview and confirmation system
-- [ ] Payment integration structure (ready for payment processors)
-- [ ] Cart persistence across user sessions
-
-**Phase 4: Frontend Application**
-- [ ] Next.js web application setup
-- [ ] User authentication UI
-- [ ] Product catalog and shopping interface
-- [ ] Admin dashboard for product/order management
+**Phase 4: Frontend Application** (Current Priority)
+- [ ] Next.js web application setup with TypeScript
+- [ ] User authentication UI with login/register forms
+- [ ] Product catalog browsing with search and filtering
+- [ ] Shopping cart interface with real-time updates
+- [ ] Multi-step checkout process with order confirmation
+- [ ] Admin dashboard for product and order management
+- [ ] Responsive design for mobile and desktop
 
 **Phase 5: Quality Engineering Tools**
 - [ ] Test automation framework integration
