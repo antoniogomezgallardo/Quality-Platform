@@ -29,14 +29,32 @@ quality-platform/
 └── docs/           # Project documentation
 ```
 
-## Development Commands (After Setup)
+## Development Commands
 
-### Initial Setup
-
+### Initial Setup (Completed ✅)
 ```bash
 pnpm install
 cp .env.example .env.local
-pnpm db:setup
+# Database setup will be added in next phase
+```
+
+### Current API Development
+```bash
+# Start NestJS API server
+pnpm nx serve api               # http://localhost:3000/api
+
+# API Testing and Building
+pnpm nx test api               # Run API unit tests
+pnpm nx e2e api-e2e            # Run API integration tests
+pnpm nx build api              # Build API for production
+pnpm nx test api --watch       # Watch mode for development
+
+# Available Endpoints:
+# GET /api                     - API welcome message  
+# GET /api/health             - Health check
+# GET /api/health/ready       - Readiness probe
+# GET /api/health/live        - Liveness probe
+# GET /api/docs               - Interactive Swagger documentation
 ```
 
 ### Quality Checks
