@@ -47,6 +47,8 @@ For a 50-person engineering team:
 
 ### API Documentation
 - [API Getting Started](./docs/api/getting-started.md) - Quick start guide for the NestJS API
+- [Product Management API](./docs/api/products.md) - Complete product catalog documentation
+- [Order Management API](./docs/api/orders.md) - Complete order processing documentation
 - [Authentication Guide](./docs/api/authentication.md) - Complete JWT authentication documentation
 - [Interactive API Docs](http://localhost:3000/api/docs) - Swagger UI (when server is running)
 
@@ -66,7 +68,7 @@ This platform demonstrates concepts from:
 
 ## 🏗️ Project Status
 
-**Current Phase**: Phase 2 - Backend API & Authentication ✅ **COMPLETED**
+**Current Phase**: Phase 3B - Order Management API ✅ **COMPLETED**
 
 ### Completed Implementation ✅
 
@@ -96,6 +98,29 @@ This platform demonstrates concepts from:
 - [x] Protected routes with authentication guards
 - [x] Database-connected health checks
 
+**Phase 3A: Product Management API** (Completed) ✅
+- [x] Complete Product CRUD operations with validation
+- [x] Advanced product filtering: search, category, price range, stock status
+- [x] Pagination support with configurable page sizes
+- [x] Role-based access control (Admin-only for CUD operations)
+- [x] Category management and product search functionality
+- [x] Database seed script with 10 sample products across 6 categories
+- [x] Comprehensive OpenAPI documentation with interactive testing
+- [x] Professional error handling and response formatting
+- [x] Stock management and inventory tracking
+
+**Phase 3B: Order Management API** (Completed) ✅
+- [x] Complete Order CRUD operations with comprehensive validation
+- [x] Advanced order filtering and pagination (status, user, date range, total amount)
+- [x] Role-based access control (Users: own orders, Admins: all orders)
+- [x] Order creation with automatic stock validation and inventory updates
+- [x] Order status management (PENDING → CONFIRMED → SHIPPED → DELIVERED → CANCELLED)
+- [x] Order cancellation with automatic stock restoration
+- [x] Order statistics and reporting (total orders, revenue, averages)
+- [x] User order history and admin order management
+- [x] Comprehensive OpenAPI documentation with business rules
+- [x] Database transactions for data integrity and consistency
+
 ### 🚀 Quick Start
 
 ```bash
@@ -105,6 +130,7 @@ pnpm install
 # Set up database
 npx prisma migrate dev     # Create and apply database migrations
 npx prisma generate       # Generate Prisma client
+pnpm run db:seed          # Seed database with sample data
 
 # Start the API server
 pnpm nx serve api         # http://localhost:3000/api
@@ -126,7 +152,7 @@ pnpm nx e2e api-e2e       # Run API e2e tests (when implemented)
 npx prisma migrate dev    # Create and apply migrations
 npx prisma generate       # Generate Prisma client
 npx prisma studio         # Open Prisma Studio (database GUI)
-npx prisma db seed        # Seed database (when seed script is added)
+pnpm run db:seed         # Seed database with sample products and users
 ```
 
 ### 🔗 Available API Endpoints
@@ -145,20 +171,36 @@ npx prisma db seed        # Seed database (when seed script is added)
 - `POST /api/auth/login` - User login with JWT token generation
 - `GET /api/auth/me` - Get current user profile (requires JWT)
 
+**Product Management API**
+- `GET /api/products` - List products with pagination & advanced filters
+- `GET /api/products/:id` - Get single product details
+- `GET /api/products/categories` - Get all product categories
+- `GET /api/products/category/:category` - Get products by category
+- `GET /api/products/search/:term` - Search products by name/description
+- `POST /api/products` - Create new product (Admin only)
+- `PATCH /api/products/:id` - Update product (Admin only)  
+- `PATCH /api/products/:id/stock` - Update product stock (Admin only)
+- `DELETE /api/products/:id` - Delete product (Admin only)
+
+**Order Management API**
+- `GET /api/orders` - List all orders with advanced filtering (Admin only)
+- `GET /api/orders/my-orders` - Get current user's orders with pagination
+- `GET /api/orders/:id` - Get single order details (own orders or admin)
+- `GET /api/orders/stats` - Get order statistics (user or global admin stats)
+- `GET /api/orders/user/:userId` - Get orders for specific user (Admin only)
+- `POST /api/orders` - Create new order with stock validation
+- `PATCH /api/orders/:id` - Update order notes (own orders or admin)
+- `PATCH /api/orders/:id/status` - Update order status (Admin only)
+- `POST /api/orders/:id/cancel` - Cancel order and restore stock
+
 ### 🎯 Next Development Phases
 
-**Phase 3A: Product Management API** (Next Priority)
-- [ ] Product CRUD operations (Create, Read, Update, Delete)
-- [ ] Product categories and search functionality
-- [ ] Inventory management with stock tracking
-- [ ] Image upload and management
-- [ ] Product validation and business rules
-
-**Phase 3B: Order Management System**
-- [ ] Shopping cart functionality
-- [ ] Order creation and processing workflow
-- [ ] Order status management (Pending → Confirmed → Shipped → Delivered)
-- [ ] Order history and tracking
+**Phase 3C: Shopping Cart & Checkout** (Current Priority)
+- [ ] Shopping cart functionality with session management
+- [ ] Multi-step checkout process with validation
+- [ ] Order preview and confirmation system
+- [ ] Payment integration structure (ready for payment processors)
+- [ ] Cart persistence across user sessions
 
 **Phase 4: Frontend Application**
 - [ ] Next.js web application setup

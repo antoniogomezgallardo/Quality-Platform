@@ -152,13 +152,116 @@ async function main() {
     console.log(`  ℹ️  Products already exist (${existingProductsCount} found), skipping...`);
   }
 
+  // Create sample orders
+  console.log('📦 Creating sample orders...');
+  
+  const existingOrdersCount = await prisma.order.count();
+  
+  if (existingOrdersCount === 0) {
+    // Create orders for the regular user
+    const sampleOrders = [
+      {
+        userId: user.id,
+        items: [
+          { productId: 1, quantity: 1 }, // Wireless Bluetooth Headphones - $199.99
+          { productId: 7, quantity: 2 }, // Wireless Phone Charger - $39.99 * 2 = $79.98
+        ],
+        total: 279.97,
+        status: 'DELIVERED' as const,
+        notes: 'Great products, fast delivery!',
+        createdAt: new Date('2024-01-10T14:30:00Z'),
+      },
+      {
+        userId: user.id,
+        items: [
+          { productId: 8, quantity: 1 }, // Yoga Mat Premium - $79.99
+          { productId: 10, quantity: 1 }, // Stainless Steel Water Bottle - $34.99
+        ],
+        total: 114.98,
+        status: 'SHIPPED' as const,
+        notes: 'For my new fitness routine',
+        createdAt: new Date('2024-01-12T09:15:00Z'),
+      },
+      {
+        userId: user.id,
+        items: [
+          { productId: 2, quantity: 1 }, // Gaming Mechanical Keyboard - $149.99
+          { productId: 6, quantity: 1 }, // Portable External SSD - $129.99
+        ],
+        total: 279.98,
+        status: 'CONFIRMED' as const,
+        notes: 'For my home office setup',
+        createdAt: new Date('2024-01-14T16:45:00Z'),
+      },
+      {
+        userId: user.id,
+        items: [
+          { productId: 4, quantity: 1 }, // Professional Coffee Maker - $249.99
+        ],
+        total: 249.99,
+        status: 'PENDING' as const,
+        notes: 'Birthday gift for my partner',
+        createdAt: new Date('2024-01-15T11:20:00Z'),
+      },
+    ];
+
+    for (const orderData of sampleOrders) {
+      const { items, ...orderInfo } = orderData;
+      
+      const order = await prisma.order.create({
+        data: {
+          ...orderInfo,
+          orderItems: {
+            create: items.map(item => {
+              // Get product price from our seeded products
+              const product = products.find(p => p.name === getProductNameById(item.productId));
+              return {
+                productId: item.productId,
+                quantity: item.quantity,
+                price: product?.price || 0,
+              };
+            }),
+          },
+        },
+        include: {
+          orderItems: {
+            include: {
+              product: true,
+            },
+          },
+        },
+      });
+      
+      console.log(`  ✅ Created order #${order.id} - $${order.total} (${order.status})`);
+    }
+  } else {
+    console.log(`  ℹ️  Orders already exist (${existingOrdersCount} found), skipping...`);
+  }
+
   console.log('\n🎉 Database seeding completed successfully!');
   console.log('\n📋 Summary:');
   console.log('  • Users created: 2 (1 admin, 1 regular user)');
   console.log('  • Products created:', products.length);
+  console.log('  • Sample orders: 4 orders with various statuses');
   console.log('\n🔐 Test credentials:');
   console.log('  Admin: admin@quality-platform.com / admin123');
   console.log('  User: user@quality-platform.com / user123');
+  
+  function getProductNameById(id: number): string {
+    const productNames = {
+      1: 'Wireless Bluetooth Headphones',
+      2: 'Gaming Mechanical Keyboard',
+      3: 'Smart Fitness Watch',
+      4: 'Professional Coffee Maker',
+      5: 'Ergonomic Office Chair',
+      6: 'Portable External SSD',
+      7: 'Wireless Phone Charger',
+      8: 'Yoga Mat Premium',
+      9: 'Smart Home Speaker',
+      10: 'Stainless Steel Water Bottle',
+    };
+    return productNames[id] || '';
+  }
 }
 
 main()
