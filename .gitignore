@@ -77,3 +77,4 @@ playwright/.cache/
 .parcel-cache/
 .next/
 .nuxt/
+/generated/prisma

@@ -29,14 +29,55 @@ quality-platform/
 └── docs/           # Project documentation
 ```
 
-## Development Commands (After Setup)
+## Development Commands
 
-### Initial Setup
-
+### Initial Setup (Completed ✅)
 ```bash
+# Install dependencies
 pnpm install
-cp .env.example .env.local
-pnpm db:setup
+
+# Set up environment variables
+cp .env.example .env.local  # If .env.example exists, or create .env.local manually
+
+# Required environment variables for .env.local:
+# DATABASE_URL="file:./dev.db"
+# JWT_SECRET="your-super-secret-jwt-key-change-in-production" 
+# JWT_EXPIRES_IN="7d"
+# NODE_ENV="development"
+# PORT=3000
+
+# Initialize and setup database
+npx prisma migrate dev     # Creates database and applies migrations
+npx prisma generate       # Generates Prisma client
+```
+
+### Current API Development (Implemented)
+```bash
+# Start NestJS API server
+pnpm nx serve api               # http://localhost:3000/api
+
+# API Testing and Building
+pnpm nx build api              # Build API for production
+pnpm nx test api               # Run API unit tests (when implemented)
+pnpm nx e2e api-e2e            # Run API integration tests (when implemented)
+pnpm nx test api --watch       # Watch mode for development (when tests added)
+
+# Database Management (Prisma)
+npx prisma migrate dev         # Create and apply database migrations
+npx prisma generate           # Generate Prisma client after schema changes
+npx prisma studio             # Open Prisma Studio (database GUI)
+npx prisma migrate reset      # Reset database (development only)
+npx prisma db push            # Push schema changes without migration files
+
+# Available Endpoints (Implemented):
+# GET /api                     - API welcome message with version info
+# GET /api/health             - Basic health check with system info
+# GET /api/health/ready       - Readiness probe (includes database connectivity)
+# GET /api/health/live        - Liveness probe for Kubernetes
+# GET /api/docs               - Interactive Swagger documentation
+# POST /api/auth/register     - User registration with validation
+# POST /api/auth/login        - User login with JWT token
+# GET /api/auth/me            - Get current user profile (JWT required)
 ```
 
 ### Quality Checks
@@ -179,29 +220,48 @@ When implementing features, ensure they contribute to:
 - **Decreasing rate of breaking changes**
 - **Improving internal adoption** of quality practices
 
-## Technology Stack (When Implemented)
+## Technology Stack (Implemented)
 
-- **Monorepo**: Nx or Turborepo
-- **Runtime**: Node.js 18+
+- **Monorepo**: Nx Workspace
+- **Runtime**: Node.js 20+
 - **Package Manager**: pnpm
 - **Language**: TypeScript
-- **Frontend**: React/Next.js
-- **Backend**: NestJS or Express
-- **Testing**: Jest, Testing Library, Playwright
-- **Database**: PostgreSQL (production), SQLite (training)
-- **Documentation**: Docusaurus
+- **Backend**: NestJS with OpenAPI/Swagger
+- **Authentication**: JWT with Passport.js (Local + JWT strategies)
+- **Database**: Prisma ORM with SQLite (development) / PostgreSQL (production)
+- **Validation**: class-validator with comprehensive DTOs
+- **Security**: bcryptjs password hashing, authentication guards
+- **Testing**: Jest (ready), Supertest (ready) - *tests to be implemented*
+- **Frontend**: React/Next.js - *planned for next phase*
+- **Documentation**: Markdown + Swagger UI
 
 ## Environment Variables
 
-Required environment variables (in .env.local):
+Required environment variables (in .env or .env.local):
 
-```
-NODE_ENV=development
-API_PORT=3000
-DATABASE_URL=postgresql://...
-REDIS_URL=redis://...
+```env
+# Database Configuration
+DATABASE_URL="file:./dev.db"  # SQLite for development
+# DATABASE_URL="postgresql://user:password@localhost:5432/quality_platform" # PostgreSQL for production
+
+# JWT Authentication
+JWT_SECRET="your-super-secret-jwt-key-change-in-production"
+JWT_EXPIRES_IN="7d"
+
+# Application Configuration  
+NODE_ENV="development"
+PORT=3000
+API_BASE_URL="http://localhost:3000"
+
+# Optional: Logging
 LOG_LEVEL=debug
 ```
+
+**Important Security Notes:**
+- Never commit .env files to version control
+- Use strong, unique JWT secrets in production  
+- Change default JWT secret before deployment
+- Consider shorter JWT expiration for sensitive applications
 
 ## Performance Budgets
 
