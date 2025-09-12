@@ -3,6 +3,12 @@
   "version": "1.0.0",
   "description": "A reusable quality platform for accelerating projects with built-in QA/QE best practices and ISTQB alignment",
   "private": true,
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
+  },
+  "scripts": {
+    "db:seed": "npx prisma db seed"
+  },
   "devDependencies": {
     "@nestjs/schematics": "^11.0.0",
     "@nestjs/testing": "^11.1.6",
@@ -13,6 +19,7 @@
     "@swc-node/register": "~1.9.1",
     "@swc/core": "~1.5.7",
     "@swc/helpers": "~0.5.11",
+    "@types/bcryptjs": "^3.0.0",
     "@types/node": "20.19.9",
     "@types/passport-jwt": "^4.0.1",
     "@types/passport-local": "^1.0.38",
@@ -24,6 +31,7 @@
     "prisma": "^6.16.1",
     "supertest": "^7.1.4",
     "tslib": "^2.3.0",
+    "tsx": "^4.20.5",
     "typescript": "~5.9.2",
     "webpack-cli": "^5.1.4"
   },
