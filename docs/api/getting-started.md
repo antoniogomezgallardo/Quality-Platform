@@ -7,20 +7,30 @@ The Quality Platform API is built with NestJS and provides a RESTful interface f
 ## Quick Start
 
 ### Prerequisites
-- Node.js 20.x or higher
-- pnpm (installed globally)
+- Node.js 20.x or higher  
+- pnpm (installed globally): `npm install -g pnpm`
 
-### Running the API
+### Initial Setup
 
 ```bash
-# Install dependencies (if not already done)
+# Clone and install dependencies
+git clone https://github.com/antoniogomezgallardo/Quality-Platform.git
+cd Quality-Platform
 pnpm install
+
+# Setup environment variables (create .env file)
+DATABASE_URL="file:./dev.db"
+JWT_SECRET="your-development-secret-key"
+JWT_EXPIRES_IN="7d"
+NODE_ENV="development"
+PORT=3000
+
+# Initialize database
+npx prisma generate
+npx prisma migrate dev
 
 # Start the development server
 pnpm nx serve api
-
-# Or using npm script
-pnpm run dev:api
 ```
 
 The API will be available at:
@@ -67,22 +77,34 @@ The API uses OpenAPI 3.0 (Swagger) for documentation. You can access the interac
 
 ### Global Configuration
 
-The API includes several global configurations:
+The API includes several production-ready global configurations:
 
-- **Validation Pipe**: Automatic request validation using class-validator
+- **Validation Pipe**: Automatic request validation using class-validator with DTO schemas
 - **CORS**: Configured for development and production environments  
-- **Global Prefix**: All routes prefixed with `/api`
-- **Environment Configuration**: Uses `@nestjs/config` for environment management
+- **Global Prefix**: All routes prefixed with `/api` for clean URL structure
+- **Environment Configuration**: Uses `@nestjs/config` for secure environment management
+- **OpenAPI Documentation**: Comprehensive Swagger UI with interactive testing
+- **JWT Authentication**: Secure token-based authentication with Passport.js
 
 ### Environment Variables
 
-Create a `.env.local` file in the project root:
+Create a `.env` file in the project root with these required variables:
 
 ```env
-NODE_ENV=development
+# Database Configuration
+DATABASE_URL="file:./dev.db"  # SQLite for development
+
+# JWT Authentication (Required)
+JWT_SECRET="your-super-secret-jwt-key-change-in-production"
+JWT_EXPIRES_IN="7d"
+
+# Application Configuration
+NODE_ENV="development"
 PORT=3000
-API_BASE_URL=http://localhost:3000
+API_BASE_URL="http://localhost:3000"
 ```
+
+**Security Note**: Never commit `.env` files to version control. Use strong, unique secrets in production.
 
 ## Health Monitoring
 
@@ -98,15 +120,15 @@ Returns basic application status including:
 
 ### Readiness Check (`/api/health/ready`)
 Verifies the application is ready to receive traffic:
-- Database connectivity (when implemented)
-- External service dependencies
-- Required configuration
+- **Database connectivity**: Tests Prisma database connection with actual query
+- **Configuration validation**: Ensures required environment variables are present
+- **External service dependencies**: Ready for future service integrations
 
 ### Liveness Check (`/api/health/live`)
 Confirms the application is alive and responsive:
-- Process status
-- Memory usage
-- Basic functionality
+- **Process health**: Validates the Node.js process is functioning
+- **Memory usage**: Monitors memory consumption within safe limits
+- **Response capability**: Ensures the application can respond to requests
 
 ## Architecture
 
@@ -160,19 +182,30 @@ pnpm nx test api --watch
 
 ## Next Steps
 
-This API setup provides the foundation for:
+This API foundation provides a production-ready base for:
 
-1. **Authentication System**: ✅ JWT-based authentication with user registration and login
-2. **Database Integration**: ✅ Prisma ORM with SQLite (development) / PostgreSQL (production)
-3. **Product Management**: CRUD operations for products (coming next)
-4. **Order System**: Complete order processing workflow (coming next)
-5. **User Management**: ✅ User registration and profile management
+### ✅ **Implemented Features**
+1. **Authentication System**: Complete JWT-based authentication with secure user registration and login
+2. **Database Integration**: Prisma ORM with SQLite (development) / PostgreSQL (production) support
+3. **User Management**: Full user registration, profile management, and role-based access
+4. **Health Monitoring**: Production-ready health checks with database connectivity testing
+5. **API Documentation**: Interactive Swagger UI with comprehensive endpoint documentation
 
-Each module will follow the same patterns established in this foundation:
-- Comprehensive documentation with Swagger
-- Health checks and monitoring
-- Input validation and error handling
-- Comprehensive testing coverage
+### 🚀 **Coming Next**
+1. **Product Management**: CRUD operations for products with category management
+2. **Order System**: Complete order processing workflow with status tracking
+3. **Shopping Cart**: Session-based and persistent cart functionality
+4. **Admin Dashboard**: Management interface for products and orders
+5. **Advanced Testing**: Unit tests, integration tests, and e2e test suites
+
+### 🏗️ **Architecture Patterns**
+Each module follows established enterprise patterns:
+- **Comprehensive Documentation**: OpenAPI/Swagger with detailed schemas
+- **Health Monitoring**: Kubernetes-ready liveness and readiness probes
+- **Input Validation**: Automatic validation using class-validator DTOs
+- **Security**: JWT authentication, password hashing, and route protection
+- **Error Handling**: Consistent error responses with proper HTTP status codes
+- **Testing Strategy**: Ready for unit, integration, and e2e testing implementation
 
 ## Troubleshooting
 

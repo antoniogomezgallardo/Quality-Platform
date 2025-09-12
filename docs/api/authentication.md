@@ -202,7 +202,7 @@ Common authentication errors:
 ### Using curl
 
 ```bash
-# Register a new user
+# 1. Register a new user
 curl -X POST http://localhost:3000/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
@@ -213,9 +213,111 @@ curl -X POST http://localhost:3000/api/auth/register \
     "lastName": "User"
   }'
 
-# Extract the access_token from response and use it:
+# Response example:
+# {
+#   "access_token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...",
+#   "user": {
+#     "id": 1,
+#     "email": "test@example.com",
+#     "username": "testuser",
+#     "firstName": "Test",
+#     "lastName": "User",
+#     "role": "USER"
+#   }
+# }
+
+# 2. Save the access_token and use it for authenticated requests
+TOKEN="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+
+# 3. Access protected endpoint
 curl -X GET http://localhost:3000/api/auth/me \
-  -H "Authorization: Bearer YOUR_TOKEN_HERE"
+  -H "Authorization: Bearer $TOKEN"
+
+# 4. Alternative: Login with existing user
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{
+    "email": "test@example.com",
+    "password": "password123"
+  }'
+```
+
+### Integration Examples
+
+#### Node.js/JavaScript Client
+
+```javascript
+// auth-client.js
+class QualityPlatformAuth {
+  constructor(baseUrl = 'http://localhost:3000/api') {
+    this.baseUrl = baseUrl;
+    this.token = localStorage.getItem('access_token');
+  }
+
+  async register(userData) {
+    const response = await fetch(`${this.baseUrl}/auth/register`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      this.token = data.access_token;
+      localStorage.setItem('access_token', this.token);
+      return data;
+    }
+    throw new Error('Registration failed');
+  }
+
+  async login(email, password) {
+    const response = await fetch(`${this.baseUrl}/auth/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      this.token = data.access_token;
+      localStorage.setItem('access_token', this.token);
+      return data;
+    }
+    throw new Error('Login failed');
+  }
+
+  async getProfile() {
+    const response = await fetch(`${this.baseUrl}/auth/me`, {
+      headers: { 'Authorization': `Bearer ${this.token}` }
+    });
+    
+    if (response.ok) {
+      return await response.json();
+    }
+    throw new Error('Failed to get profile');
+  }
+
+  logout() {
+    this.token = null;
+    localStorage.removeItem('access_token');
+  }
+}
+
+// Usage
+const auth = new QualityPlatformAuth();
+
+// Register new user
+await auth.register({
+  email: 'user@example.com',
+  username: 'newuser',
+  password: 'securepassword123',
+  firstName: 'John',
+  lastName: 'Doe'
+});
+
+// Get user profile
+const profile = await auth.getProfile();
+console.log('User profile:', profile);
 ```
 
 ## Implementation Details
