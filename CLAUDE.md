@@ -9,6 +9,7 @@ This is the Quality Platform monorepo - a reusable quality platform designed to 
 ## Project Philosophy
 
 When working on this codebase:
+
 1. **Prioritize business value** - Justify all changes in business terms (risk reduction, decision enablement, metric improvement)
 2. **Maintain functional clarity** - Write acceptance criteria in business language, avoid technical jargon unless essential
 3. **Follow GitFlow methodology** - Use feature/, bugfix/, release/, and hotfix/ branches appropriately
@@ -17,6 +18,7 @@ When working on this codebase:
 ## Monorepo Structure (Once Initialized)
 
 The project will follow this structure:
+
 ```
 quality-platform/
 ├── apps/           # Deployable applications (web, api, docs)
@@ -30,6 +32,7 @@ quality-platform/
 ## Development Commands (After Setup)
 
 ### Initial Setup
+
 ```bash
 pnpm install
 cp .env.example .env.local
@@ -37,6 +40,7 @@ pnpm db:setup
 ```
 
 ### Quality Checks
+
 ```bash
 pnpm quality:check        # Run all quality validations
 pnpm quality:report       # Generate executive summary
@@ -46,6 +50,7 @@ pnpm flow:trace --flow=order-checkout # Visualize business flow
 ```
 
 ### Testing
+
 ```bash
 pnpm test              # Run all tests
 pnpm test:unit         # Run unit tests only
@@ -56,6 +61,7 @@ pnpm test -- OrderService # Run specific test suite
 ```
 
 ### Development
+
 ```bash
 pnpm dev               # Start development server
 pnpm build             # Build all packages
@@ -65,6 +71,7 @@ pnpm typecheck         # Run TypeScript checks
 ```
 
 ### Code Generation
+
 ```bash
 pnpm generate:module --name=payment     # Create new module
 pnpm generate:tests --type=integration --module=payment # Add tests
@@ -74,12 +81,15 @@ pnpm generate:component --name=Button   # Create component
 ## Architecture Principles
 
 ### Testing Strategy
+
 - **Test Pyramid**: 70% unit, 20% integration, 10% E2E
 - **Test Naming**: Use Given-When-Then format
 - **Test Data**: Use factories and builders, not hardcoded data
 
 ### Quality Agents Architecture
+
 The platform includes specialized agents:
+
 - **QualityAgent**: Runs tests and generates reports
 - **ContractAgent**: Validates API compatibility
 - **RiskAgent**: Analyzes changes for impact
@@ -87,10 +97,13 @@ The platform includes specialized agents:
 - **DocumentationAgent**: Syncs docs with code
 
 ### Contract-First Development
+
 All services must define OpenAPI contracts before implementation. Contracts serve as the source of truth for API compatibility.
 
 ### Functional Observability
+
 Every critical business flow must expose observable signals without requiring code knowledge:
+
 - Business metrics (orders completed, users registered)
 - Flow health indicators (success rates, error patterns)
 - Performance metrics (response times per flow)
@@ -98,6 +111,7 @@ Every critical business flow must expose observable signals without requiring co
 ## Task Management Rules
 
 When creating or modifying tasks:
+
 1. Use business language, not technical jargon
 2. Include clear acceptance criteria (3-5 bullets)
 3. Specify deliverables (checklist, report, evidence)
@@ -105,6 +119,7 @@ When creating or modifying tasks:
 5. Keep tasks to 1-4 hours; split if larger
 
 Task format:
+
 ```
 Title: [Verb + Outcome]
 Description: [Business value statement]
@@ -119,6 +134,7 @@ Priority: [High/Medium/Low based on risk]
 ## Quality Criteria for All Changes
 
 Every change must meet these criteria:
+
 1. **Functional clarity**: Purpose and usage are documented
 2. **Robustness**: Critical paths have error handling
 3. **Compatibility**: Breaking changes are announced
@@ -128,12 +144,14 @@ Every change must meet these criteria:
 ## GitFlow Workflow
 
 ### Branch Naming
+
 - `feature/JIRA-123-description`
 - `bugfix/JIRA-456-description`
 - `release/v1.2.0`
 - `hotfix/v1.2.1-description`
 
 ### Commit Format
+
 ```
 <type>(<scope>): <subject>
 
@@ -141,9 +159,11 @@ Every change must meet these criteria:
 
 <footer>
 ```
+
 Types: feat, fix, docs, style, refactor, test, chore
 
 ### PR Requirements
+
 1. All CI checks pass
 2. At least 1 approval
 3. Documentation updated if needed
@@ -152,6 +172,7 @@ Types: feat, fix, docs, style, refactor, test, chore
 ## Success Metrics to Track
 
 When implementing features, ensure they contribute to:
+
 - **Reducing escaped defects**
 - **Shortening cycle time** from "ready to test" to "ready to release"
 - **Increasing perceived reliability** of critical flows
@@ -173,6 +194,7 @@ When implementing features, ensure they contribute to:
 ## Environment Variables
 
 Required environment variables (in .env.local):
+
 ```
 NODE_ENV=development
 API_PORT=3000
@@ -184,6 +206,7 @@ LOG_LEVEL=debug
 ## Performance Budgets
 
 Maintain these performance targets:
+
 - API response: < 200ms (p95)
 - Page load: < 3s (3G network)
 - Bundle size: < 200KB (gzipped)
@@ -200,6 +223,7 @@ Maintain these performance targets:
 ## ISTQB Alignment
 
 This platform demonstrates ISTQB concepts:
+
 - **Foundation Level**: Test design, levels, types
 - **Agile Extension**: Sprint testing, CI/CD
 - **Test Automation Engineer**: Automation architecture

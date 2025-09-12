@@ -5,6 +5,7 @@ A reusable quality platform for accelerating projects with built-in QA/QE best p
 ## 🎯 Vision
 
 Maintain a single repository that serves as a reusable quality platform to:
+
 - Accelerate new projects with good practices from day one
 - Train and mentor teams in modern QA/QE approaches
 - Practice and demonstrate concepts aligned with ISTQB and continuous quality
@@ -19,6 +20,7 @@ Maintain a single repository that serves as a reusable quality platform to:
 ## 📊 Proven ROI
 
 For a 50-person engineering team:
+
 - **Annual Value**: ~$5.69M
 - **ROI**: 469% in Year 1
 - **Escaped Defects**: -75%
@@ -42,6 +44,7 @@ For a 50-person engineering team:
 ## 🎓 ISTQB Alignment
 
 This platform demonstrates concepts from:
+
 - Foundation Level (test design, levels, types)
 - Agile Extension (sprint testing, CI/CD)
 - Test Automation Engineer (automation architecture)
@@ -54,24 +57,28 @@ This platform demonstrates concepts from:
 ### Roadmap
 
 **Phase 1: Foundation** (Weeks 1-2)
+
 - [ ] Monorepo structure setup
 - [ ] GitFlow configuration
 - [ ] Basic CI/CD pipeline
 - [ ] Development environment
 
 **Phase 2: Core Platform** (Weeks 3-4)
+
 - [ ] Sample product module
 - [ ] Unit test examples
 - [ ] Integration test examples
 - [ ] Basic quality metrics
 
 **Phase 3: Quality Tools** (Weeks 5-6)
+
 - [ ] Quality agent implementation
 - [ ] Contract validation
 - [ ] Risk assessment tool
 - [ ] Test data management
 
 **Phase 4: Documentation & Training** (Weeks 7-8)
+
 - [ ] Strategy templates
 - [ ] Exit criteria checklists
 - [ ] Training materials
@@ -87,6 +94,6 @@ This project is intended as a reference implementation and training platform for
 
 ---
 
-*"Quality is not an act, it is a habit." - Aristotle*
+_"Quality is not an act, it is a habit." - Aristotle_
 
 **The Quality Platform makes excellence a habit, not a hope.**
