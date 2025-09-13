@@ -51,6 +51,37 @@ quality-platform/
 
 ## Development Commands
 
+### 🚀 Port Management Solution
+
+The project includes an automated port management system (`dev-start.js`) that solves common development issues:
+
+**Problems Solved:**
+- Port conflicts when starting development servers
+- Orphaned Node.js processes blocking ports
+- Build cache corruption causing compilation errors
+- Manual process management and cleanup
+
+**Features:**
+- Automatically kills processes on target ports (3001, 4200, 5555, etc.)
+- Cleans corrupted build directories (`.next`, `dist`)
+- Starts servers in correct dependency order (API first, then Web)
+- Colored console output for easy debugging
+- Graceful error handling for permission issues
+- Single command to start entire development environment
+
+**Usage:**
+```bash
+pnpm dev        # Recommended way to start development environment
+pnpm dev:clean  # Alias for the same command
+```
+
+**What it does:**
+1. Kills existing processes on development ports
+2. Cleans build directories that may be corrupted
+3. Starts API server on port 3001 with proper environment variables
+4. Starts Web server on port 4200
+5. Provides status updates and access URLs
+
 ### Initial Setup (Completed ✅)
 ```bash
 # Install dependencies
@@ -73,45 +104,50 @@ npx prisma generate       # Generates Prisma client
 
 ### Current Development (Implemented)
 ```bash
-# Start NestJS API server
-pnpm nx serve api               # http://localhost:3000/api
+# 🚀 RECOMMENDED: Start Both Servers with Port Management
+pnpm dev                       # Start API (port 3001) + Web (port 4200) with auto-cleanup
+pnpm dev:clean                 # Same as above, alias for convenience
 
-# Start Next.js web application
-pnpm nx serve web               # http://localhost:4200
+# Individual Server Commands
+pnpm nx serve api              # Start NestJS API server on http://localhost:3001/api
+pnpm nx serve web              # Start Next.js web app on http://localhost:4200
 
-# API Testing and Building
-pnpm nx build api              # Build API for production
-pnpm nx test api               # Run API unit tests (when implemented)
-pnpm nx e2e api-e2e            # Run API integration tests (when implemented)
-pnpm nx test api --watch       # Watch mode for development (when tests added)
-
-# Web Application Development
-pnpm nx build web              # Build web app for production
-pnpm nx test web               # Run web unit tests (when implemented)
-pnpm nx e2e web-e2e            # Run web e2e tests (when implemented)
-pnpm nx lint web               # Lint web application code
-
-# Database Management (Prisma)
+# 🗃️ Database Management (Prisma)
 npx prisma migrate dev         # Create and apply database migrations
-npx prisma generate           # Generate Prisma client after schema changes
-npx prisma studio             # Open Prisma Studio (database GUI)
-npx prisma migrate reset      # Reset database (development only)
-npx prisma db push            # Push schema changes without migration files
+npx prisma generate            # Generate Prisma client after schema changes
+npx prisma studio              # Open Prisma Studio (database GUI) on http://localhost:5555
+pnpm db:seed                   # Seed database with sample products and users
+npx prisma migrate reset       # Reset database (development only)
+npx prisma db push             # Push schema changes without migration files
 
-# Available Endpoints (Implemented):
-# GET /api                     - API welcome message with version info
-# GET /api/health             - Basic health check with system info
-# GET /api/health/ready       - Readiness probe (includes database connectivity)
-# GET /api/health/live        - Liveness probe for Kubernetes
-# GET /api/docs               - Interactive Swagger documentation
-# POST /api/auth/register     - User registration with validation
-# POST /api/auth/login        - User login with JWT token
-# GET /api/auth/me            - Get current user profile (JWT required)
+# 🏗️ Building and Testing
+pnpm nx build api              # Build API for production
+pnpm nx build web              # Build web app for production
+pnpm nx lint web               # Lint web application code with ESLint
+pnpm nx test api               # Run API unit tests (when implemented)
+pnpm nx test web               # Run web unit tests (when implemented)
+pnpm nx e2e api-e2e            # Run API integration tests (when implemented)
+pnpm nx e2e web-e2e            # Run web e2e tests (when implemented)
+
+# 🌐 Access URLs (when servers are running):
+# Web Application:    http://localhost:4200
+# API Base:           http://localhost:3001/api
+# API Documentation:  http://localhost:3001/api/docs
+# Database Studio:    http://localhost:5555 (when running prisma studio)
+# API Health Check:   http://localhost:3001/api/health
 ```
 
 ### Quality Checks
 
 ```bash
+# Phase 5 Quality Engineering Tools (Implemented ✅)
+node scripts/quality-metrics.js  # Generate comprehensive quality report
+pnpm test:unit                   # Run Jest unit tests with coverage
+pnpm test:integration           # Run Supertest API integration tests
+pnpm test:e2e                   # Run Playwright end-to-end tests
+pnpm test:contract              # Run API contract validation tests
+
+# Legacy commands (to be implemented in future phases)
 pnpm quality:check        # Run all quality validations
 pnpm quality:report       # Generate executive summary
 pnpm risk:assess --pr=123 # Analyze PR for risk
@@ -122,12 +158,17 @@ pnpm flow:trace --flow=order-checkout # Visualize business flow
 ### Testing
 
 ```bash
-pnpm test              # Run all tests
-pnpm test:unit         # Run unit tests only
-pnpm test:integration  # Run integration tests
-pnpm test:e2e          # Run end-to-end tests
+# Phase 5 Testing Framework (Implemented ✅)
+pnpm test              # Run all tests (unit + integration + e2e)
+pnpm test:unit         # Run Jest unit tests with coverage reporting
+pnpm test:integration  # Run Supertest integration tests
+pnpm test:e2e          # Run Playwright end-to-end tests
+pnpm test:contract     # Run API contract validation tests
 pnpm test:watch        # Run tests in watch mode
-pnpm test -- OrderService # Run specific test suite
+pnpm test -- AuthService # Run specific test suite
+
+# Quality Metrics and Analysis
+node scripts/quality-metrics.js # Generate comprehensive quality metrics
 ```
 
 ### Development
@@ -148,38 +189,56 @@ pnpm generate:tests --type=integration --module=payment # Add tests
 pnpm generate:component --name=Button   # Create component
 ```
 
-### Frontend Development (Implemented)
+### Frontend Development (Substantially Complete ✅)
 
 ```bash
-# Web Application Development
+# 🌐 Web Application Development
 pnpm nx serve web               # Start Next.js dev server (http://localhost:4200)
 pnpm nx build web              # Build web app for production
 pnpm nx lint web               # Lint web application code with ESLint
 pnpm nx test web               # Run web unit tests (when implemented)
 pnpm nx e2e web-e2e            # Run web e2e tests (when implemented)
 
-# Frontend Code Quality
+# 🔧 Frontend Code Quality
 pnpm nx lint web --fix         # Auto-fix linting issues
 pnpm nx test web --watch       # Run tests in watch mode
 pnpm nx build web --prod       # Production build with optimizations
+```
 
-# Component Development
-# Create new components following the established patterns:
-# - Authentication: web/src/components/auth/
-# - Products: web/src/components/products/
-# - Cart: web/src/components/cart/
-# - UI: web/src/components/ui/
-# - Layout: web/src/components/layout/
+**Implemented Features ✅**
+- **Homepage**: Modern responsive landing page with gradients and animations
+- **Authentication**: Complete login/register system with JWT integration
+- **Product Catalog**: Browse products with search, filters, and pagination
+- **Shopping Cart**: Full cart functionality with persistent storage and real-time updates
+- **Navigation**: Dynamic navbar with cart badge and user authentication status
+- **Responsive Design**: Mobile-first design optimized for all screen sizes
+- **State Management**: Zustand stores with localStorage persistence
+- **API Integration**: React Query hooks for efficient data fetching
 
-# State Management (Zustand)
-# - Cart store: web/src/lib/stores/cart.ts
-# - Add new stores following the cart store pattern
-# - Use persistence middleware for data that should survive page reloads
+**Component Architecture:**
+```
+web/src/components/
+├── auth/         # Login, Register, AuthForm components ✅
+├── products/     # ProductCard, ProductGrid, ProductFilters ✅
+├── cart/         # CartDrawer, CartItem, CartBadge ✅
+├── ui/           # Button, Input, Loading components ✅
+└── layout/       # Navigation, Layout components ✅
+```
 
-# API Integration (React Query)
-# - Custom hooks: web/src/lib/hooks/
-# - API client: web/src/lib/api/client.ts
-# - Follow the useProducts pattern for new data fetching hooks
+**State Management (Zustand) ✅**
+```
+web/src/lib/stores/
+├── auth.ts       # User authentication state and JWT management
+├── cart.ts       # Shopping cart state with localStorage persistence
+└── products.ts   # Product catalog state and filtering
+```
+
+**API Integration (React Query) ✅**
+```
+web/src/lib/hooks/
+├── useAuth.ts    # Authentication hooks (login, register, logout)
+├── useProducts.ts # Product fetching and filtering hooks
+└── useCart.ts    # Shopping cart API integration hooks
 ```
 
 ## Architecture Principles
@@ -350,11 +409,20 @@ Maintain these performance targets:
 
 ## ISTQB Alignment
 
-This platform demonstrates ISTQB concepts:
+This platform demonstrates ISTQB concepts with comprehensive training materials:
 
-- **Foundation Level**: Test design, levels, types
-- **Agile Extension**: Sprint testing, CI/CD
-- **Test Automation Engineer**: Automation architecture
-- **Advanced Level**: Test management, techniques
+- **Foundation Level**: Complete certification preparation in `docs/training/istqb-foundation-level.md`
+- **Test Design**: Practical examples of test design techniques with real code
+- **Test Levels**: Implementation of unit, integration, system, and acceptance testing
+- **Test Types**: Functional, non-functional, and structural testing examples
+- **Test Automation**: Comprehensive automation architecture with Jest, Supertest, and Playwright
+- **Quality Management**: Metrics collection, analysis, and continuous improvement processes
+
+### Training Materials (Phase 5 ✅)
+
+- **ISTQB Foundation Level Preparation**: Complete syllabus coverage with 40 sample exam questions
+- **Technologies Zero to Hero**: 52-week comprehensive learning curriculum
+- **Quality Platform Usage Tutorials**: 12-part tutorial series from beginner to expert
+- **Hands-on Examples**: Real-world testing scenarios using the platform
 
 Map all test examples to relevant ISTQB syllabi sections for training purposes.

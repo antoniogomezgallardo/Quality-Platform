@@ -7,6 +7,8 @@
     "seed": "tsx prisma/seed.ts"
   },
   "scripts": {
+    "dev": "node dev-start.js",
+    "dev:clean": "node dev-start.js",
     "db:seed": "npx prisma db seed"
   },
   "devDependencies": {

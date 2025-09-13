@@ -18,26 +18,33 @@ git clone https://github.com/antoniogomezgallardo/Quality-Platform.git
 cd Quality-Platform
 pnpm install
 
-# Setup environment variables (create .env file)
+# Setup environment variables (create .env.local file)
 DATABASE_URL="file:./dev.db"
 JWT_SECRET="your-development-secret-key"
 JWT_EXPIRES_IN="7d"
 NODE_ENV="development"
-PORT=3000
+PORT=3001
 
 # Initialize database
 npx prisma generate
 npx prisma migrate dev
-pnpm run db:seed
+pnpm db:seed
 
-# Start the development server
-pnpm nx serve api
+# 🚀 Start the development environment (RECOMMENDED)
+pnpm dev                    # Starts both API + Web with port management
+
+# Or start API server individually
+pnpm nx serve api           # API only
 ```
 
 The API will be available at:
-- **Base URL**: http://localhost:3000/api
-- **Swagger Documentation**: http://localhost:3000/api/docs
-- **Health Check**: http://localhost:3000/api/health
+- **Base URL**: http://localhost:3001/api
+- **Swagger Documentation**: http://localhost:3001/api/docs
+- **Health Check**: http://localhost:3001/api/health
+
+### Development Experience
+
+**🚀 Recommended Approach**: Use `pnpm dev` to start the complete development environment with automatic port management and build cleanup.
 
 ## API Endpoints
 

@@ -36,6 +36,14 @@ This guide provides comprehensive instructions for setting up the Quality Platfo
 2. **Prisma Studio** - Database GUI (comes with Prisma)
 3. **Postman/Insomnia** - API testing (though Swagger UI is built-in)
 
+## ⚡ Port Management
+
+The Quality Platform includes an automated port management system that:
+- Resolves port conflicts automatically
+- Cleans build caches
+- Starts servers in correct order
+- Provides comprehensive error handling
+
 ## Initial Setup
 
 ### 1. Clone the Repository
