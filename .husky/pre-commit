@@ -1,0 +1,24 @@
+# Get current branch name
+branch=$(git rev-parse --abbrev-ref HEAD)
+
+# Check if trying to commit directly to protected branches
+if [ "$branch" = "main" ] || [ "$branch" = "develop" ]; then
+    echo "🚫 COMMIT REJECTED!"
+    echo "❌ Direct commits to '$branch' branch are not allowed"
+    echo ""
+    echo "📋 Use GitFlow methodology instead:"
+    if [ "$branch" = "main" ]; then
+        echo "   • For releases: git checkout -b release/v1.x.x"
+        echo "   • For hotfixes: git checkout -b hotfix/v1.x.y-description"
+    else
+        echo "   • For features: git checkout -b feature/description"
+        echo "   • For bug fixes: git checkout -b bugfix/description"
+    fi
+    echo ""
+    echo "💡 After your changes, create a Pull Request to merge back to '$branch'"
+    echo ""
+    exit 1
+fi
+
+# Run basic checks (lint-staged not configured yet)
+echo "✅ GitFlow check passed - committing to feature branch"
