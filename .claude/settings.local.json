@@ -5,7 +5,11 @@
       "Bash(npx nx g:*)",
       "Bash(npx:*)",
       "Bash(curl:*)",
-      "Bash(python:*)"
+      "Bash(python:*)",
+      "Bash(dir)",
+      "Bash(pnpm nx serve:*)",
+      "Bash(timeout:*)",
+      "Bash(git add:*)"
     ],
     "deny": [],
     "ask": []

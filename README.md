@@ -36,7 +36,7 @@ For a 50-person engineering team:
 - **Validation**: class-validator with comprehensive DTOs
 - **Security**: bcryptjs password hashing, authentication guards
 - **Testing**: Jest (unit), Supertest (e2e) - *ready for implementation*
-- **Frontend**: React/Next.js - *planned for next phase*
+- **Frontend**: React/Next.js with TypeScript and Tailwind CSS
 
 ## 📚 Documentation
 
@@ -69,7 +69,7 @@ This platform demonstrates concepts from:
 
 ## 🏗️ Project Status
 
-**Current Phase**: Phase 3C - Shopping Cart & Checkout ✅ **COMPLETED**
+**Current Phase**: Phase 4 - Frontend Application 🚧 **IN PROGRESS**
 
 ### Completed Implementation ✅
 
@@ -148,6 +148,9 @@ pnpm run db:seed          # Seed database with sample data
 # Start the API server
 pnpm nx serve api         # http://localhost:3000/api
 
+# Start the web application
+pnpm nx serve web         # http://localhost:4200
+
 # Access API Documentation
 # Open http://localhost:3000/api/docs for interactive Swagger UI
 ```
@@ -157,9 +160,13 @@ pnpm nx serve api         # http://localhost:3000/api
 ```bash
 # Development Commands
 pnpm nx serve api         # Start API server (http://localhost:3000/api)
+pnpm nx serve web         # Start web application (http://localhost:4200)
 pnpm nx build api         # Build API for production
+pnpm nx build web         # Build web application for production
 pnpm nx test api          # Run API unit tests (when implemented)
+pnpm nx test web          # Run web unit tests (when implemented)
 pnpm nx e2e api-e2e       # Run API e2e tests (when implemented)
+pnpm nx e2e web-e2e       # Run web e2e tests (when implemented)
 
 # Database Commands  
 npx prisma migrate dev    # Create and apply migrations
@@ -219,8 +226,8 @@ pnpm run db:seed         # Seed database with sample products and users
 
 ### 🎯 Next Development Phases
 
-**Phase 4: Frontend Application** (Current Priority)
-- [ ] Next.js web application setup with TypeScript
+**Phase 4: Frontend Application** (In Progress) 🚧
+- [x] Next.js web application setup with TypeScript
 - [ ] User authentication UI with login/register forms
 - [ ] Product catalog browsing with search and filtering
 - [ ] Shopping cart interface with real-time updates

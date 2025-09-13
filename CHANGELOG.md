@@ -5,6 +5,126 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2025-01-15
+
+### 🎉 **Phase 3C Complete - Shopping Cart & Checkout System**
+
+This release completes **Phase 3C** (Shopping Cart & Checkout) with a comprehensive e-commerce cart management system including session-based guest carts, persistent user carts, real-time stock validation, and seamless checkout conversion.
+
+### ✨ **Added**
+
+#### **Complete Shopping Cart System**
+- **9 REST Endpoints**: Comprehensive cart management with full CRUD operations
+- **Dual Cart Support**: Session-based carts for guest users and persistent carts for authenticated users
+- **Cart Merging**: Intelligent cart merging when guest users authenticate with duplicate item handling
+- **Real-time Stock Validation**: Prevents overselling with automatic stock checking on all operations
+- **Checkout Integration**: Seamless cart-to-order conversion with transaction safety
+
+#### **Shopping Cart API Endpoints**
+- `GET /api/cart` - Get current cart (supports both user and guest session carts)
+- `GET /api/cart/summary` - Get cart totals and summary information
+- `POST /api/cart/items` - Add item to cart with stock validation
+- `PATCH /api/cart/items/:id` - Update cart item quantity with stock checking
+- `DELETE /api/cart/items/:id` - Remove specific item from cart
+- `DELETE /api/cart` - Clear entire cart
+- `POST /api/cart/validate` - Validate cart stock availability
+- `POST /api/cart/merge` - Merge guest cart with user cart (auth required)
+- `POST /api/cart/checkout` - Convert cart to order with stock management (auth required)
+
+#### **Advanced Cart Features**
+- **Session Management**: Automatic cart creation for guest users using `x-session-id` header
+- **Cross-Device Sync**: User carts sync across devices when authenticated
+- **Smart Cart Merging**: When guests log in, takes maximum quantity for duplicate products
+- **Stock Integration**: Real-time inventory validation and automatic stock updates during checkout
+- **Business Rules**: Comprehensive validation preventing overselling and ensuring data integrity
+
+#### **Database Enhancements**
+- **Cart Model**: Added Cart table with support for both userId and sessionId
+- **CartItem Model**: Junction table linking carts to products with quantity tracking
+- **Database Migration**: Proper migration for cart functionality with foreign key relationships
+- **Enhanced Relationships**: Complete integration with existing User and Product models
+- **Transaction Support**: All cart operations wrapped in database transactions for consistency
+
+### 🛠️ **Technical Implementation**
+
+#### **CartModule Architecture**
+- **Complete NestJS Module**: Service/controller separation with proper dependency injection
+- **DTO Layer**: Comprehensive validation for cart operations using class-validator
+- **Service Layer**: Complex business logic with stock validation and cart merging
+- **Controller Layer**: RESTful endpoints with proper HTTP semantics and OpenAPI documentation
+- **Session Handling**: Dual authentication support for both users and guest sessions
+
+#### **Business Logic Implementation**
+- **Add Item Workflow**:
+  1. Validate product exists and is active
+  2. Check sufficient stock for requested quantity
+  3. Create cart automatically if doesn't exist (guest or user)
+  4. Merge quantities if item already in cart
+  5. Validate total quantity against stock
+- **Cart Merging Workflow**:
+  1. Validate user authentication and guest session
+  2. Find both user and guest carts
+  3. Merge items with intelligent duplicate handling
+  4. Validate stock for all merged items
+  5. Clean up guest cart after successful merge
+- **Checkout Workflow**:
+  1. Validate user authentication and cart existence
+  2. Perform complete stock validation for all items
+  3. Create order with all cart items in single transaction
+  4. Update product stock automatically
+  5. Clear cart after successful order creation
+
+#### **Data Transfer Objects (DTOs)**
+- **AddCartItemDto**: Cart item creation with stock validation
+- **UpdateCartItemDto**: Cart item quantity updates with constraints
+- **CartResponseDto**: Consistent cart response with full relationships
+- **CartSummaryDto**: Cart totals and statistics for UI display
+
+### 🧪 **Quality Assurance**
+- **Complete API Testing**: All 9 endpoints tested with real authentication and session data
+- **Business Rule Validation**: Cart workflows and stock management verified
+- **Session Management Testing**: Guest cart creation and user cart merging validated
+- **Stock Integration Testing**: Real-time stock validation and checkout conversion tested
+- **Transaction Testing**: Database consistency verified with rollback scenarios
+
+### 📊 **Business Value Delivered**
+- **Complete E-commerce Cart**: Production-ready shopping cart system supporting both guest and authenticated workflows
+- **Inventory Protection**: Real-time stock validation preventing overselling and inventory inconsistencies
+- **User Experience**: Seamless guest-to-user cart conversion with intelligent item merging
+- **Data Integrity**: Transaction-safe operations ensuring consistent cart and order data
+- **Scalable Architecture**: Supports high-volume cart operations with efficient session management
+
+### 🚀 **Enhanced Shopping Experience**
+
+```bash
+# Complete shopping workflow now available:
+
+# 1. Guest user adds items (cart created automatically)
+curl -X POST http://localhost:3000/api/cart/items \
+  -H "Content-Type: application/json" \
+  -H "x-session-id: guest-session-123" \
+  -d '{"productId": 1, "quantity": 2}'
+
+# 2. Guest registers/logs in
+curl -X POST http://localhost:3000/api/auth/login \
+  -H "Content-Type: application/json" \
+  -d '{"email": "user@example.com", "password": "password"}'
+
+# 3. Cart automatically merges on authentication
+curl -X POST http://localhost:3000/api/cart/merge \
+  -H "Authorization: Bearer JWT_TOKEN" \
+  -H "x-session-id: guest-session-123"
+
+# 4. Seamless checkout with stock management
+curl -X POST http://localhost:3000/api/cart/checkout \
+  -H "Authorization: Bearer JWT_TOKEN"
+```
+
+### 🎯 **Phase 4 Ready**
+This release provides the complete e-commerce backend foundation for **Phase 4: Frontend Application**. The shopping cart system is now fully functional with comprehensive business logic, ready for Next.js frontend integration and user interface development.
+
+---
+
 ## [1.2.0] - 2025-01-15
 
 ### 🎉 **Phase 3B Complete - Order Management API**

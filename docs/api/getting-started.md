@@ -91,6 +91,20 @@ The API will be available at:
 | PATCH | `/api/orders/:id/status` | Update order status (Admin only) |
 | POST | `/api/orders/:id/cancel` | Cancel order and restore stock |
 
+### Shopping Cart Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/cart` | Get current cart (supports both user and guest session carts) |
+| GET | `/api/cart/summary` | Get cart totals and summary information |
+| POST | `/api/cart/items` | Add item to cart with stock validation |
+| PATCH | `/api/cart/items/:id` | Update cart item quantity with stock checking |
+| DELETE | `/api/cart/items/:id` | Remove specific item from cart |
+| DELETE | `/api/cart` | Clear entire cart |
+| POST | `/api/cart/validate` | Validate cart stock availability |
+| POST | `/api/cart/merge` | Merge guest cart with user cart (auth required) |
+| POST | `/api/cart/checkout` | Convert cart to order with stock management (auth required) |
+
 ## API Documentation
 
 The API uses OpenAPI 3.0 (Swagger) for documentation. You can access the interactive documentation at http://localhost:3000/api/docs when the server is running.
@@ -219,16 +233,17 @@ This API foundation provides a production-ready base for:
 3. **User Management**: Full user registration, profile management, and role-based access
 4. **Product Management**: Complete CRUD operations with advanced filtering, search, and category management
 5. **Order Management**: Complete order processing system with stock management and status workflow
-6. **Health Monitoring**: Production-ready health checks with database connectivity testing
-7. **API Documentation**: Interactive Swagger UI with comprehensive endpoint documentation
-8. **Database Seeding**: Sample data including 10 products, 4 sample orders, and test users
+6. **Shopping Cart System**: Complete cart management with session-based guest carts, user cart persistence, and checkout integration
+7. **Health Monitoring**: Production-ready health checks with database connectivity testing
+8. **API Documentation**: Interactive Swagger UI with comprehensive endpoint documentation
+9. **Database Seeding**: Sample data including 10 products, 4 sample orders, and test users
 
 ### 🚀 **Coming Next**
-1. **Shopping Cart**: Session-based cart functionality with multi-step checkout
+1. **Frontend Application**: Next.js web interface with TypeScript for complete e-commerce experience
 2. **Payment Integration**: Structure for payment processor integration
 3. **Advanced Order Features**: Bulk operations, order export, and reporting
-4. **Frontend Application**: Next.js web interface for the API
-5. **Advanced Testing**: Unit tests, integration tests, and e2e test suites
+4. **Advanced Testing**: Unit tests, integration tests, and e2e test suites
+5. **Quality Engineering Tools**: Test automation framework and performance testing
 
 ### 🏗️ **Architecture Patterns**
 Each module follows established enterprise patterns:

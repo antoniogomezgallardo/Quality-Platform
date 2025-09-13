@@ -78,3 +78,7 @@ playwright/.cache/
 .next/
 .nuxt/
 /generated/prisma
+
+# Next.js
+.next
+out

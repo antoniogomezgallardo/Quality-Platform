@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quality Platform Store</title>
+    <style>
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f9fafb;
+            min-height: 100vh;
+        }
+        header {
+            background-color: white;
+            box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+            padding: 0;
+        }
+        nav {
+            max-width: 80rem;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+        .nav-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            height: 4rem;
+        }
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: rgb(17 24 39);
+            margin: 0;
+        }
+        .hero {
+            background-color: white;
+            padding: 4rem 1rem;
+        }
+        .hero-content {
+            max-width: 80rem;
+            margin: 0 auto;
+            text-align: center;
+        }
+        .hero h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: rgb(17 24 39);
+            margin: 0 0 0.75rem 0;
+        }
+        .blue-text {
+            color: rgb(37 99 235);
+        }
+        .hero p {
+            font-size: 1rem;
+            color: rgb(107 114 128);
+            max-width: 48rem;
+            margin: 0.75rem auto 0;
+        }
+        .hero a {
+            color: rgb(37 99 235);
+            text-decoration: underline;
+        }
+        .status-item {
+            display: block;
+            margin: 0.25rem 0;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <nav>
+            <div class="nav-content">
+                <h1>Quality Platform Store</h1>
+            </div>
+        </nav>
+    </header>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>
+                <div>Quality Platform</div>
+                <div class="blue-text">E-commerce Demo</div>
+            </h1>
+            <p>
+                <span class="status-item">✅ API Server Running on localhost:3001</span>
+                <span class="status-item">✅ Authentication System Complete</span>
+                <span class="status-item">✅ Database Seeded with Sample Data</span>
+                <span class="status-item">✅ Swagger Documentation Available</span>
+                <br><br>
+                <a href="http://localhost:3001/api/docs" target="_blank">
+                    → Open API Documentation
+                </a>
+            </p>
+        </div>
+    </section>
+</body>
+</html>
