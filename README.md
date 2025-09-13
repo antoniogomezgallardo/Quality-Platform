@@ -65,24 +65,26 @@ The project includes a sophisticated development environment setup that eliminat
 ## 📚 Documentation
 
 ### Project Overview
-- [Quality Platform Brief](./Quality-Platform-Brief-Enhanced.md) - Complete functional and technical specifications
-- [Capabilities & Use Cases](./Quality-Platform-Capabilities-and-Use-Cases.md) - Detailed use cases and ROI analysis
-- [Development Guide](./CLAUDE.md) - Guidelines for contributing to this repository
+- [Quality Platform Brief](./docs/project/Quality-Platform-Brief-Enhanced.md) - Complete functional and technical specifications
+- [Capabilities & Use Cases](./docs/project/Quality-Platform-Capabilities-and-Use-Cases.md) - Detailed use cases and ROI analysis
+- [Development Guide](./CLAUDE.md) - Guidelines for working with this repository
+- [Project Structure](./docs/PROJECT_STRUCTURE.md) - Monorepo organization and architecture
+- [Testing Guide](./docs/TESTING_GUIDE.md) - Comprehensive testing strategies and setup
+- [Setup & Troubleshooting](./docs/SETUP_AND_TROUBLESHOOTING.md) - Complete setup and problem resolution
 
 ### API Documentation
+- [Interactive API Docs](http://localhost:3001/api/docs) - Swagger UI (when server is running)
+- [API Reference](./docs/api/API_REFERENCE.md) - Complete endpoint documentation
 - [API Getting Started](./docs/api/getting-started.md) - Quick start guide for the NestJS API
 - [Product Management API](./docs/api/products.md) - Complete product catalog documentation
 - [Order Management API](./docs/api/orders.md) - Complete order processing documentation
 - [Shopping Cart API](./docs/api/cart.md) - Complete shopping cart and checkout documentation
 - [Authentication Guide](./docs/api/authentication.md) - Complete JWT authentication documentation
-- [Interactive API Docs](http://localhost:3000/api/docs) - Swagger UI (when server is running)
 
-### Development Guides
-- [Database Schema](./docs/database/schema.md) - Prisma schema and relationships
-- [API Architecture](./docs/api/architecture.md) - NestJS module structure and patterns
-- [Frontend Architecture](./docs/frontend/architecture.md) - Next.js application structure and patterns
-- [Component Library](./docs/frontend/components.md) - Reusable UI components and patterns
-- [Setup Guide](./docs/development/setup.md) - Complete development environment setup
+### Training Materials (Phase 5)
+- [ISTQB Foundation Level](./docs/training/istqb-foundation-level.md) - Complete certification preparation
+- [Technologies Zero to Hero](./docs/training/technologies-zero-to-hero.md) - 52-week learning curriculum
+- [Quality Platform Tutorials](./docs/tutorials/) - Hands-on learning guides
 
 ## 🎓 ISTQB Alignment
 
@@ -95,8 +97,10 @@ This platform demonstrates concepts from:
 
 ## 🏗️ Project Status
 
-**Current Version**: v1.6.0 - Production Ready E-commerce Platform
-**Status**: ✅ **FULLY FUNCTIONAL** - Ready for deployment with minor enhancements needed
+**Current Version**: v1.6.1 - Development Environment Enhanced
+**Backend API**: ✅ **FULLY FUNCTIONAL**
+**Frontend Application**: 🚧 **IN DEVELOPMENT**
+**Development Environment**: ✅ **FULLY AUTOMATED**
 
 ### Completed Implementation ✅
 
@@ -181,31 +185,66 @@ pnpm db:seed              # Seed with sample data
 pnpm dev                   # Auto-cleanup + API (3001) + Web (4200)
 
 # Access the platform:
-# 🌐 Web App:       http://localhost:4200
-# 🛍️ Admin Panel:   http://localhost:4200/admin
-# 📚 API Docs:      http://localhost:3001/api/docs
+# 🌐 Web App:       http://localhost:4200 (Next.js frontend - in development)
+# 📚 API Docs:      http://localhost:3001/api/docs (NestJS backend - fully functional)
 # 🔍 DB Studio:     npx prisma studio
 ```
 
-### 🌐 Complete E-commerce Experience
+<<<<<<< HEAD
+### 🌐 Backend API - Fully Functional
 
-The Quality Platform now provides a complete e-commerce web application:
+The Quality Platform provides a complete, production-ready backend API:
 
 ```bash
-# Frontend Application Features:
-# 🔐 User Authentication - Register, login, logout with JWT
-# 🛍️ Product Catalog - Browse, search, filter products with pagination
-# 🛒 Shopping Cart - Add items, update quantities, persistent cart
-# 📱 Responsive Design - Mobile and desktop optimized
-# ⚡ Real-time Updates - Live cart updates and stock validation
+# Backend Features (✅ COMPLETE):
+# 🔐 JWT Authentication - Complete user registration, login, and secure routes
+# 🛍️ Product Management - Full CRUD with advanced filtering and search
+# 📦 Order Management - Complete order processing with status tracking
+# 🛒 Shopping Cart - Full cart system with guest and user support
+# 📊 Business Analytics - Order statistics, inventory tracking, and reporting
+# 🔒 Security - Role-based access control, data validation, and protection
 
-# User Workflow:
-# 1. Visit http://localhost:4200
-# 2. Register/Login with your account
-# 3. Browse products with search and filters
-# 4. Add products to cart (cart badge shows count)
-# 5. Click cart icon to view cart drawer
-# 6. Manage cart items and proceed to checkout
+# API Access:
+# 📚 Interactive Docs: http://localhost:3001/api/docs
+# 🔍 Health Checks:   http://localhost:3001/api/health
+# 🗃️ Database GUI:     npx prisma studio (http://localhost:5555)
+```
+
+### 🚧 Frontend Application - In Development
+
+The web application is currently under active development:
+
+```bash
+# Frontend Status (🚧 IN DEVELOPMENT):
+# ✅ Next.js 15 + React 19 + TypeScript setup
+# ✅ Tailwind CSS v4 configuration
+# ✅ Basic component structure and routing
+# ✅ Development environment automation
+# 🚧 User interface implementation in progress
+# 📋 Complete integration with backend API (planned)
+
+# Development Access:
+# 🌐 Web App: http://localhost:4200 (development server)
+=======
+### 🏗️ Development Environment
+
+The Quality Platform provides a robust development environment with automated setup:
+
+```bash
+# Development Features:
+# 🔧 Automated Port Management - Resolves conflicts and cleans processes
+# 🚀 Single Command Startup - Both API and Web servers with proper coordination
+# 🛠️ Enhanced Scripts - dev-start.js and dev-stop.js for robust process management
+# 📊 Process Monitoring - Health checks and status validation
+# 🔄 Error Recovery - Handles permission issues and provides clear feedback
+
+# Development Workflow:
+# 1. Run 'pnpm dev' to start both servers
+# 2. Access API at http://localhost:3001/api
+# 3. Test endpoints at http://localhost:3001/api/docs
+# 4. Frontend development at http://localhost:4200
+# 5. Use 'pnpm dev:stop' for clean shutdown
+>>>>>>> origin/develop
 ```
 
 ### 🛠️ Development Commands
@@ -287,13 +326,44 @@ npx prisma migrate reset   # Reset database (development only)
 
 ### 🎯 Completed Features
 
-#### E-commerce Platform
-- ✅ Full product catalog with search, filtering, and categories
-- ✅ Shopping cart with real-time stock validation
-- ✅ Multi-step checkout process with payment UI
-- ✅ Order management and tracking
-- ✅ User authentication and profile management
-- ✅ Admin dashboard with analytics
+<<<<<<< HEAD
+**Phase 4: Frontend Application** 🚧 **IN DEVELOPMENT**
+- [x] Next.js 15 web application setup with TypeScript and Tailwind CSS v4
+- [x] Basic responsive homepage structure
+- [x] User authentication foundation (login/register forms)
+- [x] Product catalog foundation (basic browsing capabilities)
+- [ ] Advanced search, filtering, and pagination
+- [ ] Shopping cart interface implementation
+- [ ] Cart drawer and management features
+- [ ] Complete navigation system with cart integration
+- [ ] Mobile-responsive design optimization
+- [ ] State management with Zustand and React Query integration
+- [x] Development environment automation with port management
+- [ ] Complete e-commerce user journey implementation
+
+**Phase 5: Quality Engineering Tools** 📋 **PLANNED**
+- [ ] Test automation framework integration (Jest, Supertest, Playwright)
+- [ ] API contract testing implementation
+- [ ] Performance testing setup
+- [ ] Quality metrics collection and dashboards
+- [ ] ISTQB training materials and examples
+- [ ] Comprehensive testing documentation
+=======
+#### Backend API (Fully Functional)
+- ✅ Complete product catalog API with search, filtering, and categories
+- ✅ Shopping cart API with real-time stock validation
+- ✅ Order management and tracking endpoints
+- ✅ User authentication with JWT and secure password hashing
+- ✅ Role-based access control and admin operations
+- ✅ Comprehensive API documentation and testing
+
+#### Frontend Development (In Progress)
+- 🔄 Next.js application foundation with TypeScript
+- 🔄 Tailwind CSS styling system configuration
+- 📋 User interface components (planned)
+- 📋 Authentication flow implementation (planned)
+- 📋 Product catalog frontend (planned)
+- 📋 Shopping cart and checkout UI (planned)
 
 #### Quality Engineering
 - ✅ Comprehensive testing framework (Jest, Playwright, Supertest)
@@ -330,6 +400,7 @@ npx prisma migrate reset   # Reset database (development only)
 - [ ] Data export/import capabilities
 - [ ] Webhook system for integrations
 - [ ] Advanced reporting and analytics
+>>>>>>> origin/develop
 
 ## 🤝 Contributing
 

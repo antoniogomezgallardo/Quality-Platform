@@ -1,215 +1,493 @@
-# Quality Platform - Project Structure Guide
+# Project Structure
 
-## 📁 Directory Overview
+This document provides a comprehensive overview of the Quality Platform monorepo organization, architecture, and implementation status.
 
-The Quality Platform follows a monorepo architecture managed by Nx, with clear separation of concerns between API, web application, testing, and documentation.
+## Table of Contents
+
+- [Overview](#overview)
+- [Monorepo Structure](#monorepo-structure)
+- [Implementation Status](#implementation-status)
+- [Backend Architecture](#backend-architecture)
+- [Frontend Architecture](#frontend-architecture)
+- [Development Infrastructure](#development-infrastructure)
+- [Documentation Organization](#documentation-organization)
+- [Future Roadmap](#future-roadmap)
+
+## Overview
+
+The Quality Platform is an Nx-based monorepo that demonstrates enterprise-grade quality engineering practices. The project is structured to support multiple applications, shared libraries, and comprehensive tooling for quality assurance and testing.
+
+### Key Characteristics
+- **Monorepo Architecture**: Nx workspace with shared build tools and dependencies
+- **Full-Stack TypeScript**: End-to-end type safety across all applications
+- **Quality-First Approach**: Built-in testing, linting, and quality gates
+- **ISTQB Alignment**: Structured to support quality engineering training and certification
+
+## Monorepo Structure
 
 ```
 quality-platform/
-├── 📦 apps/                    # Application code
-│   ├── api/                    # NestJS backend API
-│   │   ├── src/
-│   │   │   ├── app/           # App module and controller
-│   │   │   ├── auth/          # Authentication module
-│   │   │   ├── cart/          # Shopping cart module
-│   │   │   ├── health/        # Health checks module
-│   │   │   ├── orders/        # Order management module
-│   │   │   ├── products/      # Product catalog module
-│   │   │   ├── prisma/        # Database service
-│   │   │   └── main.ts        # Application entry point
-│   │   └── project.json       # Nx project configuration
+├── 📁 apps/                          # Applications
+│   ├── 📁 api/                       # ✅ NestJS Backend API (FULLY FUNCTIONAL)
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 auth/              # JWT authentication system
+│   │   │   ├── 📁 products/          # Product management module
+│   │   │   ├── 📁 orders/            # Order processing module
+│   │   │   ├── 📁 cart/              # Shopping cart module
+│   │   │   ├── 📁 users/             # User management module
+│   │   │   ├── 📁 prisma/            # Database service and migrations
+│   │   │   ├── 📁 common/            # Shared utilities and guards
+│   │   │   └── 📄 main.ts            # Application entry point
+│   │   └── 📄 project.json           # Nx project configuration
 │   │
-│   └── api-e2e/               # API E2E tests
-│       └── src/
-│           └── api/           # API integration tests
-│
-├── 🌐 web/                     # Next.js frontend application
-│   ├── src/
-│   │   ├── app/               # Next.js App Router pages
-│   │   │   ├── (auth)/       # Authentication pages group
-│   │   │   ├── admin/        # Admin dashboard
-│   │   │   ├── cart/         # Shopping cart page
-│   │   │   ├── checkout/     # Checkout flow
-│   │   │   ├── products/     # Product catalog pages
-│   │   │   └── page.tsx      # Homepage
-│   │   │
-│   │   ├── components/        # React components
-│   │   │   ├── auth/         # Authentication components
-│   │   │   ├── cart/         # Cart components
-│   │   │   ├── layout/       # Layout components
-│   │   │   ├── products/     # Product components
-│   │   │   └── ui/           # Base UI components
-│   │   │
-│   │   └── lib/              # Utilities and libraries
-│   │       ├── api/          # API client
-│   │       ├── auth/         # Auth context
-│   │       ├── hooks/        # Custom React hooks
-│   │       └── stores/       # Zustand state stores
+│   ├── 📁 web/                       # 🚧 Next.js Frontend (IN DEVELOPMENT)
+│   │   ├── 📁 src/
+│   │   │   ├── 📁 app/               # Next.js App Router
+│   │   │   │   ├── 📁 (auth)/        # ✅ Authentication routes
+│   │   │   │   ├── 📁 products/      # 🚧 Product pages (basic structure)
+│   │   │   │   ├── 📁 cart/          # 📋 Cart pages (planned)
+│   │   │   │   └── 📁 checkout/      # 📋 Checkout flow (planned)
+│   │   │   ├── 📁 components/        # React components
+│   │   │   │   ├── 📁 ui/            # ✅ Base UI components
+│   │   │   │   ├── 📁 auth/          # ✅ Authentication forms
+│   │   │   │   ├── 📁 layout/        # ✅ Navigation and layout
+│   │   │   │   ├── 📁 products/      # 🚧 Product components
+│   │   │   │   └── 📁 cart/          # 📋 Cart components (planned)
+│   │   │   └── 📁 lib/               # Utilities and configurations
+│   │   │       ├── 📁 api/           # 🚧 API client utilities
+│   │   │       ├── 📁 auth/          # 🚧 Auth context and hooks
+│   │   │       ├── 📁 hooks/         # 📋 React Query hooks (planned)
+│   │   │       └── 📁 stores/        # 📋 Zustand stores (planned)
+│   │   └── 📄 tailwind.config.js     # ✅ Tailwind CSS v4 configuration
 │   │
-│   ├── public/               # Static assets
-│   └── project.json          # Nx project configuration
-│
-├── 🧪 Testing
-│   ├── e2e/                  # End-to-end tests
-│   │   ├── auth-flow.spec.ts
-│   │   └── homepage.spec.ts
+│   ├── 📁 api-e2e/                   # 📋 API E2E Tests (PLANNED)
+│   │   └── 📁 src/
+│   │       ├── 📄 products.spec.ts   # ✅ Product API tests (ready)
+│   │       ├── 📄 auth-flow.spec.ts  # 📋 Auth flow tests (planned)
+│   │       └── 📄 orders.spec.ts     # 📋 Order API tests (planned)
 │   │
-│   ├── tests/                # Additional test suites
-│   │   └── contract/         # API contract tests
-│   │
-│   └── web-e2e/              # Web E2E tests
-│       └── src/
+│   └── 📁 web-e2e/                   # 📋 Web E2E Tests (PLANNED)
+│       └── 📁 src/
+│           ├── 📄 homepage.spec.ts   # ✅ Homepage tests (ready)
+│           ├── 📄 auth-flow.spec.ts  # ✅ Auth flow tests (ready)
+│           └── 📄 shopping.spec.ts   # 📋 Shopping flow tests (planned)
 │
-├── 📚 Documentation
-│   ├── docs/                 # Project documentation
-│   │   ├── api/             # API documentation
-│   │   ├── architecture/    # Architecture decisions
-│   │   ├── database/        # Database schema docs
-│   │   ├── deployment/      # Deployment guides
-│   │   ├── development/     # Development guides
-│   │   ├── frontend/        # Frontend documentation
-│   │   ├── guides/          # How-to guides
-│   │   ├── training/        # ISTQB training materials
-│   │   └── tutorials/       # Platform tutorials
-│   │
-│   ├── CHANGELOG.md         # Version history
-│   ├── CLAUDE.md           # AI assistant guidelines
-│   └── README.md           # Project overview
+├── 📁 docs/                          # ✅ Documentation (COMPREHENSIVE)
+│   ├── 📄 PROJECT_STRUCTURE.md       # This document
+│   ├── 📄 TESTING_GUIDE.md          # Comprehensive testing strategies
+│   ├── 📄 SETUP_AND_TROUBLESHOOTING.md # Setup and troubleshooting guide
+│   ├── 📁 api/                       # 📋 API documentation (planned)
+│   │   └── 📄 API_REFERENCE.md       # Complete endpoint reference
+│   ├── 📁 project/                   # Project management documentation
+│   │   ├── 📄 TECHNICAL_OVERVIEW.md
+│   │   ├── 📄 DEVELOPMENT_STRATEGY.md
+│   │   ├── 📄 QUALITY_ENGINEERING_APPROACH.md
+│   │   ├── 📄 TESTING_STRATEGY.md
+│   │   ├── 📄 TOOLS_INTEGRATION.md
+│   │   ├── 📄 DEPLOYMENT_GUIDE.md
+│   │   ├── 📄 TROUBLESHOOTING_WORKFLOWS.md
+│   │   ├── 📄 PERFORMANCE_BENCHMARKS.md
+│   │   ├── 📄 ARCHITECTURE_DECISIONS.md
+│   │   └── 📄 FUTURE_ROADMAP.md
+│   ├── 📁 training/                  # 📋 Training materials (planned Phase 5)
+│   │   ├── 📄 istqb-foundation-level.md
+│   │   └── 📄 technologies-zero-to-hero.md
+│   └── 📁 tutorials/                 # 📋 Tutorials (planned Phase 5)
+│       └── 📄 quality-platform-usage.md
 │
-├── 🗄️ Database
-│   ├── prisma/
-│   │   ├── schema.prisma   # Database schema
-│   │   ├── seed.ts         # Database seeding
-│   │   ├── migrations/     # Database migrations
-│   │   └── dev.db          # SQLite dev database
+├── 📁 libs/                          # 📋 Shared Libraries (FUTURE)
+│   ├── 📁 shared-types/              # Common TypeScript interfaces
+│   ├── 📁 shared-utils/              # Utility functions
+│   └── 📁 shared-components/         # Reusable UI components
 │
-├── ⚙️ Configuration
-│   ├── .claude/            # Claude AI settings
-│   ├── .nx/                # Nx cache and metadata
-│   ├── .vscode/            # VS Code settings
-│   ├── .env                # Environment variables
-│   ├── .gitignore          # Git ignore rules
-│   ├── nx.json             # Nx configuration
-│   ├── tsconfig.base.json  # TypeScript config
-│   ├── jest.config.js      # Jest configuration
-│   ├── playwright.config.ts # Playwright config
-│   └── package.json        # Dependencies
+├── 📁 tools/                         # 📋 Development Tools (FUTURE)
+│   ├── 📁 quality-agents/            # Quality automation agents
+│   └── 📁 generators/                # Code generators
 │
-├── 🛠️ Scripts & Tools
-│   ├── scripts/
-│   │   └── quality-metrics.js # Quality reporting
-│   │
-│   ├── dev-start.js        # Development startup script
-│   ├── libs/               # Shared libraries (future)
-│   ├── tools/              # Development tools (future)
-│   └── templates/          # Document templates (future)
+├── 📁 prisma/                        # ✅ Database Configuration (COMPLETE)
+│   ├── 📄 schema.prisma              # Database schema definition
+│   ├── 📄 seed.ts                    # Database seeding script
+│   └── 📁 migrations/                # Database migration files
 │
-└── 📦 Build Outputs
-    └── dist/               # Compiled applications
+├── 📁 .husky/                        # ✅ Git Hooks (COMPLETE)
+│   └── 📄 pre-commit                 # GitFlow enforcement hook
+│
+├── 📄 dev-start.js                   # ✅ Development automation script
+├── 📄 dev-stop.js                    # ✅ Development cleanup script
+├── 📄 package.json                   # ✅ Project dependencies and scripts
+├── 📄 nx.json                        # ✅ Nx workspace configuration
+├── 📄 tsconfig.base.json             # ✅ TypeScript configuration
+├── 📄 .gitignore                     # ✅ Git ignore rules
+├── 📄 README.md                      # ✅ Project overview and setup
+├── 📄 CHANGELOG.md                   # ✅ Version history and changes
+└── 📄 CLAUDE.md                      # ✅ Development guidelines
 ```
 
-## 🏗️ Module Structure
+## Implementation Status
 
-### API Modules (NestJS)
+### Legend
+- ✅ **FULLY FUNCTIONAL**: Complete implementation, production-ready
+- 🚧 **IN DEVELOPMENT**: Basic structure implemented, features being developed
+- 📋 **PLANNED**: Documented and ready for implementation
+- 📁 **FUTURE**: Planned for future phases
 
-Each API module follows a consistent structure:
+### Current Status Summary (v1.6.1)
+
+#### Backend API ✅ **FULLY FUNCTIONAL**
+- Complete NestJS application with all major features
+- JWT authentication with role-based access control
+- Full CRUD operations for products, orders, and cart
+- Comprehensive API documentation with Swagger/OpenAPI
+- Production-ready with proper validation and error handling
+- Database integration with Prisma ORM
+
+#### Frontend Application 🚧 **IN DEVELOPMENT**
+- Next.js 15 + React 19 + TypeScript foundation established
+- Tailwind CSS v4 configuration complete
+- Basic component structure and routing
+- Authentication foundation implemented
+- Product catalog foundation in place
+- Full UI implementation and API integration in progress
+
+#### Development Environment ✅ **FULLY AUTOMATED**
+- Sophisticated port management and process cleanup
+- GitFlow enforcement with pre-commit hooks
+- Comprehensive documentation and troubleshooting guides
+- Automated development server coordination
+
+#### Testing Framework 📋 **PLANNED**
+- Complete testing strategy documented
+- Framework configurations ready (Jest, Supertest, Playwright)
+- Test examples and patterns prepared
+- Ready for implementation in Phase 5
+
+## Backend Architecture
+
+### NestJS Application Structure
 
 ```
-module-name/
-├── module-name.module.ts      # Module definition
-├── module-name.controller.ts  # HTTP endpoints
-├── module-name.service.ts     # Business logic
-├── dto/                       # Data Transfer Objects
-│   ├── create-*.dto.ts       # Creation DTOs
-│   ├── update-*.dto.ts       # Update DTOs
-│   ├── query-*.dto.ts        # Query/filter DTOs
-│   └── *-response.dto.ts     # Response DTOs
-├── guards/                    # Authorization guards
-├── decorators/               # Custom decorators
-└── *.spec.ts                 # Unit tests
-```
-
-### Frontend Structure (Next.js)
-
-```
-web/src/
-├── app/                      # Pages (App Router)
-│   ├── (group)/             # Route groups
-│   ├── layout.tsx           # Root layout
-│   └── page.tsx             # Page component
+apps/api/src/
+├── 📁 auth/                          # Authentication Module ✅
+│   ├── 📄 auth.controller.ts         # Login, register endpoints
+│   ├── 📄 auth.service.ts            # JWT token management
+│   ├── 📄 auth.module.ts             # Module configuration
+│   ├── 📁 guards/                    # Route protection
+│   ├── 📁 strategies/                # Passport strategies
+│   └── 📁 dto/                       # Data transfer objects
 │
-├── components/              # React components
-│   ├── feature/            # Feature-specific
-│   └── ui/                 # Reusable UI
+├── 📁 products/                      # Product Management ✅
+│   ├── 📄 products.controller.ts     # CRUD endpoints with filtering
+│   ├── 📄 products.service.ts        # Business logic
+│   ├── 📄 products.module.ts         # Module configuration
+│   └── 📁 dto/                       # Request/response DTOs
 │
-└── lib/                    # Utilities
-    ├── api/               # API integration
-    ├── hooks/             # Custom hooks
-    └── stores/            # State management
+├── 📁 orders/                        # Order Processing ✅
+│   ├── 📄 orders.controller.ts       # Order management endpoints
+│   ├── 📄 orders.service.ts          # Order business logic
+│   ├── 📄 orders.module.ts           # Module configuration
+│   └── 📁 dto/                       # Order DTOs
+│
+├── 📁 cart/                          # Shopping Cart ✅
+│   ├── 📄 cart.controller.ts         # Cart management endpoints
+│   ├── 📄 cart.service.ts            # Cart business logic
+│   ├── 📄 cart.module.ts             # Module configuration
+│   └── 📁 dto/                       # Cart DTOs
+│
+├── 📁 users/                         # User Management ✅
+│   ├── 📄 users.controller.ts        # User profile endpoints
+│   ├── 📄 users.service.ts           # User management logic
+│   └── 📄 users.module.ts            # Module configuration
+│
+├── 📁 prisma/                        # Database Layer ✅
+│   ├── 📄 prisma.service.ts          # Database service
+│   └── 📄 prisma.module.ts           # Prisma module
+│
+├── 📁 common/                        # Shared Utilities ✅
+│   ├── 📁 guards/                    # Authentication guards
+│   ├── 📁 decorators/                # Custom decorators
+│   ├── 📁 filters/                   # Exception filters
+│   └── 📁 interceptors/              # Response interceptors
+│
+└── 📄 main.ts                        # Application bootstrap
 ```
 
-## 📝 File Naming Conventions
+### Key Features Implemented
 
-- **TypeScript/JavaScript**: `kebab-case.ts`
-- **React Components**: `PascalCase.tsx`
-- **Test Files**: `*.spec.ts` or `*.test.ts`
-- **Documentation**: `UPPERCASE.md` or `kebab-case.md`
-- **Configuration**: `lowercase.config.ts`
+#### Authentication & Authorization ✅
+- JWT-based authentication
+- Role-based access control (USER, ADMIN)
+- Passport.js integration with Local and JWT strategies
+- Password hashing with bcryptjs
+- Protected routes with guards
 
-## 🔧 Configuration Files
+#### API Endpoints ✅
+- **Authentication**: `/api/auth/login`, `/api/auth/register`, `/api/auth/me`
+- **Products**: Full CRUD with advanced filtering and search
+- **Orders**: Complete order management with status tracking
+- **Cart**: Session-based and user-persistent cart management
+- **Health Checks**: System monitoring and database connectivity
 
-| File | Purpose |
-|------|---------|
-| `nx.json` | Nx workspace configuration |
-| `tsconfig.base.json` | Shared TypeScript settings |
-| `jest.config.js` | Test runner configuration |
-| `playwright.config.ts` | E2E test configuration |
-| `.env` | Environment variables |
-| `prisma/schema.prisma` | Database schema |
+#### Data Validation ✅
+- class-validator for comprehensive DTO validation
+- Custom validation pipes
+- Proper error handling and response formatting
 
-## 🚀 Development Workflow
+#### Documentation ✅
+- OpenAPI/Swagger integration
+- Interactive API documentation at `/api/docs`
+- Comprehensive endpoint documentation
 
-1. **Feature Development**: Create feature branch from `develop`
-2. **Implementation**: Code in appropriate module/component
-3. **Testing**: Add tests in same directory or test folder
-4. **Documentation**: Update relevant docs
-5. **Quality Check**: Run linting and tests
-6. **Merge**: PR to `develop`, then release to `main`
+## Frontend Architecture
 
-## 📦 Key Dependencies
+### Next.js Application Structure
 
-### Backend
-- NestJS - API framework
-- Prisma - ORM
-- Passport - Authentication
-- class-validator - Validation
-- Swagger - API documentation
+```
+apps/web/src/
+├── 📁 app/                           # Next.js App Router
+│   ├── 📄 layout.tsx                 # ✅ Root layout with providers
+│   ├── 📄 page.tsx                   # ✅ Homepage
+│   ├── 📄 global.css                 # ✅ Tailwind CSS imports
+│   ├── 📁 (auth)/                    # Authentication Routes
+│   │   ├── 📁 login/                 # ✅ Login page
+│   │   └── 📁 register/              # ✅ Register page
+│   ├── 📁 products/                  # Product Pages 🚧
+│   │   ├── 📄 page.tsx               # Product listing page
+│   │   └── 📁 [id]/                  # Product detail page
+│   ├── 📁 cart/                      # Cart Pages 📋
+│   │   └── 📄 page.tsx               # Shopping cart page
+│   └── 📁 checkout/                  # Checkout Flow 📋
+│       ├── 📄 page.tsx               # Checkout form
+│       └── 📁 success/               # Order confirmation
+│
+├── 📁 components/                    # React Components
+│   ├── 📁 ui/                        # Base Components ✅
+│   │   ├── 📄 button.tsx             # Button component
+│   │   ├── 📄 input.tsx              # Input component
+│   │   ├── 📄 card.tsx               # Card component
+│   │   └── 📄 loading.tsx            # Loading states
+│   ├── 📁 auth/                      # Auth Components ✅
+│   │   ├── 📄 LoginForm.tsx          # Login form
+│   │   ├── 📄 RegisterForm.tsx       # Registration form
+│   │   └── 📄 AuthProvider.tsx       # Auth context provider
+│   ├── 📁 layout/                    # Layout Components ✅
+│   │   ├── 📄 Navigation.tsx         # Main navigation
+│   │   ├── 📄 Header.tsx             # Site header
+│   │   └── 📄 Footer.tsx             # Site footer
+│   ├── 📁 products/                  # Product Components 🚧
+│   │   ├── 📄 ProductCard.tsx        # Product card display
+│   │   ├── 📄 ProductGrid.tsx        # Product grid layout
+│   │   ├── 📄 ProductFilters.tsx     # Filtering interface
+│   │   └── 📄 ProductSearch.tsx      # Search functionality
+│   └── 📁 cart/                      # Cart Components 📋
+│       ├── 📄 CartDrawer.tsx         # Slide-out cart
+│       ├── 📄 CartItem.tsx           # Individual cart item
+│       └── 📄 CartBadge.tsx          # Cart item count badge
+│
+└── 📁 lib/                           # Utilities & Configuration
+    ├── 📁 api/                       # API Client 🚧
+    │   ├── 📄 client.ts              # HTTP client configuration
+    │   ├── 📄 products.ts            # Product API calls
+    │   ├── 📄 auth.ts                # Authentication API calls
+    │   └── 📄 cart.ts                # Cart API calls
+    ├── 📁 auth/                      # Authentication 🚧
+    │   ├── 📄 context.tsx            # Auth context
+    │   ├── 📄 provider.tsx           # Auth provider
+    │   └── 📄 hooks.ts               # Auth hooks
+    ├── 📁 hooks/                     # React Query Hooks 📋
+    │   ├── 📄 useProducts.ts         # Product data hooks
+    │   ├── 📄 useCart.ts             # Cart data hooks
+    │   └── 📄 useAuth.ts             # Auth hooks
+    └── 📁 stores/                    # Zustand Stores 📋
+        ├── 📄 auth.ts                # Auth state management
+        ├── 📄 cart.ts                # Cart state management
+        └── 📄 products.ts            # Product state management
+```
 
-### Frontend
-- Next.js 15 - React framework
-- React 19 - UI library
-- Tailwind CSS - Styling
-- Zustand - State management
-- React Query - Data fetching
+### Frontend Technology Stack
 
-### Testing
-- Jest - Unit testing
-- Playwright - E2E testing
-- Supertest - API testing
+#### Core Technologies ✅
+- **Next.js 15**: React framework with App Router
+- **React 19**: Latest React with concurrent features
+- **TypeScript**: Full type safety
+- **Tailwind CSS v4**: Modern utility-first styling
 
-## 🔄 Build & Deployment
+#### Planned Integrations 📋
+- **Zustand**: State management for client-side state
+- **TanStack Query**: Server state management and caching
+- **React Hook Form**: Form handling and validation
+- **Zod**: Runtime type validation
 
-- **Development**: `pnpm dev` starts both API and web
-- **Production Build**: `pnpm nx build api` and `pnpm nx build web`
-- **Testing**: `pnpm nx test` and `pnpm nx e2e`
-- **Database**: Prisma migrations for schema changes
+## Development Infrastructure
 
-## 📊 Project Statistics
+### Automation Scripts ✅
 
-- **Total Modules**: 8 API modules, 15+ React components
-- **API Endpoints**: 40+ REST endpoints
-- **Test Coverage Target**: 70% minimum
-- **Frontend Pages**: 10+ pages with dynamic routing
-- **Database Tables**: 6 core tables with relationships
+#### Port Management System
+```javascript
+// dev-start.js - Comprehensive development automation
+- Automatic port conflict resolution
+- Process cleanup and management
+- Build cache cleaning
+- Server startup coordination
+- Error handling and recovery
+```
 
-This structure supports scalability, maintainability, and follows best practices for enterprise-grade applications.
+#### Development Commands
+```bash
+pnpm dev              # Complete development environment
+pnpm dev:stop         # Clean shutdown
+pnpm dev:reset        # Stop and restart clean
+```
+
+### Git Workflow ✅
+
+#### GitFlow Enforcement
+```bash
+# .husky/pre-commit - Automated GitFlow compliance
+- Prevents direct commits to main/develop
+- Provides guidance on proper branch workflows
+- Ensures methodology compliance
+```
+
+#### Branch Strategy
+- `main`: Production-ready releases
+- `develop`: Integration branch
+- `feature/*`: New feature development
+- `bugfix/*`: Bug fixes
+- `release/*`: Release preparation
+- `hotfix/*`: Critical fixes
+
+### Build and Quality ✅
+
+#### Nx Workspace Configuration
+```json
+// nx.json - Monorepo build coordination
+- Shared build tools and configurations
+- Dependency graph management
+- Incremental builds and caching
+- Task pipeline optimization
+```
+
+#### Code Quality Tools
+- **ESLint**: Code linting with TypeScript rules
+- **Prettier**: Code formatting
+- **TypeScript**: Static type checking
+- **Husky**: Git hook management
+
+## Documentation Organization
+
+### Documentation Structure ✅
+
+#### Project Documentation
+```
+docs/
+├── 📄 PROJECT_STRUCTURE.md          # This document
+├── 📄 TESTING_GUIDE.md              # Testing strategies and setup
+├── 📄 SETUP_AND_TROUBLESHOOTING.md  # Setup and problem resolution
+└── 📁 project/                      # Detailed project documentation
+```
+
+#### API Documentation
+```
+docs/api/
+└── 📄 API_REFERENCE.md              # Complete API endpoint reference
+```
+
+#### Training Materials (Phase 5)
+```
+docs/training/
+├── 📄 istqb-foundation-level.md     # ISTQB certification prep
+└── 📄 technologies-zero-to-hero.md  # Comprehensive tech curriculum
+```
+
+### Documentation Standards
+
+#### Content Quality
+- Clear, actionable instructions
+- Code examples and screenshots
+- Troubleshooting sections
+- Regular updates and maintenance
+
+#### Organization Principles
+- Logical information hierarchy
+- Cross-referencing between documents
+- Version control for documentation changes
+- Accessibility and searchability
+
+## Future Roadmap
+
+### Phase 5: Quality Engineering Tools 📋 **NEXT**
+
+#### Testing Framework Implementation
+- Jest unit testing setup and configuration
+- Supertest API integration testing
+- Playwright end-to-end testing
+- Test coverage reporting and quality gates
+
+#### Quality Metrics System
+- Automated quality analysis scripts
+- Code coverage tracking
+- Performance monitoring
+- Security vulnerability scanning
+
+#### Training Materials
+- Complete ISTQB Foundation Level preparation
+- 52-week technology learning curriculum
+- Interactive quality platform tutorials
+- Hands-on testing examples
+
+### Phase 6: Advanced Features 📁 **FUTURE**
+
+#### Shared Libraries
+- Common TypeScript interfaces and types
+- Shared utility functions and helpers
+- Reusable UI component library
+- Cross-application state management
+
+#### Development Tools
+- Quality automation agents
+- Code generators and scaffolding
+- Advanced debugging and profiling tools
+- Performance analysis utilities
+
+#### Production Readiness
+- Docker containerization
+- CI/CD pipeline enhancement
+- Production deployment automation
+- Monitoring and alerting systems
+
+### Long-term Vision
+
+#### Enterprise Integration
+- Multi-tenant architecture support
+- Advanced role-based permissions
+- Audit logging and compliance features
+- Integration with enterprise tools
+
+#### AI and Automation
+- AI-powered code review and suggestions
+- Automated test generation
+- Intelligent quality analysis
+- Predictive performance monitoring
+
+---
+
+## Contributing to the Structure
+
+### Adding New Features
+
+1. **Follow the established patterns**
+2. **Update relevant documentation**
+3. **Maintain implementation status indicators**
+4. **Follow GitFlow methodology**
+
+### Structure Modifications
+
+1. **Document rationale for changes**
+2. **Update all affected documentation**
+3. **Communicate changes to team**
+4. **Maintain backward compatibility**
+
+For more information on specific implementation details, refer to:
+- [Setup and Troubleshooting Guide](./SETUP_AND_TROUBLESHOOTING.md)
+- [Testing Guide](./TESTING_GUIDE.md)
+- [Development Guidelines](../CLAUDE.md)
