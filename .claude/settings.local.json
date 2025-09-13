@@ -11,7 +11,8 @@
       "Bash(timeout:*)",
       "Bash(git add:*)",
       "Bash(git checkout:*)",
-      "Bash(git merge:*)"
+      "Bash(git merge:*)",
+      "Bash(git pull:*)"
     ],
     "deny": [],
     "ask": []
