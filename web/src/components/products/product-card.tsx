@@ -1,4 +1,7 @@
+'use client';
+
 import Link from 'next/link';
+import { useCartStore } from '../../lib/stores/cart';
 import type { Product } from '../../lib/api/types';
 
 interface ProductCardProps {
@@ -7,6 +10,7 @@ interface ProductCardProps {
 }
 
 export function ProductCard({ product, onAddToCart }: ProductCardProps) {
+  const addItem = useCartStore((state) => state.addItem);
   const isOutOfStock = product.stock === 0;
 
   return (
@@ -57,7 +61,10 @@ export function ProductCard({ product, onAddToCart }: ProductCardProps) {
         </div>
         
         <button
-          onClick={() => onAddToCart?.(product)}
+          onClick={() => {
+            addItem(product);
+            onAddToCart?.(product);
+          }}
           disabled={isOutOfStock}
           className={`mt-4 w-full py-2 px-4 rounded-md font-medium transition-colors ${
             isOutOfStock

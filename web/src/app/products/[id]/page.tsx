@@ -3,18 +3,22 @@
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useProduct } from '../../../lib/hooks/use-products';
+import { useCartStore } from '../../../lib/stores/cart';
 
 export default function ProductDetailPage() {
   const params = useParams();
   const router = useRouter();
   const productId = Number(params.id);
+  const addItem = useCartStore((state) => state.addItem);
   
   const { data: product, isLoading, error } = useProduct(productId);
 
   const handleAddToCart = () => {
-    // TODO: Implement cart functionality
-    console.log('Add to cart:', product);
-    alert(`Added ${product?.name} to cart!`);
+    if (product) {
+      addItem(product);
+      // Show success message or toast notification here
+      alert(`Added ${product.name} to cart!`);
+    }
   };
 
   if (isLoading) {
