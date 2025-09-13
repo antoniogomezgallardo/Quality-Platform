@@ -15,17 +15,20 @@ When working on this codebase:
 3. **Follow GitFlow methodology** - Use feature/, bugfix/, release/, and hotfix/ branches appropriately
 4. **Ensure quality gates** - All code must pass linting, type checking, and tests before merging
 
-## Monorepo Structure (Once Initialized)
+## Monorepo Structure
 
-The project will follow this structure:
+The project follows this structure:
 
 ```
 quality-platform/
-├── apps/           # Deployable applications (web, api, docs)
-├── libs/           # Shared libraries (contracts, test-utils, metrics)
-├── tools/          # Development tools (agents, generators, scripts)
-├── templates/      # Document templates (strategies, checklists)
-├── examples/       # Test implementation examples
+├── api/            # NestJS API application
+├── web/            # Next.js web application
+├── web-e2e/        # Web e2e tests
+├── api-e2e/        # API e2e tests
+├── libs/           # Shared libraries (future)
+├── tools/          # Development tools (future)
+├── templates/      # Document templates (future)
+├── examples/       # Test implementation examples (future)
 └── docs/           # Project documentation
 ```
 
@@ -51,16 +54,25 @@ npx prisma migrate dev     # Creates database and applies migrations
 npx prisma generate       # Generates Prisma client
 ```
 
-### Current API Development (Implemented)
+### Current Development (Implemented)
 ```bash
 # Start NestJS API server
 pnpm nx serve api               # http://localhost:3000/api
+
+# Start Next.js web application
+pnpm nx serve web               # http://localhost:4200
 
 # API Testing and Building
 pnpm nx build api              # Build API for production
 pnpm nx test api               # Run API unit tests (when implemented)
 pnpm nx e2e api-e2e            # Run API integration tests (when implemented)
 pnpm nx test api --watch       # Watch mode for development (when tests added)
+
+# Web Application Development
+pnpm nx build web              # Build web app for production
+pnpm nx test web               # Run web unit tests (when implemented)
+pnpm nx e2e web-e2e            # Run web e2e tests (when implemented)
+pnpm nx lint web               # Lint web application code
 
 # Database Management (Prisma)
 npx prisma migrate dev         # Create and apply database migrations
@@ -232,7 +244,7 @@ When implementing features, ensure they contribute to:
 - **Validation**: class-validator with comprehensive DTOs
 - **Security**: bcryptjs password hashing, authentication guards
 - **Testing**: Jest (ready), Supertest (ready) - *tests to be implemented*
-- **Frontend**: React/Next.js - *planned for next phase*
+- **Frontend**: React/Next.js with TypeScript and Tailwind CSS
 - **Documentation**: Markdown + Swagger UI
 
 ## Environment Variables
