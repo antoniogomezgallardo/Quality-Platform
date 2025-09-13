@@ -127,6 +127,11 @@ npx prisma generate       # Generates Prisma client
 pnpm dev                       # Start API (port 3001) + Web (port 4200) with auto-cleanup
 pnpm dev:clean                 # Same as above, alias for convenience
 
+# 🛑 Stop Development Servers (NEW)
+pnpm dev:stop                  # Stop development servers cleanly
+pnpm dev:stop --all            # Stop ALL Node.js processes (use with caution)
+pnpm dev:reset                 # Stop all processes and restart development environment
+
 # Individual Server Commands
 pnpm nx serve api              # Start NestJS API server on http://localhost:3001/api
 pnpm nx serve web              # Start Next.js web app on http://localhost:4200
@@ -468,6 +473,157 @@ NEXT_PUBLIC_API_URL="http://localhost:3000/api"  # API base URL for frontend
 - Use strong, unique JWT secrets in production  
 - Change default JWT secret before deployment
 - Consider shorter JWT expiration for sensitive applications
+
+## Troubleshooting Development Issues
+
+### Common Startup Problems
+
+#### 🔴 Port Already in Use Errors
+
+**Problem**: `EADDRINUSE: address already in use :::4200` or `:::3001`
+
+**Solutions**:
+```bash
+# Quick fix - stop all development processes
+pnpm dev:stop
+
+# Complete reset if problems persist
+pnpm dev:reset
+
+# Manual cleanup if scripts fail
+pnpm dev:stop --all  # Kills ALL Node.js processes (use with caution)
+```
+
+**Manual Windows Commands** (if automated cleanup fails):
+```bash
+# Find processes using specific ports
+netstat -ano | findstr :4200
+netstat -ano | findstr :3001
+
+# Kill specific process ID (replace XXXX with actual PID)
+taskkill /F /PID XXXX
+```
+
+#### 🔴 Inspector/Debugger Port Conflicts
+
+**Problem**: `Starting inspector on 127.0.0.1:9230 failed: address already in use`
+
+**Solution**: This is now automatically handled by the enhanced `pnpm dev` command. If it persists:
+```bash
+# Kill processes on inspector ports
+netstat -ano | findstr :9230
+netstat -ano | findstr :9231
+taskkill /F /PID [PID_NUMBER]
+```
+
+#### 🔴 File Permission Errors (EPERM)
+
+**Problem**: `EPERM: operation not permitted, open 'web\.next\trace'`
+
+**Solutions**:
+```bash
+# The enhanced dev script now handles this automatically, but if it fails:
+
+# Remove read-only attributes (Windows)
+attrib -R "web\.next\*.*" /S /D
+
+# Force delete directory
+rmdir /S /Q "web\.next"
+
+# Alternative cleanup
+rd /S /Q "web\.next"
+```
+
+**Root Cause**: Windows file locking, antivirus interference, or previous crashed processes.
+
+#### 🔴 Build Directory Corruption
+
+**Problem**: Compilation errors, stale cache, or "module not found" errors
+
+**Solution**:
+```bash
+# Clean restart (recommended)
+pnpm dev:reset
+
+# Manual cleanup
+pnpm dev:stop
+# Remove these directories manually if needed:
+# - web\.next
+# - dist
+# - node_modules\.cache
+# - web\.swc
+pnpm dev
+```
+
+### Windows-Specific Issues
+
+#### Antivirus Interference
+- **Symptom**: Files cannot be deleted, permission errors
+- **Solution**: Add project folder to antivirus exclusions
+
+#### PowerShell Execution Policy
+- **Symptom**: Scripts fail to run
+- **Solution**: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
+
+#### Long Path Names
+- **Symptom**: Path too long errors
+- **Solution**: Enable long path support in Windows or move project closer to root
+
+### Recovery Procedures
+
+#### Complete Environment Reset
+```bash
+# 1. Stop everything
+pnpm dev:stop --all
+
+# 2. Clean dependencies (if needed)
+rm -rf node_modules
+pnpm install
+
+# 3. Clean database (if corrupted)
+npx prisma migrate reset
+
+# 4. Restart fresh
+pnpm dev
+```
+
+#### Network/Port Issues
+```bash
+# Check what's using your ports
+netstat -ano | findstr :4200
+netstat -ano | findstr :3001
+
+# Reset network stack (Administrator CMD)
+netsh int ip reset
+netsh winsock reset
+```
+
+### Prevention Best Practices
+
+1. **Always use `pnpm dev:stop`** before closing your terminal
+2. **Use `pnpm dev:reset`** if you encounter any startup issues
+3. **Keep your terminal open** while developing to allow proper cleanup
+4. **Avoid force-closing** terminal windows during development
+5. **Add project to antivirus exclusions** to prevent file locking
+
+### Getting Help
+
+If troubleshooting steps don't resolve the issue:
+
+1. **Check Process Status**: Run `pnpm dev:stop` and verify no errors
+2. **Restart Terminal**: Close and reopen your terminal with administrator privileges
+3. **Check Windows Task Manager**: Look for orphaned Node.js processes
+4. **System Restart**: As a last resort, restart Windows to clear all processes
+
+### Monitoring and Prevention
+
+The enhanced development scripts now include:
+
+- **Automatic port conflict detection** before startup
+- **Improved cleanup** of orphaned processes
+- **File permission handling** for Windows
+- **Process monitoring** during development
+- **Graceful shutdown** handling for Ctrl+C
 
 ## Performance Budgets
 

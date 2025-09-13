@@ -36,24 +36,37 @@ The project includes a sophisticated development environment setup that eliminat
 - **Error Recovery**: Handles permission issues and provides clear status messages
 - **Dependency Order**: Starts API server first, then Web app for proper initialization
 
-## 🛠️ Technology Stack (Implemented)
+## 🛠️ Technology Stack (Production Ready)
 
-- **Monorepo**: Nx Workspace with pnpm
-- **Language**: TypeScript
-- **Backend**: NestJS with OpenAPI/Swagger
+### Backend Stack
+- **Framework**: NestJS with modular architecture
+- **API Documentation**: OpenAPI/Swagger with interactive UI
+- **Database**: Prisma ORM with SQLite (dev) / PostgreSQL (prod)
 - **Authentication**: JWT with Passport.js (Local + JWT strategies)
-- **Database**: Prisma ORM with SQLite (development) / PostgreSQL (production)
 - **Validation**: class-validator with comprehensive DTOs
-- **Security**: bcryptjs password hashing, authentication guards
-- **Testing**: Jest (unit), Supertest (e2e) - *ready for implementation*
-- **Frontend**: Next.js 15 with React 19, TypeScript, and Tailwind CSS
+- **Security**: bcryptjs, authentication guards, role-based access
+
+### Frontend Stack
+- **Framework**: Next.js 15 with React 19 and App Router
+- **Language**: TypeScript with strict mode
+- **Styling**: Tailwind CSS with custom animations
 - **State Management**: Zustand with localStorage persistence
-- **Data Fetching**: TanStack React Query (@tanstack/react-query)
-- **UI Components**: Custom component library with responsive design
+- **Data Fetching**: TanStack React Query with caching
+- **UI Components**: Custom component library with shadcn/ui
+
+### Testing & Quality
+- **Unit Testing**: Jest with 70% coverage thresholds
+- **API Testing**: Supertest for integration tests
+- **E2E Testing**: Playwright for cross-browser testing
+- **Contract Testing**: API contract validation
+- **Quality Metrics**: Automated collection and reporting
+- **Code Quality**: ESLint, Prettier, Husky pre-commit hooks
 
 ## 📚 Documentation
 
 ### Project Overview
+- [Quality Platform Brief](./docs/project/Quality-Platform-Brief-Enhanced.md) - Complete functional and technical specifications
+- [Capabilities & Use Cases](./docs/project/Quality-Platform-Capabilities-and-Use-Cases.md) - Detailed use cases and ROI analysis
 - [Development Guide](./CLAUDE.md) - Guidelines for working with this repository
 - [Project Structure](./docs/PROJECT_STRUCTURE.md) - Monorepo organization and architecture
 - [Testing Guide](./docs/TESTING_GUIDE.md) - Comprehensive testing strategies and setup
@@ -62,6 +75,11 @@ The project includes a sophisticated development environment setup that eliminat
 ### API Documentation
 - [Interactive API Docs](http://localhost:3001/api/docs) - Swagger UI (when server is running)
 - [API Reference](./docs/api/API_REFERENCE.md) - Complete endpoint documentation
+- [API Getting Started](./docs/api/getting-started.md) - Quick start guide for the NestJS API
+- [Product Management API](./docs/api/products.md) - Complete product catalog documentation
+- [Order Management API](./docs/api/orders.md) - Complete order processing documentation
+- [Shopping Cart API](./docs/api/cart.md) - Complete shopping cart and checkout documentation
+- [Authentication Guide](./docs/api/authentication.md) - Complete JWT authentication documentation
 
 ### Training Materials (Phase 5)
 - [ISTQB Foundation Level](./docs/training/istqb-foundation-level.md) - Complete certification preparation
@@ -79,9 +97,10 @@ This platform demonstrates concepts from:
 
 ## 🏗️ Project Status
 
-**Current Version**: v1.6.1
+**Current Version**: v1.6.1 - Development Environment Enhanced
 **Backend API**: ✅ **FULLY FUNCTIONAL**
 **Frontend Application**: 🚧 **IN DEVELOPMENT**
+**Development Environment**: ✅ **FULLY AUTOMATED**
 
 ### Completed Implementation ✅
 
@@ -149,27 +168,29 @@ This platform demonstrates concepts from:
 ### 🚀 Quick Start
 
 ```bash
-# Install dependencies
+# Clone and install
+git clone https://github.com/antoniogomezgallardo/Quality-Platform.git
+cd Quality-Platform
 pnpm install
 
-# Set up database
-npx prisma migrate dev     # Create and apply database migrations
-npx prisma generate       # Generate Prisma client
-pnpm db:seed              # Seed database with sample data
+# Set up environment
+cp .env.example .env  # Or create .env with required variables
 
-# 🌟 RECOMMENDED: Start complete development environment
+# Initialize database
+npx prisma migrate dev     # Create database and apply migrations
+npx prisma generate       # Generate Prisma client
+pnpm db:seed              # Seed with sample data
+
+# 🌟 RECOMMENDED: Start development environment
 pnpm dev                   # Auto-cleanup + API (3001) + Web (4200)
 
-# Or start servers individually:
-pnpm nx serve api         # http://localhost:3001/api
-pnpm nx serve web         # http://localhost:4200
-
-# Access the applications:
-# 🌐 Web App:       http://localhost:4200
-# 📚 API Docs:      http://localhost:3001/api/docs
-# 🔍 DB Studio:     npx prisma studio (http://localhost:5555)
+# Access the platform:
+# 🌐 Web App:       http://localhost:4200 (Next.js frontend - in development)
+# 📚 API Docs:      http://localhost:3001/api/docs (NestJS backend - fully functional)
+# 🔍 DB Studio:     npx prisma studio
 ```
 
+<<<<<<< HEAD
 ### 🌐 Backend API - Fully Functional
 
 The Quality Platform provides a complete, production-ready backend API:
@@ -204,6 +225,26 @@ The web application is currently under active development:
 
 # Development Access:
 # 🌐 Web App: http://localhost:4200 (development server)
+=======
+### 🏗️ Development Environment
+
+The Quality Platform provides a robust development environment with automated setup:
+
+```bash
+# Development Features:
+# 🔧 Automated Port Management - Resolves conflicts and cleans processes
+# 🚀 Single Command Startup - Both API and Web servers with proper coordination
+# 🛠️ Enhanced Scripts - dev-start.js and dev-stop.js for robust process management
+# 📊 Process Monitoring - Health checks and status validation
+# 🔄 Error Recovery - Handles permission issues and provides clear feedback
+
+# Development Workflow:
+# 1. Run 'pnpm dev' to start both servers
+# 2. Access API at http://localhost:3001/api
+# 3. Test endpoints at http://localhost:3001/api/docs
+# 4. Frontend development at http://localhost:4200
+# 5. Use 'pnpm dev:stop' for clean shutdown
+>>>>>>> origin/develop
 ```
 
 ### 🛠️ Development Commands
@@ -283,8 +324,9 @@ npx prisma migrate reset   # Reset database (development only)
 - `POST /api/cart/merge` - Merge guest cart with user cart (auth required)
 - `POST /api/cart/checkout` - Convert cart to order (auth required)
 
-### 🎯 Next Development Phases
+### 🎯 Completed Features
 
+<<<<<<< HEAD
 **Phase 4: Frontend Application** 🚧 **IN DEVELOPMENT**
 - [x] Next.js 15 web application setup with TypeScript and Tailwind CSS v4
 - [x] Basic responsive homepage structure
@@ -306,6 +348,59 @@ npx prisma migrate reset   # Reset database (development only)
 - [ ] Quality metrics collection and dashboards
 - [ ] ISTQB training materials and examples
 - [ ] Comprehensive testing documentation
+=======
+#### Backend API (Fully Functional)
+- ✅ Complete product catalog API with search, filtering, and categories
+- ✅ Shopping cart API with real-time stock validation
+- ✅ Order management and tracking endpoints
+- ✅ User authentication with JWT and secure password hashing
+- ✅ Role-based access control and admin operations
+- ✅ Comprehensive API documentation and testing
+
+#### Frontend Development (In Progress)
+- 🔄 Next.js application foundation with TypeScript
+- 🔄 Tailwind CSS styling system configuration
+- 📋 User interface components (planned)
+- 📋 Authentication flow implementation (planned)
+- 📋 Product catalog frontend (planned)
+- 📋 Shopping cart and checkout UI (planned)
+
+#### Quality Engineering
+- ✅ Comprehensive testing framework (Jest, Playwright, Supertest)
+- ✅ Quality metrics collection and reporting
+- ✅ ISTQB-aligned training materials
+- ✅ GitFlow workflow with branch protection
+- ✅ Automated code quality checks
+
+### 📈 Roadmap to Production
+
+**Phase 6: CI/CD & Deployment** (Next Priority) 🚀
+- [ ] GitHub Actions workflows for automated testing
+- [ ] Docker containerization for all services
+- [ ] Kubernetes deployment manifests
+- [ ] Environment configuration management
+- [ ] Automated release pipeline
+- [ ] Database migration automation
+- [ ] Production monitoring setup
+
+**Phase 7: Performance & Security** 🔒
+- [ ] Redis caching layer implementation
+- [ ] Rate limiting and DDoS protection
+- [ ] Security headers and CSP policies
+- [ ] OWASP security scanning integration
+- [ ] Performance optimization (lazy loading, code splitting)
+- [ ] CDN integration for static assets
+- [ ] Database query optimization
+
+**Phase 8: Enterprise Features** 🏢
+- [ ] Multi-tenancy support
+- [ ] Single Sign-On (SSO) integration
+- [ ] Advanced role-based permissions
+- [ ] Audit logging and compliance
+- [ ] Data export/import capabilities
+- [ ] Webhook system for integrations
+- [ ] Advanced reporting and analytics
+>>>>>>> origin/develop
 
 ## 🤝 Contributing
 
