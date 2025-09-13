@@ -1,4 +1,6 @@
 import './global.css';
+import { Providers } from '../lib/providers';
+import { Navbar } from '../components/layout/navbar';
 
 export const metadata = {
   title: 'Quality Platform Store',
@@ -13,7 +15,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body>
-        {children}
+        <Providers>
+          <Navbar />
+          <main className="min-h-screen bg-gray-50">
+            {children}
+          </main>
+        </Providers>
       </body>
     </html>
   );
