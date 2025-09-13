@@ -5,6 +5,79 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.1] - 2025-01-15
+
+### 🛠️ **Development Environment Enhancements**
+
+This maintenance release improves the development experience with enhanced port management, GitFlow enforcement, and comprehensive documentation updates.
+
+### ✨ **Added**
+
+#### **GitFlow Enforcement**
+- **Pre-commit Hook**: Automatic GitFlow compliance checking to prevent direct commits to `main` and `develop` branches
+- **Branch Protection**: Clear guidance on proper feature/, bugfix/, release/, and hotfix/ branch workflows
+- **Developer Guidance**: Helpful error messages and next steps when GitFlow violations are detected
+- **Methodology Compliance**: Full adherence to GitFlow best practices with proper branch management
+
+#### **Enhanced Development Scripts**
+- **Improved Port Management**: Enhanced `dev-start.js` with better process cleanup and error handling
+- **Stop Script Integration**: Added `dev-stop.js` for clean development server shutdown
+- **Inspector Port Resolution**: Fixed Node.js debugger port conflicts with separate debug ports for API and Web
+- **Process Monitoring**: Better handling of orphaned processes and automatic cleanup
+
+#### **Documentation Overhaul**
+- **Accurate Status Reporting**: Updated all documentation to honestly reflect current implementation status
+- **Comprehensive Testing Guide**: Complete testing strategies and framework setup documentation
+- **Setup & Troubleshooting Guide**: Detailed troubleshooting for Windows development environment
+- **Project Structure Documentation**: Updated to reflect actual monorepo organization
+
+### 🔧 **Fixed**
+
+#### **Development Environment Issues**
+- **Tailwind CSS v4 Configuration**: Resolved inspector port conflicts causing compilation issues
+- **Port Conflict Resolution**: Enhanced automatic cleanup of processes blocking development ports
+- **File Permission Handling**: Improved Windows file system permission error handling
+- **Process Management**: Better handling of Node.js process cleanup and port liberation
+
+#### **Documentation Accuracy**
+- **Frontend Status Clarification**: Updated documentation to reflect frontend as "in development" vs "completed"
+- **API URL Corrections**: Fixed API documentation links to use correct port (3001) instead of 3000
+- **Phase Status Updates**: Accurate representation of Phase 4 (frontend) and Phase 5 (quality tools) status
+
+### 📚 **Documentation Updates**
+
+#### **Project Documentation**
+- **README.md**: Complete overhaul with accurate project status and comprehensive setup instructions
+- **CLAUDE.md**: Enhanced development guidelines with current project status and workflow instructions
+- **PROJECT_STRUCTURE.md**: Updated to reflect actual implementation and planned features
+
+#### **Development Guides**
+- **TESTING_GUIDE.md**: Comprehensive testing framework documentation with Jest, Supertest, and Playwright
+- **SETUP_AND_TROUBLESHOOTING.md**: Complete setup guide with Windows-specific troubleshooting
+- **API_REFERENCE.md**: Consolidated API documentation with all endpoints and usage examples
+
+### 🚀 **Technical Improvements**
+
+#### **Development Workflow**
+- **GitFlow Automation**: Automated branch protection and workflow guidance
+- **Quality Gate Integration**: Pre-commit hooks ensuring code quality and methodology compliance
+- **Development Server Coordination**: Better API and Web server startup coordination
+- **Error Recovery**: Enhanced error handling and recovery procedures for development issues
+
+#### **Process Management**
+- **Port Liberation**: Improved automatic port cleanup before server startup
+- **Process Isolation**: Better separation of API and Web development processes
+- **Debug Port Management**: Separate Node.js inspector ports to prevent conflicts
+- **Graceful Shutdown**: Improved Ctrl+C handling for clean development server shutdown
+
+### 🎯 **Current Status**
+
+- **Backend API**: ✅ **FULLY FUNCTIONAL** - Complete e-commerce API with authentication, products, orders, and cart
+- **Frontend Application**: 🚧 **IN DEVELOPMENT** - Basic Next.js setup with foundation components in progress
+- **Quality Engineering**: 📋 **PLANNED** - Comprehensive testing framework and training materials ready for implementation
+
+This release establishes a solid foundation for continued development with proper GitFlow methodology and enhanced developer experience.
+
 ## [1.6.0] - 2025-01-15
 
 ### 🎉 **Phase 5 Complete - Quality Engineering Tools & Training Platform**

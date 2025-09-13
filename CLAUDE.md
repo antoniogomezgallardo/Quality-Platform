@@ -6,6 +6,25 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 This is the Quality Platform monorepo - a reusable quality platform designed to accelerate projects with good practices, train teams in QA/QE approaches, and demonstrate ISTQB-aligned concepts.
 
+## Current Project Status (v1.6.1)
+
+**Backend API**: ✅ **FULLY FUNCTIONAL**
+- Complete NestJS API with authentication, products, orders, and shopping cart
+- JWT authentication with role-based access control
+- Comprehensive OpenAPI/Swagger documentation
+- Production-ready with proper validation and error handling
+
+**Frontend Application**: 🚧 **IN DEVELOPMENT**
+- Next.js 15 + React 19 + TypeScript foundation established
+- Basic component structure and routing implemented
+- Tailwind CSS v4 configuration complete
+- UI components and full integration in progress
+
+**Development Environment**: ✅ **FULLY AUTOMATED**
+- Automated port management and process cleanup
+- GitFlow enforcement with pre-commit hooks
+- Comprehensive development and troubleshooting documentation
+
 ## Project Philosophy
 
 When working on this codebase:
