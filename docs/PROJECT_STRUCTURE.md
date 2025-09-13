@@ -23,28 +23,26 @@ quality-platform/
 │       └── src/
 │           └── api/           # API integration tests
 │
-├── 🌐 web/                     # Next.js frontend application
+├── 🌐 web/                     # Next.js frontend application (IN DEVELOPMENT)
 │   ├── src/
-│   │   ├── app/               # Next.js App Router pages
-│   │   │   ├── (auth)/       # Authentication pages group
-│   │   │   ├── admin/        # Admin dashboard
-│   │   │   ├── cart/         # Shopping cart page
-│   │   │   ├── checkout/     # Checkout flow
-│   │   │   ├── products/     # Product catalog pages
-│   │   │   └── page.tsx      # Homepage
+│   │   ├── app/               # Next.js App Router foundation
+│   │   │   ├── globals.css   # Tailwind CSS v4 imports
+│   │   │   ├── layout.tsx    # Root layout component
+│   │   │   └── page.tsx      # Homepage (basic structure)
 │   │   │
-│   │   ├── components/        # React components
-│   │   │   ├── auth/         # Authentication components
-│   │   │   ├── cart/         # Cart components
-│   │   │   ├── layout/       # Layout components
-│   │   │   ├── products/     # Product components
-│   │   │   └── ui/           # Base UI components
+│   │   ├── components/        # React components (PLANNED)
+│   │   │   ├── auth/         # Authentication components (to be implemented)
+│   │   │   ├── cart/         # Cart components (to be implemented)
+│   │   │   ├── layout/       # Layout components (to be implemented)
+│   │   │   ├── products/     # Product components (to be implemented)
+│   │   │   └── ui/           # Base UI components (to be implemented)
 │   │   │
-│   │   └── lib/              # Utilities and libraries
-│   │       ├── api/          # API client
-│   │       ├── auth/         # Auth context
-│   │       ├── hooks/        # Custom React hooks
-│   │       └── stores/       # Zustand state stores
+│   │   ├── lib/              # Utilities and libraries (FOUNDATION)
+│   │   │   ├── api/          # API client (to be implemented)
+│   │   │   ├── hooks/        # Custom React hooks (to be implemented)
+│   │   │   └── stores/       # Zustand state stores (to be implemented)
+│   │   │
+│   │   └── test-setup.ts     # Jest testing setup
 │   │
 │   ├── public/               # Static assets
 │   └── project.json          # Nx project configuration
@@ -99,7 +97,15 @@ quality-platform/
 │   ├── scripts/
 │   │   └── quality-metrics.js # Quality reporting
 │   │
-│   ├── dev-start.js        # Development startup script
+│   ├── dev-start.js        # Enhanced development startup script
+│   │                       # - Port conflict resolution
+│   │                       # - Process cleanup and monitoring
+│   │                       # - Server coordination (API → Web)
+│   │                       # - Health checks and validation
+│   ├── dev-stop.js         # Comprehensive development cleanup
+│   │                       # - Windows process tree termination
+│   │                       # - Safe shutdown with protection
+│   │                       # - Port cleanup and validation
 │   ├── libs/               # Shared libraries (future)
 │   ├── tools/              # Development tools (future)
 │   └── templates/          # Document templates (future)
