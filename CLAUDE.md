@@ -306,10 +306,64 @@ Every change must meet these criteria:
 
 ## GitFlow Workflow
 
+**⚠️ CRITICAL: NEVER work directly on `develop` or `main` branches!**
+
+Git pre-commit hook is installed to prevent direct commits to these branches.
+
+### Branch Flow
+
+1. **New Feature Development**:
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git checkout -b feature/description
+   # Make changes and commit
+   git push origin feature/description
+   # Create PR to merge into develop
+   ```
+
+2. **Bug Fixes**:
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git checkout -b bugfix/description
+   # Fix bug and commit
+   git push origin bugfix/description
+   # Create PR to merge into develop
+   ```
+
+3. **Release Process**:
+   ```bash
+   # After features are merged to develop
+   git checkout develop
+   git pull origin develop
+   git checkout -b release/v1.x.x
+   # Final testing and minor fixes only
+   git checkout main
+   git merge release/v1.x.x
+   git tag v1.x.x
+   git push origin main --tags
+   git checkout develop
+   git merge release/v1.x.x  # Merge back any release fixes
+   ```
+
+4. **Hotfixes**:
+   ```bash
+   git checkout main
+   git pull origin main
+   git checkout -b hotfix/v1.x.y-description
+   # Fix critical issue
+   git checkout main
+   git merge hotfix/v1.x.y-description
+   git tag v1.x.y
+   git checkout develop
+   git merge hotfix/v1.x.y-description  # Apply fix to develop too
+   ```
+
 ### Branch Naming
 
-- `feature/JIRA-123-description`
-- `bugfix/JIRA-456-description`
+- `feature/description` (no JIRA required, descriptive name)
+- `bugfix/description`
 - `release/v1.2.0`
 - `hotfix/v1.2.1-description`
 
@@ -331,6 +385,12 @@ Types: feat, fix, docs, style, refactor, test, chore
 2. At least 1 approval
 3. Documentation updated if needed
 4. Quality gates met (coverage, performance, security)
+
+### GitFlow Prevention Measures
+
+- **Pre-commit hook**: Blocks commits to develop/main branches
+- **Branch protection**: Use GitHub/GitLab branch protection rules in production
+- **Code review**: All changes must go through PR process
 
 ## Success Metrics to Track
 
