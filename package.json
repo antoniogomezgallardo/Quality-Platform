@@ -1,6 +1,6 @@
 {
   "name": "quality-platform",
-  "version": "1.0.0",
+  "version": "1.6.0",
   "description": "A reusable quality platform for accelerating projects with built-in QA/QE best practices and ISTQB alignment",
   "private": true,
   "prisma": {
@@ -9,6 +9,8 @@
   "scripts": {
     "dev": "node dev-start.js",
     "dev:clean": "node dev-start.js",
+    "dev:stop": "node dev-stop.js",
+    "dev:reset": "node dev-stop.js --all && timeout /t 2 && node dev-start.js",
     "db:seed": "npx prisma db seed"
   },
   "devDependencies": {
