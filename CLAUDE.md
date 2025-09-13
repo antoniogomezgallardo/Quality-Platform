@@ -22,7 +22,24 @@ The project follows this structure:
 ```
 quality-platform/
 ├── api/            # NestJS API application
-├── web/            # Next.js web application
+├── web/            # Next.js 15 web application with React 19
+│   ├── src/
+│   │   ├── app/            # Next.js App Router pages
+│   │   │   ├── (auth)/     # Authentication pages (login/register)
+│   │   │   ├── products/   # Product catalog and detail pages
+│   │   │   ├── cart/       # Shopping cart page
+│   │   │   └── checkout/   # Checkout pages
+│   │   ├── components/     # Reusable UI components
+│   │   │   ├── auth/       # Authentication forms and components
+│   │   │   ├── cart/       # Cart drawer and cart-related components
+│   │   │   ├── layout/     # Navigation, layout, and structural components
+│   │   │   ├── products/   # Product cards, grids, filters, search
+│   │   │   └── ui/         # Base UI components (buttons, forms, etc.)
+│   │   └── lib/            # Utilities and configurations
+│   │       ├── api/        # API client and data fetching utilities
+│   │       ├── auth/       # Authentication context and utilities
+│   │       ├── hooks/      # Custom React Query hooks
+│   │       └── stores/     # Zustand stores
 ├── web-e2e/        # Web e2e tests
 ├── api-e2e/        # API e2e tests
 ├── libs/           # Shared libraries (future)
@@ -129,6 +146,40 @@ pnpm typecheck         # Run TypeScript checks
 pnpm generate:module --name=payment     # Create new module
 pnpm generate:tests --type=integration --module=payment # Add tests
 pnpm generate:component --name=Button   # Create component
+```
+
+### Frontend Development (Implemented)
+
+```bash
+# Web Application Development
+pnpm nx serve web               # Start Next.js dev server (http://localhost:4200)
+pnpm nx build web              # Build web app for production
+pnpm nx lint web               # Lint web application code with ESLint
+pnpm nx test web               # Run web unit tests (when implemented)
+pnpm nx e2e web-e2e            # Run web e2e tests (when implemented)
+
+# Frontend Code Quality
+pnpm nx lint web --fix         # Auto-fix linting issues
+pnpm nx test web --watch       # Run tests in watch mode
+pnpm nx build web --prod       # Production build with optimizations
+
+# Component Development
+# Create new components following the established patterns:
+# - Authentication: web/src/components/auth/
+# - Products: web/src/components/products/
+# - Cart: web/src/components/cart/
+# - UI: web/src/components/ui/
+# - Layout: web/src/components/layout/
+
+# State Management (Zustand)
+# - Cart store: web/src/lib/stores/cart.ts
+# - Add new stores following the cart store pattern
+# - Use persistence middleware for data that should survive page reloads
+
+# API Integration (React Query)
+# - Custom hooks: web/src/lib/hooks/
+# - API client: web/src/lib/api/client.ts
+# - Follow the useProducts pattern for new data fetching hooks
 ```
 
 ## Architecture Principles
@@ -244,7 +295,9 @@ When implementing features, ensure they contribute to:
 - **Validation**: class-validator with comprehensive DTOs
 - **Security**: bcryptjs password hashing, authentication guards
 - **Testing**: Jest (ready), Supertest (ready) - *tests to be implemented*
-- **Frontend**: React/Next.js with TypeScript and Tailwind CSS
+- **Frontend**: Next.js 15 with React 19, TypeScript, and Tailwind CSS
+- **State Management**: Zustand with localStorage persistence
+- **Data Fetching**: TanStack React Query (@tanstack/react-query)
 - **Documentation**: Markdown + Swagger UI
 
 ## Environment Variables
@@ -267,6 +320,9 @@ API_BASE_URL="http://localhost:3000"
 
 # Optional: Logging
 LOG_LEVEL=debug
+
+# Frontend Configuration (web/.env.local)
+NEXT_PUBLIC_API_URL="http://localhost:3000/api"  # API base URL for frontend
 ```
 
 **Important Security Notes:**
