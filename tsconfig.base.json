@@ -16,9 +16,16 @@
     "baseUrl": ".",
     "paths": {
       "@quality-platform/shared": ["libs/shared/src/index.ts"],
-      "@quality-platform/shared/validation": ["libs/shared/src/validation/index.ts"],
-      "@quality-platform/shared/utilities": ["libs/shared/src/utilities/index.ts"],
-      "@quality-platform/shared/test-helpers": ["libs/shared/src/test-helpers/index.ts"]
+      "@quality-platform/shared/test-helpers": [
+        "libs/shared/src/test-helpers/index.ts"
+      ],
+      "@quality-platform/shared/utilities": [
+        "libs/shared/src/utilities/index.ts"
+      ],
+      "@quality-platform/shared/validation": [
+        "libs/shared/src/validation/index.ts"
+      ],
+      "@quality-platform/tools": ["tools/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
