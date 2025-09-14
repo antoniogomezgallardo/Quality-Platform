@@ -1,0 +1,24 @@
+{
+  "name": "@quality-platform/tools",
+  "version": "0.0.1",
+  "description": "Quality Platform CLI Tools for automated quality checks and reporting",
+  "private": true,
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "types": "./src/index.d.ts",
+  "bin": {
+    "quality-tools": "./src/bin/quality-tools.js",
+    "quality-check": "./src/bin/quality-tools.js",
+    "quality-report": "./src/bin/quality-tools.js"
+  },
+  "keywords": [
+    "quality",
+    "testing",
+    "linting",
+    "cli",
+    "automation"
+  ],
+  "dependencies": {
+    "tslib": "^2.3.0"
+  }
+}

@@ -1,0 +1,47 @@
+{
+  "name": "tools",
+  "$schema": "../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "tools/src",
+  "projectType": "library",
+  "tags": [],
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/tools",
+        "tsConfig": "tools/tsconfig.lib.json",
+        "packageJson": "tools/package.json",
+        "main": "tools/src/index.ts",
+        "assets": ["tools/*.md"]
+      }
+    },
+    "quality-check": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node dist/tools/src/bin/quality-tools.js quality:check {args}",
+        "cwd": "{workspaceRoot}"
+      },
+      "dependsOn": ["build"]
+    },
+    "quality-report": {
+      "executor": "nx:run-commands",
+      "options": {
+        "command": "node dist/tools/src/bin/quality-tools.js quality:report {args}",
+        "cwd": "{workspaceRoot}"
+      },
+      "dependsOn": ["build"]
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "tools/jest.config.ts"
+      }
+    }
+  }
+}
