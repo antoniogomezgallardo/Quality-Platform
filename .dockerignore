@@ -1,0 +1,86 @@
+# Dependencies
+node_modules
+**/node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.pnpm-store
+
+# Testing
+coverage
+.nyc_output
+*.lcov
+
+# Build outputs
+dist
+build
+.next
+out
+*.tsbuildinfo
+
+# Development
+.git
+.gitignore
+*.md
+.env
+.env.*
+!.env.example
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.travis.yml
+
+# Docker
+Dockerfile*
+docker-compose*
+.dockerignore
+
+# Temporary files
+tmp
+temp
+*.tmp
+*.temp
+*.log
+
+# IDE
+.vscode
+.idea
+*.sublime-*
+.history
+
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Test files
+*.test.ts
+*.spec.ts
+*.test.js
+*.spec.js
+__tests__
+e2e
+cypress
+playwright-report
+test-results
+
+# Documentation
+docs
+*.md
+LICENSE
+
+# Husky
+.husky
+
+# Claude
+.claude
+CLAUDE.md
