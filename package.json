@@ -1,6 +1,6 @@
 {
   "name": "quality-platform",
-  "version": "1.6.0",
+  "version": "1.0.0",
   "description": "A reusable quality platform for accelerating projects with built-in QA/QE best practices and ISTQB alignment",
   "private": true,
   "prisma": {
