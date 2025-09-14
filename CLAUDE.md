@@ -654,3 +654,86 @@ This platform demonstrates ISTQB concepts with comprehensive training materials:
 - **Hands-on Examples**: Real-world testing scenarios using the platform
 
 Map all test examples to relevant ISTQB syllabi sections for training purposes.
+
+## Context Management for Claude Code
+
+This project implements specific measures to optimize Claude Code interactions and context handling.
+
+### Context Loading Strategies
+
+**Essential Context (Load First):**
+```bash
+# Get project overview
+pnpm context:summary
+
+# Check current development status
+pnpm context:git
+
+# Get feature-specific context
+pnpm context:feature api      # For API development
+pnpm context:feature web      # For frontend development
+pnpm context:feature tools    # For CLI tools development
+```
+
+**Context Navigation Patterns:**
+- Use `.claude/context-map.md` for efficient file navigation
+- Follow priority matrix: Essential → Feature-specific → On-demand
+- Leverage Grep/Glob tools before Reading large files
+- Focus on single feature area per conversation session
+
+**Context Reset Triggers:**
+- Switching between major features (API ↔ Web ↔ CLI)
+- Context window approaching limit (>150K tokens estimated)
+- Starting complex debugging (>3 layers deep)
+- Significant time gap between work sessions
+
+### Project-Specific Context Optimization
+
+**Monorepo Efficiency:**
+- Work with one project at a time (`api/`, `web/`, `tools/`, `libs/`)
+- Use workspace-relative paths consistently
+- Reference `nx.json` for understanding project relationships
+- Leverage `package.json` scripts as functional entry points
+
+**GitFlow Context Integration:**
+- Always check git status before starting work
+- Include branch context in complex discussions
+- Reference recent commits for change context
+- Use conventional commit format for clarity
+
+**File Reading Hierarchy:**
+1. **Primary**: Core functionality, main configuration
+2. **Secondary**: Related modules, tests, documentation
+3. **Tertiary**: Utilities, helpers, examples
+4. **On-demand**: Only when specifically needed for debugging
+
+### Context Management Tools
+
+**Available Scripts:**
+- `pnpm context:summary` - Complete project context overview
+- `pnpm context:git` - Current git status and branch information
+- `pnpm context:feature <name>` - Feature-specific file recommendations
+
+**Documentation References:**
+- `.claude/context-map.md` - Context navigation guide
+- Individual `README.md` files per project
+- TypeScript interfaces as inline documentation
+- Code comments for business logic context
+
+### Context Handoff Protocol
+
+When starting new conversations or switching focus:
+
+```markdown
+## Context Handoff
+
+**Current Task**: [Brief description of what you're working on]
+**Branch**: [Current git branch]
+**Progress**: [What has been completed]
+**Next Steps**: [What needs to happen next]
+**Key Decisions**: [Important architectural/design choices made]
+**Modified Files**: [List of files changed in current session]
+**Blocked On**: [Any dependencies or issues preventing progress]
+```
+
+This protocol ensures efficient context transfer and maintains development momentum across conversation boundaries.

@@ -16,7 +16,10 @@
     "quality:report": "nx run tools:quality-report",
     "tools:build": "nx build tools",
     "tools:test": "nx test tools",
-    "tools:lint": "nx lint tools"
+    "tools:lint": "nx lint tools",
+    "context:summary": "node scripts/context-helper.js summary",
+    "context:feature": "node scripts/context-helper.js feature",
+    "context:git": "node scripts/context-helper.js git"
   },
   "devDependencies": {
     "@nestjs/schematics": "^11.0.0",
