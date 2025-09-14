@@ -19,10 +19,13 @@ The Quality Platform is a comprehensive monorepo designed to accelerate projects
 ### Key Features
 
 - **Full-Stack Application**: Complete e-commerce platform with API and web frontend
+- **Production Infrastructure**: Docker containerization, Kubernetes orchestration, CI/CD pipelines
 - **Quality Engineering Tools**: Comprehensive testing framework (unit, integration, E2E, contract)
+- **Monitoring & Observability**: Prometheus metrics, Grafana dashboards, real-time alerts
+- **Security Hardening**: Rate limiting, security headers, authentication guards
 - **Automated Quality Metrics**: Code coverage, quality scoring, and security analysis
 - **ISTQB Training Materials**: Foundation-level certification preparation
-- **Modern Tech Stack**: NestJS, Next.js 15, React 19, Prisma, TypeScript
+- **Modern Tech Stack**: NestJS, Next.js 15, React 19, Prisma, TypeScript, Docker, Kubernetes
 - **GitFlow Methodology**: Professional version control and release management
 
 ### Business Value
@@ -41,7 +44,19 @@ The Quality Platform is a comprehensive monorepo designed to accelerate projects
 - Understanding of APIs and web applications
 
 ### System Requirements
+
+#### Option 1: Docker Development (Recommended)
+- **Docker Desktop**: Latest version with Kubernetes enabled
+- **Git**: Latest version
+- **Code Editor**: VS Code recommended
+- **Operating System**: Windows, macOS, or Linux
+- **RAM**: 8GB minimum, 16GB recommended
+- **Storage**: 5GB free space for containers
+
+#### Option 2: Native Development
 - **Node.js**: Version 20 or higher
+- **PostgreSQL**: Version 16 or higher (production) or SQLite (development)
+- **Redis**: Latest version (optional for caching)
 - **Git**: Latest version
 - **Code Editor**: VS Code recommended
 - **Operating System**: Windows, macOS, or Linux
@@ -55,7 +70,43 @@ The Quality Platform is a comprehensive monorepo designed to accelerate projects
 
 ## Installation & Setup
 
-### Step 1: Clone the Repository
+### Quick Start with Docker (Recommended)
+
+#### Step 1: Clone and Setup
+
+```bash
+# Clone the repository
+git clone https://github.com/your-org/quality-platform.git
+cd quality-platform
+
+# Switch to develop branch (following GitFlow)
+git checkout develop
+
+# Copy environment configuration
+cp .env.example .env
+```
+
+#### Step 2: Start with Docker
+
+```bash
+# Start the entire platform with Docker Compose
+docker-compose up -d
+
+# View logs (optional)
+docker-compose logs -f
+```
+
+**That's it!** Your Quality Platform is now running:
+- **Web Application**: http://localhost:4200
+- **API Documentation**: http://localhost:3001/api/docs
+- **Database Admin**: http://localhost:5050 (pgAdmin)
+- **Monitoring**: http://localhost:3000 (Grafana, if enabled)
+
+---
+
+### Alternative: Native Development Setup
+
+#### Step 1: Clone the Repository
 
 ```bash
 # Clone the repository
@@ -66,7 +117,7 @@ cd quality-platform
 git checkout develop
 ```
 
-### Step 2: Install Dependencies
+#### Step 2: Install Dependencies
 
 ```bash
 # Install all dependencies using pnpm (faster than npm)
@@ -77,7 +128,7 @@ npm install -g pnpm
 pnpm install
 ```
 
-### Step 3: Environment Configuration
+#### Step 3: Environment Configuration
 
 Create your environment variables file:
 
@@ -120,10 +171,13 @@ npx prisma migrate dev
 npx prisma db seed
 ```
 
-### Step 5: Start the Development Environment
+#### Step 5: Start the Development Environment
 
 ```bash
-# Start both API and Web servers with our custom script
+# 🚀 RECOMMENDED: Start with automated port management
+pnpm dev
+
+# Alternative: Start both API and Web servers
 node dev-start.js
 
 # Or manually start each service:
@@ -134,10 +188,23 @@ pnpm nx serve api
 pnpm nx serve web
 ```
 
-### Step 6: Verify Installation
+**New Development Features:**
+- **Automatic Port Management**: Kills conflicting processes automatically
+- **Context Loading**: Shows current git branch and project status
+- **Health Checks**: Verifies all services are running correctly
+- **Clean Shutdown**: Proper cleanup when stopping servers
 
+#### Step 6: Verify Installation
+
+**For Docker Setup:**
 Open your browser and visit:
+- **Web Application**: http://localhost:4200
+- **API Documentation**: http://localhost:3001/api/docs
+- **Database Admin**: http://localhost:5050 (pgAdmin)
+- **API Health Check**: http://localhost:3001/api/health
 
+**For Native Setup:**
+Open your browser and visit:
 - **Web Application**: http://localhost:4200
 - **API Documentation**: http://localhost:3001/api/docs
 - **API Health Check**: http://localhost:3001/api/health
@@ -160,23 +227,54 @@ Navigate to http://localhost:4200 and explore:
 Visit http://localhost:3001/api/docs to explore:
 
 - **Interactive API Documentation**: Swagger/OpenAPI interface
-- **Authentication Endpoints**: Registration and login
-- **Product Management**: CRUD operations for products
+- **Authentication Endpoints**: Registration and login with JWT
+- **Product Management**: Full CRUD operations with categories and search
+- **Order Management**: Complete order lifecycle with status tracking
+- **Shopping Cart**: Session-based and persistent cart functionality
 - **Health Checks**: System status and readiness probes
+- **Admin Operations**: Product and order management for admin users
 
-### 3. Run Your First Tests
+### 3. Production Features Overview
 
+#### Quality Engineering Tools
 ```bash
-# Run unit tests
-pnpm test:unit
+# Run comprehensive quality checks
+pnpm quality:check
 
-# Run integration tests
-pnpm test:integration
+# Generate detailed quality report
+pnpm quality:report
 
-# Run end-to-end tests
-pnpm test:e2e
+# Run specific test suites
+pnpm test:unit        # Jest unit tests
+pnpm test:integration # Supertest API tests
+pnpm test:e2e         # Playwright browser tests
+pnpm test:contract    # API contract validation
+```
 
-# Generate quality metrics report
+#### Context Management System
+```bash
+# Get project overview
+pnpm context:summary
+
+# Get git context
+pnpm context:git
+
+# Get feature-specific context
+pnpm context:feature api    # API development context
+pnpm context:feature web    # Frontend development context
+```
+
+#### Production Deployment
+```bash
+# Docker deployment
+docker-compose -f docker-compose.prod.yml up -d
+
+# Kubernetes deployment (requires cluster)
+kubectl apply -f k8s/base/
+
+# Check deployment status
+kubectl get pods -n quality-platform
+```
 node scripts/quality-metrics.js
 ```
 
@@ -187,11 +285,18 @@ Key directories to examine:
 ```
 quality-platform/
 ├── apps/api/          # NestJS API application
-├── apps/web/          # Next.js web application
-├── tests/             # Integration and contract tests
-├── scripts/           # Quality metrics and utilities
-├── docs/              # Documentation and tutorials
-└── prisma/            # Database schema and migrations
+├── web/               # Next.js 15 web application
+├── apps/api-e2e/      # API integration tests
+├── web-e2e/           # Web E2E tests (Playwright)
+├── libs/shared/       # Shared libraries and utilities
+├── tools/             # CLI tools and quality automation
+├── k8s/               # Kubernetes deployment manifests
+├── scripts/           # Database, backup, and utility scripts
+├── docs/              # Comprehensive documentation
+├── prisma/            # Database schema and migrations
+├── .github/           # CI/CD workflows
+├── docker-compose.yml # Local development setup
+└── Dockerfile*        # Container definitions
 ```
 
 ## Understanding the Architecture
@@ -205,30 +310,46 @@ The Quality Platform uses Nx monorepo architecture:
 - **Coordinated Testing**: Cross-application test execution
 - **Consistent Tooling**: Standardized build and deployment
 
-### Application Architecture
+### Production Architecture
 
 ```
-┌─────────────────┐    ┌─────────────────┐
-│   Next.js Web   │───▶│   NestJS API    │
-│   (Frontend)    │    │   (Backend)     │
-└─────────────────┘    └─────────────────┘
-         │                       │
-         │                       │
-         ▼                       ▼
-┌─────────────────┐    ┌─────────────────┐
-│   TanStack      │    │     Prisma      │
-│   React Query   │    │   ORM + SQLite  │
-│   (State Mgmt)  │    │   (Database)    │
-└─────────────────┘    └─────────────────┘
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  Load Balancer  │───▶│   Next.js Web   │───▶│   NestJS API    │
+│    (Nginx)      │    │   (Frontend)    │    │   (Backend)     │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Monitoring    │    │   TanStack      │    │   PostgreSQL    │
+│ Grafana+Prometheus│    │   React Query   │    │   + Prisma ORM  │
+│   (Observability) │    │   (State Mgmt)  │    │   (Database)    │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │                       │                       ▼
+         ▼                       ▼              ┌─────────────────┐
+┌─────────────────┐    ┌─────────────────┐    │      Redis      │
+│   CI/CD Pipeline│    │    Security     │    │    (Caching)    │
+│  GitHub Actions │    │ Rate Limiting   │    │                 │
+│   (Automation)  │    │ + Auth Guards   │    │                 │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
 ```
 
-### Quality Engineering Pipeline
+### Quality Engineering & DevOps Pipeline
 
 ```
-┌─────────────┐    ┌─────────────┐    ┌─────────────┐
-│ Unit Tests  │───▶│Integration  │───▶│  E2E Tests  │
-│   (Jest)    │    │ Tests (API) │    │ (Playwright)│
-└─────────────┘    └─────────────┘    └─────────────┘
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│ Unit Tests  │───▶│Integration  │───▶│  E2E Tests  │───▶│   Deploy    │
+│   (Jest)    │    │ Tests (API) │    │ (Playwright)│    │ (Kubernetes)│
+└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
+       │                  │                  │                  │
+       ▼                  ▼                  ▼                  ▼
+┌─────────────┐    ┌─────────────┐    ┌─────────────┐    ┌─────────────┐
+│Code Quality │    │Security Scan│    │Performance  │    │ Monitoring  │
+│   Linting   │    │   (Trivy)   │    │  Testing    │    │  & Alerts   │
+│  Coverage   │    │   Audit     │    │   (k6)      │    │ (Grafana)   │
+└─────────────┘    └─────────────┘    └─────────────┘    └─────────────┘
+```
        │                   │                   │
        └───────────────────┼───────────────────┘
                            ▼
@@ -281,12 +402,52 @@ This tutorial series is organized into 12 comprehensive parts:
 ### Advanced (Parts 7-9)
 7. **Feature Development with Quality Gates**
 8. **Custom Quality Agents**
-9. **Deployment & Production**
+9. **Production Deployment & Monitoring**
 
 ### Mastery (Parts 10-12)
 10. **Platform Architecture Deep Dive**
 11. **Building Quality Culture**
 12. **Training & Team Development**
+
+## Production Environment (Optional)
+
+### Docker Deployment
+
+For a production-like environment:
+
+```bash
+# Deploy with Docker Compose (production configuration)
+docker-compose -f docker-compose.prod.yml up -d
+
+# Access production services
+# Web: http://localhost:4200
+# API: http://localhost:3001
+# Monitoring: http://localhost:3000 (Grafana)
+```
+
+### Kubernetes Deployment
+
+For full production deployment:
+
+```bash
+# Deploy to Kubernetes cluster
+kubectl apply -f k8s/base/
+
+# Check deployment status
+kubectl get pods -n quality-platform
+
+# Access via ingress or port-forward
+kubectl port-forward svc/web-service 4200:4200 -n quality-platform
+```
+
+### Monitoring & Observability
+
+Access production monitoring:
+
+- **Prometheus Metrics**: http://localhost:9090
+- **Grafana Dashboards**: http://localhost:3000
+- **Application Logs**: `kubectl logs -f deployment/api -n quality-platform`
+- **Health Checks**: http://localhost:3001/api/health
 
 ## Next Steps
 
@@ -297,8 +458,9 @@ Now that you have the platform running, proceed to:
 In the next part, you'll learn:
 - How to use the web application effectively
 - API interaction patterns
-- Basic testing workflows
-- Development best practices
+- CI/CD workflows and GitFlow methodology
+- Quality automation and monitoring
+- Production deployment strategies
 
 ## Support & Resources
 
@@ -309,12 +471,16 @@ In the next part, you'll learn:
 
 ## Glossary
 
-- **Quality Platform**: Our comprehensive quality engineering platform
-- **Monorepo**: Single repository containing multiple applications
-- **Quality Gates**: Automated checks that must pass before deployment
+- **Quality Platform**: Our comprehensive quality engineering platform with production infrastructure
+- **Monorepo**: Single repository containing multiple applications and shared infrastructure
+- **Quality Gates**: Automated checks that must pass before deployment (linting, testing, security)
 - **ISTQB**: International Software Testing Qualifications Board
-- **GitFlow**: Branch-based development workflow methodology
+- **GitFlow**: Branch-based development workflow methodology with feature/release branches
 - **E2E**: End-to-End testing across the entire application flow
+- **Container Orchestration**: Kubernetes-based deployment and scaling
+- **Observability**: Monitoring, logging, and alerting with Prometheus/Grafana
+- **CI/CD**: Continuous Integration/Continuous Deployment with GitHub Actions
+- **Infrastructure as Code**: Kubernetes manifests and Docker configurations
 
 ---
 

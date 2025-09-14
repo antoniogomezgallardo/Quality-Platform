@@ -5,13 +5,17 @@ This tutorial covers the fundamental usage patterns and workflows you'll use dai
 ## Table of Contents
 
 1. [Development Workflow Overview](#development-workflow-overview)
-2. [Using the Web Application](#using-the-web-application)
-3. [API Development Patterns](#api-development-patterns)
-4. [Testing Workflows](#testing-workflows)
-5. [Quality Checks](#quality-checks)
-6. [Database Operations](#database-operations)
-7. [Common Tasks](#common-tasks)
-8. [Troubleshooting](#troubleshooting)
+2. [GitFlow Methodology](#gitflow-methodology)
+3. [CI/CD Pipeline Usage](#cicd-pipeline-usage)
+4. [Using the Web Application](#using-the-web-application)
+5. [API Development Patterns](#api-development-patterns)
+6. [Testing Workflows](#testing-workflows)
+7. [Quality Automation](#quality-automation)
+8. [Production Deployment](#production-deployment)
+9. [Monitoring & Observability](#monitoring--observability)
+10. [Database Operations](#database-operations)
+11. [Common Tasks](#common-tasks)
+12. [Troubleshooting](#troubleshooting)
 
 ## Development Workflow Overview
 
@@ -33,20 +37,41 @@ The Quality Platform follows modern development practices with quality gates at 
 
 1. **Start Development Environment**
    ```bash
-   # Quick start with our custom script
+   # 🚀 RECOMMENDED: Automated port management + context loading
+   pnpm dev
+
+   # Alternative: Custom script with manual port cleanup
    node dev-start.js
+
+   # Docker environment (production-like)
+   docker-compose up -d
 
    # Or individually
    pnpm nx serve api    # Terminal 1
    pnpm nx serve web    # Terminal 2
    ```
 
-2. **Make Changes**
+2. **Load Project Context**
+   ```bash
+   # Get comprehensive project overview
+   pnpm context:summary
+
+   # Get current git status and branch info
+   pnpm context:git
+
+   # Get feature-specific context
+   pnpm context:feature api    # For API work
+   pnpm context:feature web    # For frontend work
+   ```
+
+3. **Make Changes**
    - Edit code in your preferred editor
+   - Follow GitFlow methodology (feature branches)
    - Follow existing patterns and conventions
    - Write tests for new functionality
+   - Update documentation as needed
 
-3. **Validate Changes**
+4. **Validate Changes**
    ```bash
    # Run relevant tests
    pnpm test:unit
@@ -66,6 +91,89 @@ The Quality Platform follows modern development practices with quality gates at 
    git commit -m "feat: add new feature with tests"
    git push origin feature/your-feature
    ```
+
+## GitFlow Methodology
+
+The Quality Platform enforces GitFlow methodology with automated validation:
+
+### Branch Structure
+
+```
+main                    # Production-ready code, tagged releases
+├── develop             # Integration branch for features
+│   ├── feature/auth    # Feature branches
+│   ├── feature/cart    # New functionality
+│   └── bugfix/login    # Bug fixes
+├── release/v1.1.0      # Release preparation
+└── hotfix/v1.0.1       # Critical production fixes
+```
+
+### Working with Features
+
+#### Starting a New Feature
+```bash
+# Start from the latest develop
+git checkout develop
+git pull origin develop
+
+# Create feature branch
+git checkout -b feature/shopping-cart-persistence
+
+# Work on your feature...
+# Make commits with conventional format
+git commit -m "feat(cart): add localStorage persistence"
+
+# Push feature branch
+git push origin feature/shopping-cart-persistence
+```
+
+#### GitFlow Automation
+
+The platform includes **pre-commit hooks** that automatically:
+- ⛔ **Block direct commits** to `main` and `develop` branches
+- ✅ **Load project context** and display current branch info
+- 🔍 **Validate branch naming** convention (feature/, bugfix/, etc.)
+- 🧹 **Check for console logs** and debug statements
+- 📋 **Provide context-aware guidance** based on modified files
+
+## CI/CD Pipeline Usage
+
+The platform includes comprehensive GitHub Actions workflows:
+
+### Automated Pipelines
+
+#### Pull Request Pipeline
+Triggered on PRs to `main` or `develop`:
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  Code Quality   │───▶│  Unit Tests     │───▶│  Integration    │
+│  • Linting      │    │  • Jest (API)   │    │  • Supertest    │
+│  • Type Check   │    │  • Jest (Web)   │    │  • Database     │
+│  • Formatting   │    │  • Coverage     │    │  • Redis        │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         ▼                       ▼                       ▼
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│  E2E Tests      │    │  Security Scan  │    │  Build Images   │
+│  • Playwright   │    │  • Trivy        │    │  • Docker API   │
+│  • Cross-browser│    │  • npm audit    │    │  • Docker Web   │
+│  • UI Testing   │    │  • SARIF report │    │  • Multi-arch   │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+```
+
+### Pipeline Monitoring
+
+```bash
+# Check CI/CD status
+gh workflow list                    # List all workflows
+gh run list                         # Recent pipeline runs
+gh run view <run-id> --log         # View detailed logs
+
+# Local quality checks (same as CI)
+pnpm quality:check --ci            # CI-compatible output
+pnpm quality:report --format=json  # Generate CI reports
+```
 
 ## Using the Web Application
 

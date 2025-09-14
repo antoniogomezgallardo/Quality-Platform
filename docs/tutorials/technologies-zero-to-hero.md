@@ -37,8 +37,10 @@ Think of web development like building a restaurant:
 ### 🧪 **Testing** (Quality Control)
 - **Jest, Playwright**: Like taste-testing food before serving - ensures everything works perfectly
 
-### 🚀 **DevOps** (Restaurant Management)
+### 🚀 **DevOps & Infrastructure** (Restaurant Management)
 - **Git, CI/CD**: Like management systems - keeps track of changes and ensures smooth operations
+- **Docker & Kubernetes**: Like having multiple restaurant locations with consistent operations
+- **Monitoring & Logging**: Like security cameras and management reports - know what's happening at all times
 
 ## 🎯 Learning Path Overview
 
@@ -53,7 +55,7 @@ Week 13-22: Frontend Development (Building beautiful user interfaces)
     ↓
 Week 23-28: Database & Testing (Storing data and ensuring quality)
     ↓
-Week 29-40: Advanced Topics (Performance, Security, Deployment)
+Week 29-40: Advanced Topics (Performance, Security, Docker, Kubernetes, Production Deployment)
     ↓
 Week 41-52: Capstone Project (Build your complete application)
 ```
@@ -66,6 +68,8 @@ After mastering these technologies, you can work as:
 - **Frontend Developer** ($55,000 - $130,000+ per year)
 - **Backend Developer** ($65,000 - $140,000+ per year)
 - **DevOps Engineer** ($70,000 - $160,000+ per year)
+- **Cloud Engineer** ($75,000 - $170,000+ per year)
+- **Site Reliability Engineer** ($80,000 - $180,000+ per year)
 - **Technical Lead** ($90,000 - $200,000+ per year)
 - **Freelancer/Consultant** ($50-150+ per hour)
 
@@ -87,10 +91,12 @@ After mastering these technologies, you can work as:
 4. [Frontend Development](#frontend-development)
 5. [Database & ORM](#database--orm)
 6. [Testing Framework](#testing-framework)
-7. [DevOps & Tooling](#devops--tooling)
-8. [Advanced Topics](#advanced-topics)
-9. [Quality Engineering](#quality-engineering)
-10. [Project-Based Learning](#project-based-learning)
+7. [DevOps & Infrastructure](#devops--infrastructure)
+8. [Container Orchestration](#container-orchestration)
+9. [Production Deployment](#production-deployment)
+10. [Advanced Topics](#advanced-topics)
+11. [Quality Engineering](#quality-engineering)
+12. [Project-Based Learning](#project-based-learning)
 
 ---
 
@@ -2587,7 +2593,7 @@ test.describe('Visual Tests', () => {
 
 ---
 
-## 🛠️ DevOps & Tooling
+## 🛠️ DevOps & Infrastructure
 
 ### 1. Package Managers & Build Tools (Week 29-30)
 
@@ -3254,9 +3260,305 @@ describe('CartService', () => {
 });
 ```
 
-### 2. Continuous Integration (Week 39-40)
+---
 
-#### **GitHub Actions Workflow**:
+## 🐳 Container Orchestration
+
+### 1. Docker Fundamentals (Week 33-34)
+
+#### **What is Docker?**
+Docker is like creating identical "boxes" (containers) for your applications that work the same way everywhere - your computer, staging server, production server.
+
+#### **Dockerfile for API**:
+```dockerfile
+# Multi-stage build for production optimization
+FROM node:20-alpine AS base
+WORKDIR /app
+COPY package*.json pnpm-lock.yaml ./
+RUN npm install -g pnpm
+
+# Dependencies stage
+FROM base AS deps
+RUN pnpm install --frozen-lockfile
+
+# Build stage
+FROM base AS builder
+COPY --from=deps /app/node_modules ./node_modules
+COPY . .
+RUN pnpm nx build api
+
+# Production stage
+FROM node:20-alpine AS runner
+WORKDIR /app
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nestjs
+
+# Copy built application
+COPY --from=builder --chown=nestjs:nodejs /app/dist ./dist
+COPY --from=builder --chown=nestjs:nodejs /app/node_modules ./node_modules
+COPY --from=builder --chown=nestjs:nodejs /app/package.json ./package.json
+
+# Security: Run as non-root user
+USER nestjs
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl -f http://localhost:3000/health || exit 1
+
+EXPOSE 3000
+CMD ["node", "dist/apps/api/main.js"]
+```
+
+#### **Docker Compose for Development**:
+```yaml
+# docker-compose.yml
+version: '3.8'
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    ports:
+      - "3001:3000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:password@postgres:5432/quality_platform
+      - JWT_SECRET=dev-secret-key
+    depends_on:
+      - postgres
+      - redis
+    volumes:
+      - ./apps/api:/app/apps/api
+    command: pnpm nx serve api
+
+  web:
+    build:
+      context: .
+      dockerfile: web/Dockerfile
+    ports:
+      - "4200:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://localhost:3001/api
+    depends_on:
+      - api
+    volumes:
+      - ./web:/app/web
+
+  postgres:
+    image: postgres:16-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=quality_platform
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+  # Monitoring stack
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus_data:/prometheus
+
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    volumes:
+      - grafana_data:/var/lib/grafana
+      - ./monitoring/dashboards:/etc/grafana/provisioning/dashboards
+
+volumes:
+  postgres_data:
+  redis_data:
+  prometheus_data:
+  grafana_data:
+
+networks:
+  default:
+    name: quality-platform
+```
+
+### 2. Kubernetes Orchestration (Week 35-36)
+
+#### **What is Kubernetes?**
+Kubernetes (K8s) is like having a smart manager for your Docker containers that:
+- Automatically scales your app when traffic increases
+- Restarts crashed containers
+- Distributes traffic evenly
+- Manages updates without downtime
+
+#### **API Deployment**:
+```yaml
+# k8s/api-deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: api
+  labels:
+    app: api
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: api
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: api
+        image: quality-platform/api:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: DATABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: database-url
+        - name: JWT_SECRET
+          valueFrom:
+            secretKeyRef:
+              name: app-secrets
+              key: jwt-secret
+        resources:
+          limits:
+            cpu: 500m
+            memory: 512Mi
+          requests:
+            cpu: 250m
+            memory: 256Mi
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 3000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /health/ready
+            port: 3000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: api-service
+spec:
+  selector:
+    app: api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+  type: ClusterIP
+```
+
+#### **Auto-scaling Configuration**:
+```yaml
+# k8s/api-hpa.yaml
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: api-hpa
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: api
+  minReplicas: 3
+  maxReplicas: 20
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 70
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+```
+
+#### **Database with Persistent Storage**:
+```yaml
+# k8s/postgres-statefulset.yaml
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: postgres
+spec:
+  serviceName: postgres
+  replicas: 1
+  selector:
+    matchLabels:
+      app: postgres
+  template:
+    metadata:
+      labels:
+        app: postgres
+    spec:
+      containers:
+      - name: postgres
+        image: postgres:16-alpine
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_DB
+          value: quality_platform
+        - name: POSTGRES_USER
+          value: postgres
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secret
+              key: password
+        volumeMounts:
+        - name: postgres-storage
+          mountPath: /var/lib/postgresql/data
+        resources:
+          limits:
+            cpu: 1000m
+            memory: 2Gi
+          requests:
+            cpu: 500m
+            memory: 1Gi
+  volumeClaimTemplates:
+  - metadata:
+      name: postgres-storage
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 20Gi
+```
+
+---
+
+## 🚀 Production Deployment
+
+### 1. CI/CD Pipeline (Week 37-38)
+
+#### **Complete GitHub Actions Workflow**:
 ```yaml
 # .github/workflows/ci.yml
 name: CI/CD Pipeline
@@ -3266,20 +3568,40 @@ on:
     branches: [main, develop]
   pull_request:
     branches: [main]
+  release:
+    types: [created]
 
 env:
   NODE_VERSION: '20'
-  DATABASE_URL: 'file:./test.db'
-  JWT_SECRET: 'test-secret'
+  DATABASE_URL: 'postgresql://postgres:password@localhost:5432/quality_platform_test'
+  JWT_SECRET: 'test-secret-for-ci'
+  DOCKER_REGISTRY: 'ghcr.io'
+  IMAGE_NAME: 'quality-platform'
 
 jobs:
   test:
     name: Test & Quality Checks
     runs-on: ubuntu-latest
 
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_PASSWORD: password
+          POSTGRES_DB: quality_platform_test
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+        ports:
+          - 5432:5432
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -3300,13 +3622,16 @@ jobs:
         run: npx prisma migrate dev
 
       - name: Lint code
-        run: pnpm nx run-many --target=lint --all
+        run: pnpm nx run-many --target=lint --all --parallel
 
       - name: Type check
-        run: pnpm nx run-many --target=type-check --all
+        run: pnpm nx run-many --target=type-check --all --parallel
 
       - name: Run unit tests
-        run: pnpm nx run-many --target=test --all --coverage
+        run: pnpm nx run-many --target=test --all --parallel --coverage
+
+      - name: Run integration tests
+        run: pnpm test:integration
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3
@@ -3315,7 +3640,7 @@ jobs:
           fail_ci_if_error: true
 
       - name: Build applications
-        run: pnpm nx run-many --target=build --all
+        run: pnpm nx run-many --target=build --all --parallel
 
       - name: Run E2E tests
         run: pnpm nx run-many --target=e2e --all
@@ -3323,25 +3648,252 @@ jobs:
       - name: Security audit
         run: pnpm audit --audit-level moderate
 
-  deploy-staging:
-    name: Deploy to Staging
+      - name: Run Trivy vulnerability scanner
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          scan-ref: '.'
+          format: 'sarif'
+          output: 'trivy-results.sarif'
+
+      - name: Upload Trivy scan results
+        uses: github/codeql-action/upload-sarif@v2
+        if: always()
+        with:
+          sarif_file: 'trivy-results.sarif'
+
+  build-and-push:
+    name: Build & Push Docker Images
     runs-on: ubuntu-latest
     needs: test
-    if: github.ref == 'refs/heads/develop'
+    if: github.event_name == 'release'
 
     steps:
-      - name: Deploy to staging
-        run: echo "Deploy to staging environment"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.DOCKER_REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.DOCKER_REGISTRY }}/${{ github.repository }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=ref,event=branch
+            type=ref,event=pr
+            type=semver,pattern={{version}}
+            type=semver,pattern={{major}}.{{minor}}
+
+      - name: Build and push API image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./apps/api/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}-api
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Build and push Web image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./web/Dockerfile
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}-web
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
 
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: test
-    if: github.ref == 'refs/heads/main'
+    needs: [test, build-and-push]
+    if: github.event_name == 'release'
+    environment: production
 
     steps:
-      - name: Deploy to production
-        run: echo "Deploy to production environment"
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure kubectl
+        uses: azure/k8s-set-context@v3
+        with:
+          method: kubeconfig
+          kubeconfig: ${{ secrets.KUBE_CONFIG_DATA }}
+
+      - name: Deploy to Kubernetes
+        run: |
+          # Update image tags in manifests
+          sed -i "s/IMAGE_TAG/${{ github.ref_name }}/g" k8s/production/*.yaml
+
+          # Apply manifests
+          kubectl apply -f k8s/production/ -n quality-platform-prod
+
+          # Wait for rollout to complete
+          kubectl rollout status deployment/api -n quality-platform-prod
+          kubectl rollout status deployment/web -n quality-platform-prod
+
+      - name: Verify deployment
+        run: |
+          # Health checks
+          kubectl get pods -n quality-platform-prod
+
+          # Test API health endpoint
+          API_URL=$(kubectl get service api-service -n quality-platform-prod -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+          curl -f http://$API_URL/health || exit 1
+
+      - name: Notify deployment
+        if: always()
+        uses: 8398a7/action-slack@v3
+        with:
+          status: ${{ job.status }}
+          text: "Production deployment ${{ job.status }}: ${{ github.ref_name }}"
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+```
+
+### 2. Production Monitoring (Week 39-40)
+
+#### **Prometheus Configuration**:
+```yaml
+# monitoring/prometheus.yml
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+
+rule_files:
+  - "alert_rules.yml"
+
+alerting:
+  alertmanagers:
+    - static_configs:
+        - targets:
+          - alertmanager:9093
+
+scrape_configs:
+  - job_name: 'api'
+    static_configs:
+      - targets: ['api:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'web'
+    static_configs:
+      - targets: ['web:3000']
+    metrics_path: '/metrics'
+    scrape_interval: 10s
+
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+    scrape_interval: 30s
+
+  - job_name: 'kubernetes-pods'
+    kubernetes_sd_configs:
+      - role: pod
+    relabel_configs:
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_scrape]
+        action: keep
+        regex: true
+      - source_labels: [__meta_kubernetes_pod_annotation_prometheus_io_path]
+        action: replace
+        target_label: __metrics_path__
+        regex: (.+)
+```
+
+#### **Production Alert Rules**:
+```yaml
+# monitoring/alert_rules.yml
+groups:
+- name: quality-platform-alerts
+  rules:
+  - alert: HighErrorRate
+    expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.1
+    for: 2m
+    labels:
+      severity: critical
+    annotations:
+      summary: "High error rate detected"
+      description: "Error rate is {{ $value }} errors per second"
+
+  - alert: DatabaseConnectionHigh
+    expr: pg_stat_activity_count > 15
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High database connections"
+      description: "Database has {{ $value }} active connections"
+
+  - alert: PodCrashLooping
+    expr: rate(kube_pod_container_status_restarts_total[5m]) > 0
+    for: 1m
+    labels:
+      severity: critical
+    annotations:
+      summary: "Pod is crash looping"
+      description: "Pod {{ $labels.pod }} in namespace {{ $labels.namespace }} is restarting frequently"
+
+  - alert: HighMemoryUsage
+    expr: container_memory_usage_bytes / container_spec_memory_limit_bytes > 0.9
+    for: 2m
+    labels:
+      severity: warning
+    annotations:
+      summary: "High memory usage"
+      description: "Container memory usage is above 90%"
+```
+
+#### **Grafana Dashboard as Code**:
+```json
+{
+  "dashboard": {
+    "title": "Quality Platform - Application Overview",
+    "panels": [
+      {
+        "title": "Request Rate",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total[5m])) by (service)",
+            "legendFormat": "{{ service }}"
+          }
+        ]
+      },
+      {
+        "title": "Response Time",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, service))",
+            "legendFormat": "95th percentile - {{ service }}"
+          }
+        ]
+      },
+      {
+        "title": "Error Rate",
+        "type": "stat",
+        "targets": [
+          {
+            "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) / sum(rate(http_requests_total[5m]))",
+            "legendFormat": "Error Rate"
+          }
+        ]
+      }
+    ]
+  }
+}
 ```
 
 ---
@@ -3392,11 +3944,12 @@ jobs:
 - Add performance monitoring
 - Conduct security audit
 
-**Weeks 51-52: Deployment & Final Polish**
-- Set up CI/CD pipeline
-- Deploy to staging/production
-- Performance optimization
-- Final documentation
+**Weeks 51-52: Production Deployment & Final Polish**
+- Set up comprehensive CI/CD pipeline with GitHub Actions
+- Deploy to Kubernetes production environment
+- Configure monitoring, logging, and alerting
+- Performance optimization and load testing
+- Final documentation and deployment guides
 
 ---
 
@@ -3418,13 +3971,15 @@ jobs:
 - Complex testing strategies
 - Performance optimization
 - Security implementation
-- DevOps & CI/CD
+- DevOps, Docker, Kubernetes & CI/CD
+- Production monitoring and observability
 
 ### Expert (Weeks 41-52)
 - Full project implementation
 - Advanced patterns & practices
 - Quality engineering
-- Production deployment
+- Production deployment with container orchestration
+- Infrastructure as Code and GitOps practices
 
 ---
 
@@ -3466,6 +4021,9 @@ You've completed the Technologies Zero to Hero tutorial! You now have:
 ✅ **Database skills** with Prisma ORM
 ✅ **Testing knowledge** across all levels
 ✅ **DevOps understanding** for deployment
+✅ **Container orchestration** with Docker and Kubernetes
+✅ **Production monitoring** with Prometheus and Grafana
+✅ **CI/CD pipelines** with automated testing and deployment
 ✅ **Quality engineering** practices
 ✅ **Real-world project experience**
 

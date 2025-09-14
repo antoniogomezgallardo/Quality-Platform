@@ -5,13 +5,17 @@ This tutorial teaches you how to write comprehensive, maintainable, and effectiv
 ## Table of Contents
 
 1. [Test-Driven Development (TDD)](#test-driven-development-tdd)
-2. [Writing Unit Tests](#writing-unit-tests)
-3. [Integration Testing](#integration-testing)
-4. [End-to-End Testing](#end-to-end-testing)
-5. [Contract Testing](#contract-testing)
-6. [Test Patterns & Best Practices](#test-patterns--best-practices)
-7. [Mocking & Test Doubles](#mocking--test-doubles)
-8. [Data Management in Tests](#data-management-in-tests)
+2. [Production Testing Strategy](#production-testing-strategy)
+3. [Container-Based Testing](#container-based-testing)
+4. [Writing Unit Tests](#writing-unit-tests)
+5. [Integration Testing](#integration-testing)
+6. [End-to-End Testing](#end-to-end-testing)
+7. [Contract Testing](#contract-testing)
+8. [CI/CD Testing Pipeline](#cicd-testing-pipeline)
+9. [Production Monitoring Tests](#production-monitoring-tests)
+10. [Test Patterns & Best Practices](#test-patterns--best-practices)
+11. [Mocking & Test Doubles](#mocking--test-doubles)
+12. [Data Management in Tests](#data-management-in-tests)
 
 ## Test-Driven Development (TDD)
 
@@ -26,13 +30,238 @@ Write failing   Make it pass    Improve design
                  Repeat cycle
 ```
 
-### TDD Benefits
+### TDD Benefits in Production Environment
 
 - **Better Design**: Tests force you to think about interfaces first
 - **Higher Coverage**: Every feature starts with a test
 - **Faster Feedback**: Immediate validation of functionality
 - **Regression Safety**: Changes can't break existing features
 - **Living Documentation**: Tests document expected behavior
+- **Container Compatibility**: Tests verify behavior in containerized environments
+- **Infrastructure Validation**: Tests ensure proper deployment configuration
+- **Monitoring Integration**: Tests validate observability and alerting
+
+## Production Testing Strategy
+
+The Quality Platform implements a comprehensive testing strategy designed for production environments:
+
+### Testing Layers for Production
+
+```
+┌─────────────────────────────────────────────────────────────────┐
+│ 🚀 Production Deployment Tests                                  │
+│ • Smoke tests after deployment                                  │
+│ • Health check validation                                       │
+│ • Monitoring and alerting verification                          │
+└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│ 🎭 End-to-End Tests (Playwright)                               │
+│ • User journey validation across environments                   │
+│ • Cross-browser compatibility testing                          │
+│ • Performance testing with real browsers                       │
+└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│ 🔗 Contract & Integration Tests (Supertest)                    │
+│ • API contract validation                                       │
+│ • Database integration testing                                 │
+│ • External service interaction testing                         │
+└─────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│ ⚡ Unit Tests (Jest)                                           │
+│ • Fast feedback for individual components                       │
+│ • Business logic validation                                    │
+│ • Edge case coverage                                           │
+└─────────────────────────────────────────────────────────────────┘
+```
+
+### Production Testing Principles
+
+#### 1. Environment Parity
+```bash
+# Test in production-like environments
+docker-compose -f docker-compose.prod.yml up -d
+
+# Run tests against containerized services
+pnpm test:integration --env=container
+pnpm test:e2e --env=container
+```
+
+#### 2. Test Automation in CI/CD
+```yaml
+# .github/workflows/ci.yml
+name: Production Quality Gates
+on: [push, pull_request]
+
+jobs:
+  quality-gates:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Unit Tests
+        run: pnpm test:unit --coverage
+
+      - name: Integration Tests
+        run: pnpm test:integration --env=ci
+
+      - name: E2E Tests
+        run: pnpm test:e2e --headed=false
+
+      - name: Security Scan
+        run: pnpm audit --audit-level moderate
+
+      - name: Quality Check
+        run: pnpm quality:check --ci
+```
+
+#### 3. Production Monitoring Tests
+```typescript
+// tests/production/monitoring.spec.ts
+describe('Production Monitoring', () => {
+  it('should have all health endpoints responding', async () => {
+    const endpoints = [
+      '/api/health',
+      '/api/health/ready',
+      '/api/health/live'
+    ];
+
+    for (const endpoint of endpoints) {
+      const response = await request(app.getHttpServer())
+        .get(endpoint)
+        .expect(200);
+
+      expect(response.body.status).toBe('ok');
+    }
+  });
+
+  it('should have metrics endpoint available', async () => {
+    const response = await request(app.getHttpServer())
+      .get('/api/metrics')
+      .expect(200);
+
+    // Verify Prometheus metrics format
+    expect(response.text).toContain('http_requests_total');
+    expect(response.text).toContain('http_request_duration_seconds');
+  });
+});
+```
+
+## Container-Based Testing
+
+### Docker Test Environment Setup
+
+```bash
+# Test with Docker Compose
+docker-compose -f docker-compose.test.yml up -d
+
+# Run tests against containerized services
+pnpm test:container
+
+# Clean up test environment
+docker-compose -f docker-compose.test.yml down -v
+```
+
+### Docker Compose for Testing
+```yaml
+# docker-compose.test.yml
+version: '3.9'
+services:
+  postgres-test:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: test_db
+      POSTGRES_USER: test_user
+      POSTGRES_PASSWORD: test_pass
+    ports:
+      - "5433:5432"
+
+  redis-test:
+    image: redis:7-alpine
+    ports:
+      - "6380:6379"
+
+  api-test:
+    build:
+      context: .
+      dockerfile: ./apps/api/Dockerfile
+    environment:
+      NODE_ENV: test
+      DATABASE_URL: postgresql://test_user:test_pass@postgres-test:5432/test_db
+      REDIS_URL: redis://redis-test:6379
+    ports:
+      - "3002:3000"
+    depends_on:
+      - postgres-test
+      - redis-test
+```
+
+### Container Integration Testing
+```typescript
+// tests/container/api-integration.spec.ts
+describe('Container Integration Tests', () => {
+  beforeAll(async () => {
+    // Wait for containers to be ready
+    await waitForService('http://localhost:3002/api/health');
+    await waitForService('redis://localhost:6380');
+  });
+
+  it('should connect to containerized database', async () => {
+    const response = await request('http://localhost:3002')
+      .get('/api/products')
+      .expect(200);
+
+    expect(response.body.products).toBeDefined();
+  });
+
+  it('should use containerized Redis cache', async () => {
+    // First request should hit database
+    const start1 = Date.now();
+    await request('http://localhost:3002')
+      .get('/api/products/1')
+      .expect(200);
+    const time1 = Date.now() - start1;
+
+    // Second request should hit cache (faster)
+    const start2 = Date.now();
+    await request('http://localhost:3002')
+      .get('/api/products/1')
+      .expect(200);
+    const time2 = Date.now() - start2;
+
+    expect(time2).toBeLessThan(time1);
+  });
+});
+```
+
+### Kubernetes Testing
+```typescript
+// tests/k8s/deployment.spec.ts
+describe('Kubernetes Deployment Tests', () => {
+  it('should deploy successfully to test namespace', async () => {
+    // Apply test manifests
+    await execAsync('kubectl apply -f k8s/test/ -n quality-platform-test');
+
+    // Wait for deployment
+    await execAsync('kubectl wait --for=condition=available deployment/api -n quality-platform-test --timeout=300s');
+
+    // Verify pods are running
+    const result = await execAsync('kubectl get pods -n quality-platform-test -o json');
+    const pods = JSON.parse(result.stdout);
+
+    expect(pods.items.every(pod =>
+      pod.status.phase === 'Running'
+    )).toBe(true);
+  });
+
+  it('should have proper resource limits', async () => {
+    const result = await execAsync('kubectl get deployment api -n quality-platform-test -o json');
+    const deployment = JSON.parse(result.stdout);
+
+    const container = deployment.spec.template.spec.containers[0];
+
+    expect(container.resources.limits.memory).toBe('1Gi');
+    expect(container.resources.limits.cpu).toBe('1000m');
+  });
+});
+```
 
 ### Practical TDD Example
 
@@ -1373,16 +1602,17 @@ const users = UserFactory.buildMany(5, { role: 'USER' });
 
 ## Next Steps
 
-You now know how to write comprehensive tests across all levels. In the next tutorial, you'll learn how to analyze and improve quality metrics.
+You now know how to write comprehensive tests across all levels. In the next tutorial, you'll learn how to deploy the Quality Platform to production environments.
 
-👉 **[Part 5: Quality Metrics & Analysis →](./05-quality-metrics-analysis.md)**
+👉 **[Part 5: Production Deployment & Infrastructure →](./05-production-deployment.md)**
 
 In the next part, you'll learn:
-- Deep dive into quality metrics interpretation
-- Setting up quality gates and thresholds
-- Creating custom quality reports
-- Tracking quality improvements over time
+- Docker containerization and orchestration
+- Kubernetes production deployment
+- CI/CD pipeline setup with GitHub Actions
+- Production monitoring and observability
+- Security hardening and performance optimization
 
 ---
 
-**Previous**: [← Part 3: Understanding Test Results](./03-understanding-test-results.md) | **Next**: [Part 5: Quality Metrics & Analysis →](./05-quality-metrics-analysis.md)
+**Previous**: [← Part 3: Understanding Test Results](./03-understanding-test-results.md) | **Next**: [Part 5: Production Deployment & Infrastructure →](./05-production-deployment.md)
