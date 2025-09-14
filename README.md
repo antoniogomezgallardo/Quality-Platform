@@ -86,32 +86,115 @@ For a 50-person engineering team deploying to production:
 - **Context Management**: Advanced system for efficient Claude Code interactions
 - **Configuration**: Flexible config management with environment overrides
 
-## 🏗️ Production Architecture
+### Project Overview
+- [Quality Platform Brief](./docs/project/Quality-Platform-Brief-Enhanced.md) - Complete functional and technical specifications
+- [Capabilities & Use Cases](./docs/project/Quality-Platform-Capabilities-and-Use-Cases.md) - Detailed use cases and ROI analysis
+- [Development Guide](./CLAUDE.md) - Guidelines for working with this repository
+- [Project Structure](./docs/PROJECT_STRUCTURE.md) - Monorepo organization and architecture
+- [Testing Guide](./docs/TESTING_GUIDE.md) - Comprehensive testing strategies and setup
+- [Setup & Troubleshooting](./docs/SETUP_AND_TROUBLESHOOTING.md) - Complete setup and problem resolution
 
-```
-Production Environment
-├── Load Balancer (Nginx Ingress)
-├── Web Application (Next.js)
-│   ├── Static Assets (CDN)
-│   ├── Server-Side Rendering
-│   └── API Proxy
-├── API Services (NestJS)
-│   ├── Authentication Service
-│   ├── Product Catalog Service
-│   ├── Order Management Service
-│   └── Cart Service
-├── Database Layer
-│   ├── PostgreSQL (Primary)
-│   ├── Redis (Cache/Sessions)
-│   └── Database Migrations
-└── Monitoring Stack
-    ├── Prometheus (Metrics)
-    ├── Grafana (Dashboards)
-    ├── Loki (Logging)
-    └── AlertManager
-```
+### API Documentation
+- [Interactive API Docs](http://localhost:3001/api/docs) - Swagger UI (when server is running)
+- [API Reference](./docs/api/API_REFERENCE.md) - Complete endpoint documentation
+- [API Getting Started](./docs/api/getting-started.md) - Quick start guide for the NestJS API
+- [Product Management API](./docs/api/products.md) - Complete product catalog documentation
+- [Order Management API](./docs/api/orders.md) - Complete order processing documentation
+- [Shopping Cart API](./docs/api/cart.md) - Complete shopping cart and checkout documentation
+- [Authentication Guide](./docs/api/authentication.md) - Complete JWT authentication documentation
+- [API Reference](./docs/api/API_REFERENCE.md) - Complete API documentation and examples
 
-## 🚀 Quick Start (Production Deployment)
+### CLI Tools & Automation
+- [CLI Tools Overview](./tools/README.md) - Complete CLI framework documentation
+- [Context Management Guide](./.claude/context-map.md) - Efficient Claude Code interaction patterns
+- [Development Tools](./CLAUDE.md#context-management-for-claude-code) - Context management and development workflow
+- [Interactive API Docs](http://localhost:3001/api/docs) - Swagger UI (when server is running)
+
+### Training Materials (Phase 5)
+- [ISTQB Foundation Level](./docs/training/istqb-foundation-level.md) - Complete certification preparation
+- [Technologies Zero to Hero](./docs/training/technologies-zero-to-hero.md) - 52-week learning curriculum
+- [Quality Platform Tutorials](./docs/tutorials/) - Hands-on learning guides
+
+## 🎓 ISTQB Alignment
+
+This platform demonstrates concepts from:
+
+- Foundation Level (test design, levels, types)
+- Agile Extension (sprint testing, CI/CD)
+- Test Automation Engineer (automation architecture)
+- Advanced Level (test management, techniques)
+
+## 🏗️ Project Status
+
+**Current Version**: v1.6.1 - Development Environment Enhanced
+**Backend API**: ✅ **FULLY FUNCTIONAL**
+**Frontend Application**: 🚧 **IN DEVELOPMENT**
+**Development Environment**: ✅ **FULLY AUTOMATED**
+
+### Completed Implementation ✅
+
+**Phase 1: Foundation** (Completed) ✅
+- [x] Nx monorepo structure with pnpm
+- [x] GitFlow configuration (main/develop branches)  
+- [x] GitHub Actions CI/CD pipeline
+- [x] Development environment configuration
+- [x] Conventional commits with Husky hooks
+- [x] Pre-commit linting and formatting
+- [x] PR and issue templates
+- [x] VS Code workspace settings
+
+**Phase 2A: NestJS API Foundation** (Completed) ✅
+- [x] NestJS application generated with Nx
+- [x] OpenAPI/Swagger documentation configured
+- [x] Health check endpoints with monitoring
+- [x] Global validation and CORS setup
+- [x] Environment configuration
+- [x] Comprehensive API documentation
+
+**Phase 2B: Database & Authentication** (Completed) ✅
+- [x] Prisma ORM with SQLite (development) and PostgreSQL (production) support
+- [x] Complete e-commerce database schema (Users, Products, Orders, OrderItems)
+- [x] JWT authentication system with Passport.js strategies
+- [x] User registration and login with secure password hashing
+- [x] Protected routes with authentication guards
+- [x] Database-connected health checks
+
+**Phase 3A: Product Management API** (Completed) ✅
+- [x] Complete Product CRUD operations with validation
+- [x] Advanced product filtering: search, category, price range, stock status
+- [x] Pagination support with configurable page sizes
+- [x] Role-based access control (Admin-only for CUD operations)
+- [x] Category management and product search functionality
+- [x] Database seed script with 10 sample products across 6 categories
+- [x] Comprehensive OpenAPI documentation with interactive testing
+- [x] Professional error handling and response formatting
+- [x] Stock management and inventory tracking
+
+**Phase 3B: Order Management API** (Completed) ✅
+- [x] Complete Order CRUD operations with comprehensive validation
+- [x] Advanced order filtering and pagination (status, user, date range, total amount)
+- [x] Role-based access control (Users: own orders, Admins: all orders)
+- [x] Order creation with automatic stock validation and inventory updates
+- [x] Order status management (PENDING → CONFIRMED → SHIPPED → DELIVERED → CANCELLED)
+- [x] Order cancellation with automatic stock restoration
+- [x] Order statistics and reporting (total orders, revenue, averages)
+- [x] User order history and admin order management
+- [x] Comprehensive OpenAPI documentation with business rules
+- [x] Database transactions for data integrity and consistency
+
+**Phase 3C: Shopping Cart & Checkout** (Completed) ✅
+- [x] Complete shopping cart management with 9 REST endpoints
+- [x] Session-based carts for guest users with automatic creation
+- [x] Persistent carts for authenticated users with cross-device sync
+- [x] Cart merging functionality when guest users log in
+- [x] Real-time stock validation and automatic inventory management
+- [x] Cart-to-order checkout conversion with transaction safety
+- [x] Cart summary, validation, and cleanup operations
+- [x] Support for both authenticated and guest user workflows
+- [x] Comprehensive cart API documentation with business rules
+- [x] Database models optimized with proper relationships and constraints
+
+### 🚀 Quick Start
 
 ### **Local Development (Docker)**
 ```bash
@@ -363,11 +446,15 @@ This platform serves as a complete ISTQB training environment:
 - **Security Testing**: OWASP ZAP integration with vulnerability management
 - **Test Data Management**: Prisma-based test data generation and cleanup
 
-### **Training Materials**
-- [📚 **52-Week Learning Curriculum**](./docs/tutorials/technologies-zero-to-hero.md) - Complete technology mastery program
-- [🎯 **12-Part Quality Platform Tutorial Series**](./docs/tutorials/quality-platform/) - From beginner to expert
-- [📋 **40 ISTQB Sample Exam Questions**](./docs/training/istqb-foundation-level.md) - Certification preparation
-- [💼 **Real-World Case Studies**](./docs/project/) - Business scenarios and solutions
+**Phase 8: Enterprise Features** 🏢
+- [ ] Multi-tenancy support
+- [ ] Single Sign-On (SSO) integration
+- [ ] Advanced role-based permissions
+- [ ] Audit logging and compliance
+- [ ] Data export/import capabilities
+- [ ] Webhook system for integrations
+- [ ] Advanced reporting and analytics
+>>>>>>> origin/develop
 
 ## 🌟 Using Quality Platform for New Projects
 

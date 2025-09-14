@@ -1,110 +1,144 @@
-# Quality Platform Testing Guide
+# Testing Guide
 
-## 🎯 Testing Philosophy
+This guide provides comprehensive testing strategies, setup instructions, and best practices for the Quality Platform.
 
-The Quality Platform implements a comprehensive testing strategy following the test pyramid methodology:
+## Table of Contents
 
-- **70% Unit Tests**: Fast, focused tests for individual components and functions
-- **20% Integration Tests**: API endpoint testing with database integration
-- **10% End-to-End Tests**: Full user journey testing across the entire application
+- [Testing Philosophy](#testing-philosophy)
+- [Test Pyramid](#test-pyramid)
+- [Framework Setup](#framework-setup)
+- [Unit Testing (Jest)](#unit-testing-jest)
+- [Integration Testing (Supertest)](#integration-testing-supertest)
+- [End-to-End Testing (Playwright)](#end-to-end-testing-playwright)
+- [Contract Testing](#contract-testing)
+- [Testing Best Practices](#testing-best-practices)
+- [Running Tests](#running-tests)
+- [Coverage Requirements](#coverage-requirements)
+- [CI/CD Integration](#cicd-integration)
 
-## 🏗️ Testing Architecture
+## Testing Philosophy
 
-### Current Testing Infrastructure
+The Quality Platform follows these core testing principles:
+
+### Test-Driven Development (TDD)
+- Write tests before implementation (Red-Green-Refactor cycle)
+- Use tests as design documentation
+- Ensure comprehensive coverage of business logic
+
+### Behavior-Driven Development (BDD)
+- Structure tests using Given-When-Then format
+- Focus on business behavior over technical implementation
+- Use descriptive test names that explain business value
+
+### Quality Gates
+- All code must pass tests before merging
+- Minimum coverage thresholds enforced
+- Automated testing in CI/CD pipeline
+
+## Test Pyramid
+
+The Quality Platform implements a balanced test pyramid:
 
 ```
-testing/
-├── 🧪 Unit Testing (Jest)
-│   ├── API modules (apps/api/src/**/*.spec.ts)
-│   ├── Web components (web/src/**/*.test.tsx)
-│   ├── Utilities and services
-│   └── Coverage reporting (70% minimum)
-│
-├── 🔌 Integration Testing (Supertest)
-│   ├── API endpoints testing
-│   ├── Database integration
-│   ├── Authentication flows
-│   └── Business logic validation
-│
-├── 🎭 End-to-End Testing (Playwright)
-│   ├── User journey testing
-│   ├── Cross-browser testing
-│   ├── Visual regression testing
-│   └── Performance testing
-│
-└── 📋 Contract Testing
-    ├── API schema validation
-    ├── Backward compatibility
-    └── Breaking change detection
+    /\     10% E2E Tests
+   /  \    (Playwright - Cross-browser, User workflows)
+  /____\
+ /      \  20% Integration Tests
+/        \ (Supertest - API endpoints, Database integration)
+/__________\
+   70% Unit Tests
+   (Jest - Business logic, Components, Services)
 ```
 
-## 🛠️ Testing Framework Setup
+### Unit Tests (70%)
+- **Purpose**: Test individual components, functions, and business logic
+- **Framework**: Jest with TypeScript support
+- **Scope**: Fast, isolated, focused on single units of code
+- **Target**: 70% of total test suite
 
-### Jest Configuration (Unit Tests)
+### Integration Tests (20%)
+- **Purpose**: Test API endpoints, database interactions, and service integration
+- **Framework**: Supertest with Jest
+- **Scope**: Test component interaction and data flow
+- **Target**: 20% of total test suite
 
-**Location**: `web/jest.config.ts`, API uses default Jest config
+### End-to-End Tests (10%)
+- **Purpose**: Test complete user workflows across the entire application
+- **Framework**: Playwright
+- **Scope**: Full browser automation, user journey validation
+- **Target**: 10% of total test suite
 
-```typescript
-// web/jest.config.ts
-export default {
-  displayName: 'web',
-  preset: '../../jest.preset.js',
+## Framework Setup
+
+### Prerequisites
+
+```bash
+# Install dependencies
+pnpm install
+
+# Set up test database
+cp .env.example .env.test
+# Configure DATABASE_URL for test environment
+```
+
+### Test Environment Configuration
+
+```bash
+# .env.test
+DATABASE_URL="file:./test.db"
+JWT_SECRET="test-secret"
+NODE_ENV="test"
+PORT=3333
+```
+
+## Unit Testing (Jest)
+
+### Configuration
+
+Jest is configured with TypeScript support and comprehensive coverage reporting:
+
+```javascript
+// jest.config.js
+module.exports = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  roots: ['<rootDir>/apps', '<rootDir>/libs'],
+  testMatch: [
+    '**/__tests__/**/*.+(ts|tsx|js)',
+    '**/*.(test|spec).+(ts|tsx|js)'
+  ],
   transform: {
-    '^(?!.*\\.(js|jsx|ts|tsx|css|json)$)': '@nx/react/plugins/jest',
-    '^.+\\.[tj]sx?$': ['babel-jest', { presets: ['@nx/next/babel'] }],
+    '^.+\\.(ts|tsx)$': 'ts-jest'
   },
-  moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
-  setupFilesAfterEnv: ['<rootDir>/src/test-setup.ts'],
   collectCoverageFrom: [
-    'src/**/*.{ts,tsx}',
-    '!src/**/*.stories.{ts,tsx}',
-    '!src/**/*.d.ts',
+    'apps/**/*.{ts,tsx}',
+    '!apps/**/*.d.ts',
+    '!apps/**/*.spec.ts',
+    '!apps/**/main.ts'
   ],
   coverageThreshold: {
     global: {
       branches: 70,
       functions: 70,
       lines: 70,
-      statements: 70,
-    },
-  },
+      statements: 70
+    }
+  }
 };
 ```
 
-### Playwright Configuration (E2E Tests)
+### Unit Test Examples
 
-**Location**: `web-e2e/playwright.config.ts`
-
-```typescript
-// Key features:
-// - Cross-browser testing (Chrome, Firefox, Safari, Edge)
-// - Automatic server startup and teardown
-// - Video recording on test failure
-// - Screenshot comparison
-// - Mobile device emulation
-```
-
-### Test Database Setup
-
-```bash
-# Test database isolation
-DATABASE_URL_TEST="file:./test.db"
-
-# Database setup for tests
-npx prisma migrate deploy --schema=./prisma/schema.prisma
-npx prisma db seed
-```
-
-## 📝 Writing Tests
-
-### Unit Tests (Jest)
-
-#### API Service Tests
+#### Service Testing
 ```typescript
 // apps/api/src/products/products.service.spec.ts
+import { Test, TestingModule } from '@nestjs/testing';
+import { ProductsService } from './products.service';
+import { PrismaService } from '../prisma/prisma.service';
+
 describe('ProductsService', () => {
   let service: ProductsService;
-  let prismaService: PrismaService;
+  let prisma: PrismaService;
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -114,52 +148,48 @@ describe('ProductsService', () => {
           provide: PrismaService,
           useValue: {
             product: {
-              create: jest.fn(),
               findMany: jest.fn(),
               findUnique: jest.fn(),
+              create: jest.fn(),
               update: jest.fn(),
               delete: jest.fn(),
-            },
-          },
-        },
+            }
+          }
+        }
       ],
     }).compile();
 
     service = module.get<ProductsService>(ProductsService);
-    prismaService = module.get<PrismaService>(PrismaService);
+    prisma = module.get<PrismaService>(PrismaService);
   });
 
-  describe('create', () => {
-    it('should create a product successfully', async () => {
+  describe('findAll', () => {
+    it('should return paginated products', async () => {
       // Given
-      const createProductDto = {
-        name: 'Test Product',
-        price: 99.99,
-        category: 'Electronics',
-        description: 'Test description',
-        stockQuantity: 100,
-      };
-
-      const expectedProduct = { id: 1, ...createProductDto };
-      jest.spyOn(prismaService.product, 'create').mockResolvedValue(expectedProduct);
+      const mockProducts = [
+        { id: 1, name: 'Product 1', price: 100 },
+        { id: 2, name: 'Product 2', price: 200 }
+      ];
+      jest.spyOn(prisma.product, 'findMany').mockResolvedValue(mockProducts);
 
       // When
-      const result = await service.create(createProductDto);
+      const result = await service.findAll({ page: 1, limit: 10 });
 
       // Then
-      expect(result).toEqual(expectedProduct);
-      expect(prismaService.product.create).toHaveBeenCalledWith({
-        data: createProductDto,
+      expect(result.data).toEqual(mockProducts);
+      expect(prisma.product.findMany).toHaveBeenCalledWith({
+        skip: 0,
+        take: 10
       });
     });
   });
 });
 ```
 
-#### React Component Tests
+#### Component Testing (React)
 ```typescript
-// web/src/components/products/ProductCard.test.tsx
-import { render, screen, fireEvent } from '@testing-library/react';
+// apps/web/src/components/products/ProductCard.spec.tsx
+import { render, screen } from '@testing-library/react';
 import { ProductCard } from './ProductCard';
 
 describe('ProductCard', () => {
@@ -167,35 +197,28 @@ describe('ProductCard', () => {
     id: 1,
     name: 'Test Product',
     price: 99.99,
-    category: 'Electronics',
-    description: 'Test description',
-    stockQuantity: 10,
-    isActive: true,
+    description: 'A test product',
+    imageUrl: 'https://example.com/image.jpg'
   };
 
-  const mockOnAddToCart = jest.fn();
-
-  beforeEach(() => {
-    mockOnAddToCart.mockClear();
-  });
-
-  it('should render product information correctly', () => {
-    // Given
-    render(<ProductCard product={mockProduct} onAddToCart={mockOnAddToCart} />);
+  it('should display product information correctly', () => {
+    // Given & When
+    render(<ProductCard product={mockProduct} />);
 
     // Then
     expect(screen.getByText('Test Product')).toBeInTheDocument();
     expect(screen.getByText('$99.99')).toBeInTheDocument();
-    expect(screen.getByText('Electronics')).toBeInTheDocument();
+    expect(screen.getByText('A test product')).toBeInTheDocument();
   });
 
-  it('should call onAddToCart when add to cart button is clicked', () => {
+  it('should handle add to cart action', async () => {
     // Given
+    const mockOnAddToCart = jest.fn();
     render(<ProductCard product={mockProduct} onAddToCart={mockOnAddToCart} />);
-    const addToCartButton = screen.getByRole('button', { name: /add to cart/i });
 
     // When
-    fireEvent.click(addToCartButton);
+    const addButton = screen.getByRole('button', { name: /add to cart/i });
+    await userEvent.click(addButton);
 
     // Then
     expect(mockOnAddToCart).toHaveBeenCalledWith(mockProduct);
@@ -203,14 +226,22 @@ describe('ProductCard', () => {
 });
 ```
 
-### Integration Tests (Supertest)
+## Integration Testing (Supertest)
+
+### API Integration Tests
 
 ```typescript
-// apps/api-e2e/src/api/products.spec.ts
+// apps/api-e2e/src/products.spec.ts
+import { Test, TestingModule } from '@nestjs/testing';
+import { INestApplication } from '@nestjs/common';
+import * as request from 'supertest';
+import { AppModule } from '../src/app.module';
+import { PrismaService } from '../src/prisma/prisma.service';
+
 describe('Products API (e2e)', () => {
   let app: INestApplication;
-  let prismaService: PrismaService;
-  let jwtToken: string;
+  let prisma: PrismaService;
+  let authToken: string;
 
   beforeAll(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
@@ -218,439 +249,661 @@ describe('Products API (e2e)', () => {
     }).compile();
 
     app = moduleFixture.createNestApplication();
-    prismaService = moduleFixture.get<PrismaService>(PrismaService);
+    prisma = app.get<PrismaService>(PrismaService);
 
-    // Setup app with same configuration as main.ts
-    setupApp(app);
     await app.init();
 
-    // Create test user and get JWT token
-    const authResponse = await request(app.getHttpServer())
-      .post('/api/auth/register')
+    // Get auth token for protected routes
+    const loginResponse = await request(app.getHttpServer())
+      .post('/auth/login')
       .send({
-        email: 'test@example.com',
-        password: 'TestPass123!',
-        role: 'ADMIN',
+        email: 'admin@test.com',
+        password: 'password123'
       });
 
-    jwtToken = authResponse.body.access_token;
+    authToken = loginResponse.body.access_token;
+  });
+
+  beforeEach(async () => {
+    // Clean database
+    await prisma.product.deleteMany();
+  });
+
+  describe('GET /products', () => {
+    it('should return paginated products', async () => {
+      // Given
+      await prisma.product.createMany({
+        data: [
+          { name: 'Product 1', price: 100, description: 'Desc 1' },
+          { name: 'Product 2', price: 200, description: 'Desc 2' }
+        ]
+      });
+
+      // When & Then
+      const response = await request(app.getHttpServer())
+        .get('/products')
+        .expect(200);
+
+      expect(response.body.data).toHaveLength(2);
+      expect(response.body.meta.total).toBe(2);
+    });
+  });
+
+  describe('POST /products', () => {
+    it('should create a new product when authenticated as admin', async () => {
+      // Given
+      const newProduct = {
+        name: 'New Product',
+        price: 150,
+        description: 'New product description',
+        category: 'electronics'
+      };
+
+      // When & Then
+      const response = await request(app.getHttpServer())
+        .post('/products')
+        .set('Authorization', `Bearer ${authToken}`)
+        .send(newProduct)
+        .expect(201);
+
+      expect(response.body.name).toBe(newProduct.name);
+      expect(response.body.price).toBe(newProduct.price);
+
+      // Verify in database
+      const created = await prisma.product.findUnique({
+        where: { id: response.body.id }
+      });
+      expect(created).toBeTruthy();
+    });
+
+    it('should reject unauthorized requests', async () => {
+      // Given
+      const newProduct = {
+        name: 'Unauthorized Product',
+        price: 100,
+        description: 'Should not be created'
+      };
+
+      // When & Then
+      await request(app.getHttpServer())
+        .post('/products')
+        .send(newProduct)
+        .expect(401);
+    });
   });
 
   afterAll(async () => {
-    await prismaService.$disconnect();
     await app.close();
-  });
-
-  describe('GET /api/products', () => {
-    it('should return paginated products', async () => {
-      // Given
-      const expectedProducts = await prismaService.product.findMany({
-        take: 10,
-        skip: 0,
-      });
-
-      // When
-      const response = await request(app.getHttpServer())
-        .get('/api/products')
-        .query({ page: 1, limit: 10 })
-        .expect(200);
-
-      // Then
-      expect(response.body.data).toHaveLength(expectedProducts.length);
-      expect(response.body.pagination.page).toBe(1);
-      expect(response.body.pagination.limit).toBe(10);
-    });
-  });
-
-  describe('POST /api/products', () => {
-    it('should create a new product with valid data', async () => {
-      // Given
-      const createProductDto = {
-        name: 'Integration Test Product',
-        price: 199.99,
-        category: 'Testing',
-        description: 'Product created during integration test',
-        stockQuantity: 50,
-      };
-
-      // When
-      const response = await request(app.getHttpServer())
-        .post('/api/products')
-        .set('Authorization', `Bearer ${jwtToken}`)
-        .send(createProductDto)
-        .expect(201);
-
-      // Then
-      expect(response.body).toMatchObject(createProductDto);
-      expect(response.body.id).toBeDefined();
-      expect(response.body.createdAt).toBeDefined();
-
-      // Verify product was actually created in database
-      const createdProduct = await prismaService.product.findUnique({
-        where: { id: response.body.id },
-      });
-      expect(createdProduct).toBeTruthy();
-    });
-
-    it('should return 401 when no authentication token provided', async () => {
-      // When & Then
-      await request(app.getHttpServer())
-        .post('/api/products')
-        .send({
-          name: 'Unauthorized Product',
-          price: 99.99,
-          category: 'Test',
-          description: 'Should not be created',
-          stockQuantity: 10,
-        })
-        .expect(401);
-    });
   });
 });
 ```
 
-### End-to-End Tests (Playwright)
+### Database Integration Tests
 
+```typescript
+// apps/api/src/orders/orders.integration.spec.ts
+describe('Orders Integration', () => {
+  it('should create order and update stock atomically', async () => {
+    // Given
+    const product = await prisma.product.create({
+      data: { name: 'Test Product', price: 100, stock: 10 }
+    });
+
+    const orderData = {
+      items: [
+        { productId: product.id, quantity: 5, price: product.price }
+      ]
+    };
+
+    // When
+    const order = await ordersService.create(orderData, user.id);
+
+    // Then
+    expect(order.status).toBe('PENDING');
+    expect(order.total).toBe(500);
+
+    // Verify stock was updated
+    const updatedProduct = await prisma.product.findUnique({
+      where: { id: product.id }
+    });
+    expect(updatedProduct.stock).toBe(5);
+  });
+});
+```
+
+## End-to-End Testing (Playwright)
+
+### Configuration
+
+```typescript
+// playwright.config.ts
+import { defineConfig, devices } from '@playwright/test';
+
+export default defineConfig({
+  testDir: './web-e2e',
+  fullyParallel: true,
+  forbidOnly: !!process.env.CI,
+  retries: process.env.CI ? 2 : 0,
+  workers: process.env.CI ? 1 : undefined,
+  reporter: 'html',
+  use: {
+    baseURL: 'http://localhost:4200',
+    trace: 'on-first-retry',
+    screenshot: 'only-on-failure',
+    video: 'retain-on-failure',
+  },
+  projects: [
+    {
+      name: 'chromium',
+      use: { ...devices['Desktop Chrome'] },
+    },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
+  ],
+  webServer: [
+    {
+      command: 'pnpm nx serve api',
+      port: 3001,
+      reuseExistingServer: !process.env.CI,
+    },
+    {
+      command: 'pnpm nx serve web',
+      port: 4200,
+      reuseExistingServer: !process.env.CI,
+    },
+  ],
+});
+```
+
+### E2E Test Examples
+
+#### Authentication Flow
 ```typescript
 // web-e2e/src/auth-flow.spec.ts
 import { test, expect } from '@playwright/test';
 
 test.describe('Authentication Flow', () => {
-  test('should complete user registration and login flow', async ({ page }) => {
+  test('should allow user to register, login, and logout', async ({ page }) => {
     // Given
-    const testUser = {
-      email: `test-${Date.now()}@example.com`,
-      password: 'TestPass123!',
-    };
+    await page.goto('/');
 
-    // Navigate to registration page
-    await page.goto('/auth/register');
+    // When - Register
+    await page.click('text=Sign Up');
+    await page.fill('[data-testid=email]', 'test@example.com');
+    await page.fill('[data-testid=password]', 'password123');
+    await page.fill('[data-testid=confirmPassword]', 'password123');
+    await page.click('[data-testid=submit]');
 
-    // When - User registers
-    await page.fill('[data-testid=email-input]', testUser.email);
-    await page.fill('[data-testid=password-input]', testUser.password);
-    await page.fill('[data-testid=confirm-password-input]', testUser.password);
-    await page.click('[data-testid=register-button]');
-
-    // Then - Registration should succeed and redirect to login
-    await expect(page).toHaveURL('/auth/login');
-    await expect(page.locator('[data-testid=success-message]')).toBeVisible();
-
-    // When - User logs in with new credentials
-    await page.fill('[data-testid=email-input]', testUser.email);
-    await page.fill('[data-testid=password-input]', testUser.password);
-    await page.click('[data-testid=login-button]');
-
-    // Then - Should be redirected to homepage and authenticated
-    await expect(page).toHaveURL('/');
+    // Then - Should be logged in
+    await expect(page.locator('text=Welcome')).toBeVisible();
     await expect(page.locator('[data-testid=user-menu]')).toBeVisible();
-    await expect(page.locator('[data-testid=logout-button]')).toBeVisible();
-  });
 
-  test('should handle login with invalid credentials', async ({ page }) => {
-    // Given
-    await page.goto('/auth/login');
+    // When - Logout
+    await page.click('[data-testid=user-menu]');
+    await page.click('text=Logout');
 
-    // When
-    await page.fill('[data-testid=email-input]', 'invalid@example.com');
-    await page.fill('[data-testid=password-input]', 'wrongpassword');
-    await page.click('[data-testid=login-button]');
-
-    // Then
-    await expect(page.locator('[data-testid=error-message]')).toBeVisible();
-    await expect(page.locator('[data-testid=error-message]')).toContainText('Invalid credentials');
-    await expect(page).toHaveURL('/auth/login'); // Should stay on login page
+    // Then - Should be logged out
+    await expect(page.locator('text=Sign In')).toBeVisible();
   });
 });
+```
 
+#### Shopping Flow
+```typescript
 // web-e2e/src/shopping-flow.spec.ts
 test.describe('Shopping Flow', () => {
-  test('should complete full shopping journey', async ({ page, context }) => {
-    // Given - User is logged in
-    await context.addCookies([{
-      name: 'auth-token',
-      value: 'valid-jwt-token',
-      domain: 'localhost',
-      path: '/',
-    }]);
+  test('should complete full shopping journey', async ({ page }) => {
+    // Given - Logged in user
+    await page.goto('/login');
+    await page.fill('[data-testid=email]', 'test@example.com');
+    await page.fill('[data-testid=password]', 'password123');
+    await page.click('[data-testid=login-submit]');
 
-    // Navigate to products page
+    // When - Browse products
     await page.goto('/products');
+    await expect(page.locator('[data-testid=product-grid]')).toBeVisible();
 
-    // When - User searches for products
-    await page.fill('[data-testid=search-input]', 'laptop');
-    await page.press('[data-testid=search-input]', 'Enter');
+    // When - Add to cart
+    const firstProduct = page.locator('[data-testid=product-card]').first();
+    await firstProduct.locator('[data-testid=add-to-cart]').click();
 
-    // Then - Should show search results
-    await expect(page.locator('[data-testid=product-card]')).toHaveCountGreaterThan(0);
-
-    // When - User adds product to cart
-    await page.click('[data-testid=product-card]:first-child [data-testid=add-to-cart-button]');
-
-    // Then - Cart badge should update
+    // Then - Cart should update
     await expect(page.locator('[data-testid=cart-badge]')).toHaveText('1');
 
-    // When - User opens cart
-    await page.click('[data-testid=cart-button]');
-
-    // Then - Cart drawer should open with product
+    // When - View cart
+    await page.click('[data-testid=cart-icon]');
     await expect(page.locator('[data-testid=cart-drawer]')).toBeVisible();
-    await expect(page.locator('[data-testid=cart-item]')).toHaveCount(1);
 
-    // When - User proceeds to checkout
+    // When - Proceed to checkout
     await page.click('[data-testid=checkout-button]');
+    await expect(page.locator('[data-testid=checkout-form]')).toBeVisible();
 
-    // Then - Should navigate to checkout page
-    await expect(page).toHaveURL(/\/checkout/);
-    await expect(page.locator('[data-testid=order-summary]')).toBeVisible();
+    // When - Complete order
+    await page.fill('[data-testid=shipping-address]', '123 Test St');
+    await page.click('[data-testid=place-order]');
+
+    // Then - Order should be created
+    await expect(page.locator('text=Order Confirmation')).toBeVisible();
+    await expect(page.locator('[data-testid=order-number]')).toBeVisible();
   });
 });
 ```
 
-## 🔧 Test Data Management
+## Contract Testing
 
-### Test Factories
+### API Contract Validation
 
+```typescript
+// apps/api-e2e/src/contract-tests.spec.ts
+import { validateApiContract } from '../utils/contract-validator';
+
+describe('API Contract Tests', () => {
+  test('should maintain backward compatibility', async () => {
+    const endpoints = [
+      { method: 'GET', path: '/products' },
+      { method: 'POST', path: '/products' },
+      { method: 'GET', path: '/orders' },
+    ];
+
+    for (const endpoint of endpoints) {
+      const response = await request(app.getHttpServer())
+        [endpoint.method.toLowerCase()](endpoint.path);
+
+      const isValid = validateApiContract(endpoint, response);
+      expect(isValid.valid).toBe(true);
+
+      if (!isValid.valid) {
+        console.error(`Contract violation in ${endpoint.method} ${endpoint.path}:`, isValid.errors);
+      }
+    }
+  });
+});
+```
+
+## Testing Best Practices
+
+### Test Structure
+
+#### AAA Pattern (Arrange-Act-Assert)
+```typescript
+test('should calculate order total correctly', () => {
+  // Arrange
+  const items = [
+    { price: 100, quantity: 2 },
+    { price: 50, quantity: 1 }
+  ];
+
+  // Act
+  const total = calculateOrderTotal(items);
+
+  // Assert
+  expect(total).toBe(250);
+});
+```
+
+#### Given-When-Then (BDD Style)
+```typescript
+test('should reject order when insufficient stock', async () => {
+  // Given
+  const product = await createTestProduct({ stock: 5 });
+  const orderRequest = { productId: product.id, quantity: 10 };
+
+  // When
+  const result = ordersService.create(orderRequest);
+
+  // Then
+  await expect(result).rejects.toThrow('Insufficient stock');
+});
+```
+
+### Test Data Management
+
+#### Test Factories
 ```typescript
 // tests/factories/product.factory.ts
-export class ProductFactory {
-  static create(overrides: Partial<Product> = {}): Product {
-    return {
-      id: faker.number.int({ min: 1, max: 1000 }),
-      name: faker.commerce.productName(),
-      price: parseFloat(faker.commerce.price()),
-      category: faker.commerce.department(),
-      description: faker.commerce.productDescription(),
-      stockQuantity: faker.number.int({ min: 0, max: 100 }),
-      isActive: true,
-      createdAt: faker.date.past(),
-      updatedAt: faker.date.recent(),
-      ...overrides,
-    };
-  }
+export const createTestProduct = (overrides = {}) => {
+  return {
+    name: 'Test Product',
+    price: 99.99,
+    description: 'Test description',
+    stock: 10,
+    category: 'electronics',
+    ...overrides
+  };
+};
 
-  static createMany(count: number, overrides: Partial<Product> = {}): Product[] {
-    return Array.from({ length: count }, () => this.create(overrides));
-  }
-}
-
-// tests/factories/user.factory.ts
-export class UserFactory {
-  static create(overrides: Partial<User> = {}): User {
-    return {
-      id: faker.number.int({ min: 1, max: 1000 }),
-      email: faker.internet.email(),
-      password: faker.internet.password(),
-      role: 'USER',
-      createdAt: faker.date.past(),
-      updatedAt: faker.date.recent(),
-      ...overrides,
-    };
-  }
-
-  static admin(overrides: Partial<User> = {}): User {
-    return this.create({ role: 'ADMIN', ...overrides });
-  }
-}
+export const createTestUser = (overrides = {}) => {
+  return {
+    email: 'test@example.com',
+    password: 'hashedPassword123',
+    role: 'USER',
+    ...overrides
+  };
+};
 ```
 
-### Database Seeding for Tests
-
+#### Database Seeding for Tests
 ```typescript
-// tests/setup/seed-test-data.ts
-export async function seedTestData(prisma: PrismaService) {
-  // Clean existing data
-  await prisma.orderItem.deleteMany();
-  await prisma.order.deleteMany();
-  await prisma.cartItem.deleteMany();
-  await prisma.cart.deleteMany();
-  await prisma.product.deleteMany();
-  await prisma.user.deleteMany();
+// tests/utils/test-db.ts
+export class TestDatabase {
+  static async seed() {
+    // Create test admin user
+    await prisma.user.create({
+      data: createTestUser({
+        email: 'admin@test.com',
+        role: 'ADMIN'
+      })
+    });
 
-  // Create test users
-  const adminUser = await prisma.user.create({
-    data: UserFactory.admin({
-      email: 'admin@test.com',
-      password: await bcrypt.hash('AdminPass123!', 12),
-    }),
-  });
+    // Create test products
+    const products = await prisma.product.createMany({
+      data: [
+        createTestProduct({ name: 'Product 1', category: 'electronics' }),
+        createTestProduct({ name: 'Product 2', category: 'clothing' }),
+      ]
+    });
 
-  const regularUser = await prisma.user.create({
-    data: UserFactory.create({
-      email: 'user@test.com',
-      password: await bcrypt.hash('UserPass123!', 12),
-    }),
-  });
+    return { products };
+  }
 
-  // Create test products
-  const products = await Promise.all(
-    ProductFactory.createMany(20).map(product =>
-      prisma.product.create({ data: product })
-    )
-  );
+  static async cleanup() {
+    const tablenames = await prisma.$queryRaw<Array<{ tablename: string }>>`
+      SELECT tablename FROM pg_tables WHERE schemaname='public'
+    `;
 
-  return { adminUser, regularUser, products };
+    for (const { tablename } of tablenames) {
+      if (tablename !== '_prisma_migrations') {
+        await prisma.$executeRawUnsafe(`TRUNCATE TABLE "public"."${tablename}" CASCADE;`);
+      }
+    }
+  }
 }
 ```
 
-## 🎯 Testing Commands
+### Mocking Strategies
 
-### Running Tests
+#### Service Mocking
+```typescript
+const mockPrismaService = {
+  product: {
+    findMany: jest.fn(),
+    findUnique: jest.fn(),
+    create: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  }
+};
+
+const mockEmailService = {
+  sendOrderConfirmation: jest.fn(),
+  sendPasswordReset: jest.fn(),
+};
+```
+
+#### HTTP Mocking for External APIs
+```typescript
+import nock from 'nock';
+
+describe('Payment Integration', () => {
+  beforeEach(() => {
+    nock('https://api.stripe.com')
+      .post('/v1/charges')
+      .reply(200, { id: 'ch_test_123', status: 'succeeded' });
+  });
+
+  afterEach(() => {
+    nock.cleanAll();
+  });
+});
+```
+
+## Running Tests
+
+### Command Reference
 
 ```bash
-# Unit Tests
-pnpm test:unit                 # Run all unit tests
-pnpm test:unit --watch         # Run in watch mode
-pnpm test:unit --coverage      # Run with coverage report
-pnpm test:unit ProductService  # Run specific test suite
+# Run all tests
+pnpm test
 
-# Integration Tests
-pnpm test:integration         # Run API integration tests
-pnpm test:integration --verbose # Run with detailed output
+# Unit tests only
+pnpm test:unit
 
-# End-to-End Tests
-pnpm test:e2e                 # Run all E2E tests
-pnpm test:e2e --headed        # Run with visible browser
-pnpm test:e2e --debug         # Run in debug mode
-pnpm test:e2e auth-flow       # Run specific test file
+# Integration tests only
+pnpm test:integration
 
-# All Tests
-pnpm test                     # Run entire test suite
-pnpm test:ci                  # Run tests in CI mode (no watch, with coverage)
+# E2E tests only
+pnpm test:e2e
 
-# Quality Metrics
-node scripts/quality-metrics.js  # Generate quality report including test metrics
+# Run tests in watch mode
+pnpm test:watch
+
+# Run tests with coverage
+pnpm test:coverage
+
+# Run specific test file
+pnpm test products.spec.ts
+
+# Run tests matching pattern
+pnpm test --testNamePattern="should create product"
+```
+
+### Test Scripts Configuration
+
+```json
+{
+  "scripts": {
+    "test": "jest --passWithNoTests",
+    "test:unit": "jest --testMatch='**/*.spec.ts'",
+    "test:integration": "jest --testMatch='**/*.integration.spec.ts'",
+    "test:e2e": "playwright test",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:debug": "jest --runInBand --no-cache"
+  }
+}
+```
+
+## Coverage Requirements
+
+### Minimum Thresholds
+
+```javascript
+// jest.config.js
+coverageThreshold: {
+  global: {
+    branches: 70,
+    functions: 70,
+    lines: 70,
+    statements: 70
+  },
+  './apps/api/src/': {
+    branches: 80,
+    functions: 80,
+    lines: 80,
+    statements: 80
+  }
+}
 ```
 
 ### Coverage Reports
 
 ```bash
 # Generate coverage report
-pnpm test:unit --coverage
+pnpm test:coverage
 
-# Coverage files location:
-# - coverage/lcov-report/index.html (HTML report)
-# - coverage/lcov.info (LCOV format)
-# - coverage/clover.xml (Clover format)
+# View coverage report
+open coverage/lcov-report/index.html
 ```
 
-## 📊 Quality Metrics Integration
+### Coverage Analysis
 
-### Coverage Thresholds
+- **Statements**: Percentage of executable statements that have been executed
+- **Branches**: Percentage of if/else and switch/case branches that have been executed
+- **Functions**: Percentage of functions that have been called
+- **Lines**: Percentage of executable lines that have been covered
 
-```javascript
-// Minimum coverage requirements (enforced in CI/CD)
-{
-  "branches": 70,
-  "functions": 70,
-  "lines": 70,
-  "statements": 70
-}
+## CI/CD Integration
+
+### GitHub Actions Workflow
+
+```yaml
+# .github/workflows/test.yml
+name: Tests
+
+on: [push, pull_request]
+
+jobs:
+  unit-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: pnpm install
+      - name: Run unit tests
+        run: pnpm test:unit
+      - name: Upload coverage
+        uses: codecov/codecov-action@v3
+
+  integration-tests:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_PASSWORD: postgres
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+      - name: Run integration tests
+        run: pnpm test:integration
+
+  e2e-tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+      - name: Run E2E tests
+        run: pnpm test:e2e
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
 ```
 
 ### Quality Gates
 
-- **Unit Test Coverage**: Minimum 70% across all metrics
-- **Integration Test Success**: All API endpoints must pass
-- **E2E Test Success**: Critical user journeys must pass
-- **Performance Tests**: Page load times under 3 seconds
-- **Security Tests**: No high/critical vulnerabilities
+```yaml
+# Require all tests to pass
+- name: Quality Gate - Tests
+  run: pnpm test
 
-## 🐛 Debugging Tests
+# Require minimum coverage
+- name: Quality Gate - Coverage
+  run: |
+    pnpm test:coverage
+    if [ $(cat coverage/coverage-summary.json | jq '.total.lines.pct') -lt 70 ]; then
+      echo "Coverage below 70%"
+      exit 1
+    fi
+```
 
-### Jest Debugging
+## Troubleshooting
 
+### Common Issues
+
+#### Tests Failing Due to Database State
+```bash
+# Reset test database
+npm run db:reset:test
+
+# Clear Jest cache
+npx jest --clearCache
+```
+
+#### Port Conflicts in E2E Tests
+```bash
+# Kill processes on test ports
+pnpm dev:stop
+```
+
+#### Playwright Browser Issues
+```bash
+# Reinstall browsers
+npx playwright install
+
+# Run with headed browsers for debugging
+npx playwright test --headed
+```
+
+### Debugging Tests
+
+#### Unit Test Debugging
 ```bash
 # Debug specific test
-node --inspect-brk node_modules/.bin/jest --runInBand --testNamePattern="should create product"
+npx jest --runInBand --no-cache products.spec.ts
 
-# VS Code debugging configuration
-{
-  "type": "node",
-  "request": "launch",
-  "name": "Debug Jest Tests",
-  "program": "${workspaceFolder}/node_modules/.bin/jest",
-  "args": ["--runInBand"],
-  "console": "integratedTerminal",
-  "internalConsoleOptions": "neverOpen"
-}
+# Debug with VS Code
+# Add breakpoint and use Jest extension
 ```
 
-### Playwright Debugging
-
+#### E2E Test Debugging
 ```bash
-# Debug with visible browser
-pnpm test:e2e --debug --headed
+# Run with UI mode
+npx playwright test --ui
 
-# Trace viewer for failed tests
-npx playwright show-trace test-results/auth-flow-should-login/trace.zip
+# Generate and view trace
+npx playwright test --trace on
+npx playwright show-trace trace.zip
 ```
 
-## 🔄 Continuous Integration
+### Performance Optimization
 
-### GitHub Actions Integration
-
-```yaml
-# .github/workflows/test.yml
-name: Test Suite
-on: [push, pull_request]
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        with:
-          node-version: '20'
-          cache: 'pnpm'
-
-      - run: pnpm install
-      - run: pnpm test:unit --coverage
-      - run: pnpm test:integration
-      - run: pnpm test:e2e
-
-      - uses: codecov/codecov-action@v3
-        with:
-          files: ./coverage/lcov.info
+#### Parallel Test Execution
+```javascript
+// jest.config.js
+module.exports = {
+  maxWorkers: '50%', // Use 50% of available CPU cores
+  testTimeout: 30000, // 30 second timeout
+};
 ```
 
-## 📋 Testing Best Practices
-
-### General Principles
-- **AAA Pattern**: Arrange, Act, Assert structure
-- **Descriptive Names**: Test names should describe the scenario
-- **Independent Tests**: Each test should be able to run in isolation
-- **Fast Feedback**: Unit tests should run quickly (<1s each)
-- **Realistic Data**: Use factories instead of hardcoded test data
-
-### Test Organization
-- **Group Related Tests**: Use `describe` blocks effectively
-- **Setup and Teardown**: Use `beforeEach`/`afterEach` for test isolation
-- **Shared Test Utilities**: Extract common test logic into utilities
-- **Test Documentation**: Include examples and edge cases
-
-### API Testing
-- **Test All HTTP Methods**: GET, POST, PUT, PATCH, DELETE
-- **Test Authentication**: Both authenticated and unauthenticated scenarios
-- **Test Validation**: Invalid input scenarios and error responses
-- **Test Business Logic**: Verify business rules are enforced
-
-### Frontend Testing
-- **User-Centric Tests**: Test what users see and interact with
-- **Accessibility Testing**: Include keyboard navigation and screen readers
-- **Loading States**: Test loading, error, and empty states
-- **Mobile Responsiveness**: Test on different screen sizes
-
-## 🎯 Quality Goals
-
-Our testing strategy aims to achieve:
-
-- **80% Bug Prevention**: Catch issues before production
-- **90% Feature Confidence**: Ensure new features work as expected
-- **95% Regression Protection**: Prevent breaking existing functionality
-- **100% Critical Path Coverage**: All business-critical flows tested
+#### Test Database Optimization
+```typescript
+// Use in-memory database for unit tests
+const testConfig = {
+  DATABASE_URL: 'file::memory:?cache=shared'
+};
+```
 
 ---
 
-*This testing guide is continuously updated as we expand our testing capabilities and learn from our quality engineering practices.*
+## Next Steps
+
+1. **Set up testing framework**: Configure Jest, Supertest, and Playwright
+2. **Write initial tests**: Start with critical business logic unit tests
+3. **Add integration tests**: Test API endpoints and database interactions
+4. **Implement E2E tests**: Cover main user workflows
+5. **Set up CI/CD**: Automate testing in GitHub Actions
+6. **Monitor coverage**: Ensure quality thresholds are met
+7. **Train team**: Share testing best practices and patterns
+
+For questions or support with testing implementation, refer to the [Setup & Troubleshooting Guide](./SETUP_AND_TROUBLESHOOTING.md) or create an issue in the repository.

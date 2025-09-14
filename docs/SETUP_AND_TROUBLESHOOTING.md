@@ -1,307 +1,562 @@
-# Quality Platform - Setup & Troubleshooting Guide
+# Setup and Troubleshooting Guide
 
-## 🚀 Quick Start
+This comprehensive guide covers everything you need to set up the Quality Platform development environment and resolve common issues.
 
-### Prerequisites
-- **Node.js**: Version 20+ (LTS recommended)
-- **pnpm**: Version 8+ (preferred package manager)
-- **Git**: For version control
-- **VS Code**: Recommended editor with workspace settings
+## Table of Contents
 
-### Initial Setup
+- [System Requirements](#system-requirements)
+- [Initial Setup](#initial-setup)
+- [Development Environment](#development-environment)
+- [Database Setup](#database-setup)
+- [Environment Variables](#environment-variables)
+- [Development Scripts](#development-scripts)
+- [Common Issues & Solutions](#common-issues--solutions)
+- [Windows-Specific Troubleshooting](#windows-specific-troubleshooting)
+- [Performance Optimization](#performance-optimization)
+- [Recovery Procedures](#recovery-procedures)
+- [Getting Help](#getting-help)
+
+## System Requirements
+
+### Minimum Requirements
+- **Node.js**: 18.0.0 or higher
+- **pnpm**: 8.0.0 or higher (package manager)
+- **RAM**: 8GB minimum, 16GB recommended
+- **Storage**: 2GB free space
+- **OS**: Windows 10+, macOS 10.15+, Ubuntu 18.04+
+
+### Development Tools
+- **Git**: 2.30+ with GitFlow support
+- **VS Code**: Latest version (recommended)
+- **Terminal**: PowerShell (Windows), Terminal (macOS), Bash (Linux)
+
+### Optional Tools
+- **Docker**: For containerized development (future)
+- **PostgreSQL**: For production database setup
+- **Postman**: For API testing
+
+## Initial Setup
+
+### 1. Clone Repository
 
 ```bash
-# 1. Clone the repository
-git clone https://github.com/antoniogomezgallardo/Quality-Platform.git
-cd Quality-Platform
+# Clone the repository
+git clone https://github.com/your-org/quality-platform.git
+cd quality-platform
 
-# 2. Install dependencies
-pnpm install
-
-# 3. Set up environment variables
-cp .env.example .env.local  # Or create manually
-
-# 4. Initialize database
-npx prisma migrate dev     # Creates database and applies migrations
-npx prisma generate        # Generates Prisma client
-pnpm db:seed              # Seeds with sample data
-
-# 5. 🌟 Start development environment
-pnpm dev                  # Starts both API (3001) + Web (4200)
+# Verify GitFlow is set up
+git flow version
 ```
 
-## 🔧 Environment Configuration
-
-### Required Environment Variables
-
-Create `.env.local` in the project root:
+### 2. Install Dependencies
 
 ```bash
+# Install pnpm if not already installed
+npm install -g pnpm
+
+# Install project dependencies
+pnpm install
+
+# Verify installation
+pnpm --version
+```
+
+### 3. Environment Configuration
+
+```bash
+# Create environment file
+cp .env.example .env.local
+
+# Edit the environment variables (see Environment Variables section)
+```
+
+### 4. Database Setup
+
+```bash
+# Generate Prisma client
+npx prisma generate
+
+# Run database migrations
+npx prisma migrate dev --name init
+
+# Seed database with sample data
+pnpm db:seed
+```
+
+### 5. Verify Installation
+
+```bash
+# Start development servers
+pnpm dev
+
+# Verify APIs are working
+curl http://localhost:3001/api/health
+curl http://localhost:4200
+```
+
+## Development Environment
+
+### 🚀 Automated Development Setup
+
+The Quality Platform includes sophisticated development automation that eliminates common issues:
+
+#### Features
+- **Automatic Port Management**: Kills conflicting processes on development ports
+- **Process Cleanup**: Removes orphaned Node.js processes
+- **Build Cache Management**: Cleans corrupted build directories
+- **Server Coordination**: Starts API before Web for proper initialization
+- **Error Recovery**: Handles permission issues and provides clear status messages
+
+#### Primary Commands
+
+```bash
+# 🌟 RECOMMENDED: Complete development environment
+pnpm dev                    # Auto-cleanup + start API (3001) + Web (4200)
+pnpm dev:clean             # Same as above (alias)
+
+# 🛑 Stop development servers
+pnpm dev:stop              # Clean shutdown of development processes
+pnpm dev:stop --all        # Stop ALL Node.js processes (use with caution)
+
+# 🔄 Reset and restart
+pnpm dev:reset             # Stop all processes and restart clean
+```
+
+#### Individual Server Commands
+```bash
+# Start servers individually (if needed)
+pnpm nx serve api          # API server on http://localhost:3001
+pnpm nx serve web          # Web app on http://localhost:4200
+
+# Database management
+npx prisma studio          # Database GUI on http://localhost:5555
+```
+
+#### Development URLs
+```bash
+# 🌐 Web Application:     http://localhost:4200
+# 🔌 API Base:            http://localhost:3001/api
+# 📚 API Documentation:   http://localhost:3001/api/docs
+# 🔍 Health Check:        http://localhost:3001/api/health
+# 🗃️ Database Studio:     http://localhost:5555 (when running)
+```
+
+## Database Setup
+
+### Development Database (SQLite)
+
+```bash
+# Initialize database
+npx prisma migrate dev
+
+# Reset database (removes all data)
+npx prisma migrate reset
+
+# View database
+npx prisma studio
+```
+
+### Production Database (PostgreSQL)
+
+```bash
+# Install PostgreSQL locally (optional)
+# macOS: brew install postgresql
+# Windows: Download from postgresql.org
+# Ubuntu: sudo apt install postgresql postgresql-contrib
+
+# Update .env.local for PostgreSQL
+DATABASE_URL="postgresql://username:password@localhost:5432/quality_platform"
+
+# Run migrations on PostgreSQL
+npx prisma migrate deploy
+```
+
+### Database Commands Reference
+
+```bash
+# Migrations
+npx prisma migrate dev --name "description"  # Create and apply migration
+npx prisma migrate deploy                    # Apply migrations (production)
+npx prisma migrate reset                     # Reset database
+
+# Client Generation
+npx prisma generate                          # Generate Prisma client
+npx prisma db push                          # Push schema without migration
+
+# Data Management
+pnpm db:seed                                # Seed with sample data
+npx prisma studio                           # Database GUI
+npx prisma db seed                          # Alternative seed command
+```
+
+## Environment Variables
+
+### Required Variables
+
+Create `.env.local` file in the project root:
+
+```env
 # Database Configuration
-DATABASE_URL="file:./dev.db"  # SQLite for development
-# For production: DATABASE_URL="postgresql://user:password@localhost:5432/quality_platform"
+DATABASE_URL="file:./dev.db"
 
 # JWT Authentication
-JWT_SECRET="your-super-secret-jwt-key-change-in-production"
+JWT_SECRET="your-super-secret-jwt-key-change-in-production-abc123"
 JWT_EXPIRES_IN="7d"
 
 # Application Configuration
 NODE_ENV="development"
-PORT=3001                 # API server port
+PORT=3001
 API_BASE_URL="http://localhost:3001"
 
-# Optional Configuration
+# Optional: Logging
 LOG_LEVEL="debug"
 ```
 
-### Web Application Environment
+### Frontend Environment (Optional)
 
-Create `web/.env.local`:
+Create `web/.env.local` for frontend-specific variables:
 
-```bash
-# Frontend Configuration
-NEXT_PUBLIC_API_URL="http://localhost:3001/api"  # API base URL for frontend
+```env
+# API Configuration
+NEXT_PUBLIC_API_URL="http://localhost:3001/api"
+
+# Feature Flags (future)
+NEXT_PUBLIC_ENABLE_ANALYTICS="false"
+```
+
+### Testing Environment
+
+Create `.env.test` for test configuration:
+
+```env
+DATABASE_URL="file:./test.db"
+JWT_SECRET="test-secret-key"
+NODE_ENV="test"
+PORT=3333
 ```
 
 ### Security Notes
-- ⚠️ **Never commit .env files to version control**
-- 🔑 **Use strong, unique JWT secrets in production**
-- 🛡️ **Change default JWT secret before deployment**
-- ⏰ **Consider shorter JWT expiration for sensitive applications**
 
-## 🖥️ Development Environment
+- ✅ **DO**: Use strong, unique JWT secrets in production
+- ✅ **DO**: Keep .env files in .gitignore
+- ❌ **DON'T**: Commit secrets to version control
+- ❌ **DON'T**: Use default JWT secret in production
 
-### Enhanced Development Scripts
+## Development Scripts
 
-The Quality Platform includes robust development tooling that resolves common issues automatically:
+### Package.json Scripts
 
-#### `pnpm dev` - Automated Development Environment
-
-**Features:**
-- 🔄 **Port Conflict Resolution**: Automatically kills processes blocking development ports
-- 🧹 **Build Cache Cleanup**: Removes corrupted build directories (`.next`, `dist`)
-- 📊 **Health Monitoring**: Validates server status and port availability
-- 🎯 **Server Coordination**: Starts API first, then Web application
-- 🛠️ **Error Recovery**: Handles permission issues gracefully
-
-**What it does:**
-1. Kills existing processes on ports 3001, 4200, 5555
-2. Cleans build directories that may be corrupted
-3. Starts API server with health checks
-4. Starts Web server after API is ready
-5. Provides colored console output for debugging
-
-#### `pnpm dev:stop` - Comprehensive Cleanup
-
-**Features:**
-- 🛑 **Graceful Shutdown**: Properly terminates development servers
-- 🌲 **Process Tree Termination**: Uses Windows `taskkill /F /T` for complete cleanup
-- 🛡️ **Smart Protection**: Protects Claude Code and VS Code processes
-- 🔍 **Port Validation**: Ensures ports are properly released
-
-#### Additional Commands
-
-```bash
-# Development Management
-pnpm dev:clean            # Alias for pnpm dev
-pnpm dev:reset            # Stop all + restart fresh
-pnpm dev:stop --all       # Aggressive cleanup (use with caution)
-
-# Individual Services
-pnpm nx serve api         # API only (http://localhost:3001/api)
-pnpm nx serve web         # Web only (http://localhost:4200)
-
-# Database Management
-npx prisma studio         # Database GUI (http://localhost:5555)
-npx prisma migrate dev    # Apply database migrations
-npx prisma migrate reset  # Reset database (development only)
-pnpm db:seed             # Seed with sample data
+```json
+{
+  "scripts": {
+    "dev": "node dev-start.js",
+    "dev:clean": "node dev-start.js",
+    "dev:stop": "node dev-stop.js",
+    "dev:reset": "node dev-stop.js && node dev-start.js",
+    "db:seed": "npx prisma db seed"
+  }
+}
 ```
 
-## 🌐 Access URLs
+### Advanced Development Commands
 
-When development servers are running:
-
-- **🌐 Web Application**: http://localhost:4200 (Next.js - in development)
-- **🔌 API Base**: http://localhost:3001/api (NestJS - fully functional)
-- **📚 API Documentation**: http://localhost:3001/api/docs (Swagger UI)
-- **🏥 Health Check**: http://localhost:3001/api/health
-- **🗃️ Database Studio**: http://localhost:5555 (when running `npx prisma studio`)
-
-## 🐛 Common Issues & Solutions
-
-### Port Conflicts
-
-#### Problem: "EADDRINUSE: address already in use :::4200" or ":::3001"
-
-**Quick Solutions:**
 ```bash
-# Recommended fix - automated cleanup
+# Build for production
+pnpm nx build api          # Build API
+pnpm nx build web          # Build Web app
+pnpm build                 # Build all projects
+
+# Code quality
+pnpm nx lint api           # Lint API code
+pnpm nx lint web           # Lint Web code
+pnpm nx format             # Format all code
+
+# Testing (when implemented)
+pnpm test                  # Run all tests
+pnpm test:unit             # Unit tests only
+pnpm test:e2e              # End-to-end tests
+pnpm test:watch            # Watch mode
+```
+
+## Common Issues & Solutions
+
+### 🔴 Port Already in Use
+
+**Problem**: `EADDRINUSE: address already in use :::4200` or `:::3001`
+
+**Solution**:
+```bash
+# Quick fix - automated cleanup
 pnpm dev:stop
 
 # Complete reset if problems persist
 pnpm dev:reset
 
-# Nuclear option - kills ALL Node.js processes (use with caution)
-pnpm dev:stop --all
-```
-
-**Manual Windows Commands (if automated cleanup fails):**
-```bash
-# Find processes using specific ports
+# Manual cleanup (Windows)
 netstat -ano | findstr :4200
 netstat -ano | findstr :3001
+taskkill /F /PID [PID_NUMBER]
 
-# Kill specific process ID (replace XXXX with actual PID)
-taskkill /F /PID XXXX
-
-# Kill process tree (more effective)
-taskkill /F /T /PID XXXX
+# Manual cleanup (macOS/Linux)
+lsof -ti:4200 | xargs kill -9
+lsof -ti:3001 | xargs kill -9
 ```
 
-#### Root Cause Prevention:
-- Always use `pnpm dev:stop` before closing your terminal
-- Use `pnpm dev:reset` if you encounter any startup issues
-- Avoid force-closing terminal windows during development
+### 🔴 Inspector/Debugger Port Conflicts
 
-### Inspector/Debugger Port Conflicts
+**Problem**: `Starting inspector on 127.0.0.1:9230 failed: address already in use`
 
-#### Problem: "Starting inspector on 127.0.0.1:9230 failed: address already in use"
+**Solution**: The enhanced `dev-start.js` automatically handles this by using separate debug ports:
+- API: 127.0.0.1:9230
+- Web: 127.0.0.1:9231
 
-**✅ This issue has been RESOLVED in v1.6.1**
-
-**Solution:** The enhanced development scripts now automatically handle this by:
-- Removing hardcoded inspector ports from development configuration
-- Using dynamic port assignment for Node.js debugging
-- Comprehensive process cleanup before server startup
-
-**If the issue persists:**
+If issues persist:
 ```bash
-# Kill processes on inspector ports
 netstat -ano | findstr :9230
 netstat -ano | findstr :9231
 taskkill /F /PID [PID_NUMBER]
 ```
 
-### File Permission Errors (EPERM)
+### 🔴 File Permission Errors (EPERM)
 
-#### Problem: `EPERM: operation not permitted, open 'web\.next\trace'`
+**Problem**: `EPERM: operation not permitted, open 'web\.next\trace'`
 
-**✅ This issue is now handled automatically by the development scripts**
-
-**Automated Solution:** The `pnpm dev` command now:
-- Removes read-only attributes from build directories
-- Uses multiple cleanup methods for robust file removal
-- Handles Windows-specific file locking issues
-
-**Manual Recovery (if needed):**
+**Solution**:
 ```bash
-# Remove read-only attributes (Windows)
+# Windows - Remove read-only attributes
 attrib -R "web\.next\*.*" /S /D
 
-# Force delete directory
+# Force remove directory
 rmdir /S /Q "web\.next"
-```
+rmdir /S /Q "dist"
 
-**Root Causes:**
-- Windows file system locking
-- Antivirus software interference
-- Previous crashed processes holding file handles
-
-### Build Directory Corruption
-
-#### Problem: Compilation errors, stale cache, "module not found" errors
-
-**Automated Solution:**
-```bash
-# The enhanced dev script handles this automatically
+# Then restart
 pnpm dev:reset
 ```
 
-**Manual Cleanup (if needed):**
+**Root Causes**:
+- Antivirus software interference
+- Previous crashed Node.js processes
+- Windows file system locking
+
+### 🔴 Build Directory Corruption
+
+**Problem**: Compilation errors, "module not found", or stale cache issues
+
+**Solution**:
 ```bash
-# Stop development servers
+# Automated cleanup (recommended)
+pnpm dev:reset
+
+# Manual cleanup
 pnpm dev:stop
 
-# Remove corrupted directories
-# These are automatically cleaned by pnpm dev:
-# - web/.next
-# - dist
-# - node_modules/.cache
-# - web/.swc
+# Remove build directories
+rm -rf web/.next
+rm -rf dist
+rm -rf node_modules/.cache
+rm -rf web/.swc
 
-# Restart development
+# Clear package manager cache
+pnpm store prune
+
+# Restart
 pnpm dev
 ```
 
-### Tailwind CSS Build Errors
+### 🔴 Database Connection Issues
 
-#### Problem: PostCSS plugin errors, CSS compilation issues
+**Problem**: `Can't reach database server` or migration failures
 
-**✅ Resolved in v1.6.1 with proper Tailwind CSS v4 configuration**
+**Solutions**:
 
-**Current Configuration:**
-- **PostCSS**: Uses `@tailwindcss/postcss` plugin for v4 compatibility
-- **CSS Import**: Uses `@import "tailwindcss"` syntax in `global.css`
-- **Configuration**: Proper `tailwind.config.js` with v4-compatible settings
-
-**If issues persist:**
+#### SQLite Issues:
 ```bash
-# Clear Next.js cache
-pnpm dev:reset
+# Check database file permissions
+ls -la dev.db
 
-# Verify configuration files:
-# - web/postcss.config.js should use '@tailwindcss/postcss'
-# - web/src/app/global.css should use '@import "tailwindcss"'
-# - web/tailwind.config.js should exist with proper configuration
-```
-
-### Database Issues
-
-#### Problem: Database connection errors, migration failures
-
-**Solutions:**
-```bash
-# Reset database (development only)
+# Reset database
 npx prisma migrate reset
 
-# Apply pending migrations
-npx prisma migrate dev
-
-# Generate Prisma client
+# Regenerate client
 npx prisma generate
-
-# Verify database connection
-npx prisma db pull  # Should show existing schema
 ```
 
-**Database File Location:**
-- Development: `apps/api/src/dev.db` (SQLite)
-- Test: Configured per test suite
+#### PostgreSQL Issues:
+```bash
+# Check service status (macOS)
+brew services list | grep postgres
 
-## 🖥️ Windows-Specific Issues
+# Check service status (Windows)
+net start | findstr postgres
 
-### Antivirus Interference
-- **Symptom**: Files cannot be deleted, permission errors during builds
-- **Solution**: Add project folder to antivirus exclusions
-- **Path to exclude**: `C:\Users\[YourName]\path\to\Quality-Platform`
+# Check connection
+psql -h localhost -U username -d quality_platform
+```
+
+### 🔴 Dependency Installation Issues
+
+**Problem**: Package installation failures or version conflicts
+
+**Solutions**:
+```bash
+# Clear package manager cache
+pnpm store prune
+
+# Remove node_modules and reinstall
+rm -rf node_modules
+pnpm install
+
+# Check for version conflicts
+pnpm outdated
+
+# Update dependencies
+pnpm update
+```
+
+### 🔴 Git and GitFlow Issues
+
+**Problem**: GitFlow violations, commit rejections
+
+**Solution**:
+```bash
+# Check current branch
+git branch
+
+# Switch to proper feature branch
+git checkout develop
+git pull origin develop
+git checkout -b feature/your-feature-name
+
+# Fix GitFlow hook issues
+chmod +x .husky/pre-commit
+```
+
+## Windows-Specific Troubleshooting
 
 ### PowerShell Execution Policy
-- **Symptom**: Scripts fail to run with execution policy errors
-- **Solution**: `Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser`
+
+**Problem**: Scripts cannot be executed
+
+**Solution**:
+```powershell
+# Check current policy
+Get-ExecutionPolicy
+
+# Set policy for current user
+Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+# Alternative: Run specific script
+powershell -ExecutionPolicy Bypass -File script.ps1
+```
+
+### Antivirus Interference
+
+**Problem**: Files being deleted or access denied
+
+**Solution**:
+1. Add project folder to antivirus exclusions:
+   - Windows Defender: Settings > Update & Security > Windows Security > Virus & threat protection > Exclusions
+   - Add folder: `C:\path\to\quality-platform`
+
+2. Exclude file types:
+   - `.js`, `.ts`, `.json`, `.db` files
 
 ### Long Path Names
-- **Symptom**: "Path too long" errors during npm/pnpm operations
-- **Solution**: Enable long path support in Windows or move project closer to root drive
 
-### Windows Defender Real-Time Protection
-- **Symptom**: Slow file operations, permission errors
-- **Solution**: Add exclusions for:
-  - Project directory
-  - Node.js installation directory
-  - npm/pnpm cache directories
+**Problem**: Path too long errors
 
-## 🔄 Recovery Procedures
+**Solution**:
+```powershell
+# Enable long path support (Admin PowerShell)
+New-ItemProperty -Path "HKLM:\SYSTEM\CurrentControlSet\Control\FileSystem" -Name "LongPathsEnabled" -Value 1 -PropertyType DWORD -Force
+
+# Alternative: Move project closer to root
+# C:\dev\quality-platform instead of C:\Users\Username\Documents\Projects\quality-platform
+```
+
+### Windows Terminal Issues
+
+**Problem**: Terminal encoding or color issues
+
+**Solution**:
+```bash
+# Set UTF-8 encoding
+chcp 65001
+
+# Use Windows Terminal (recommended)
+# Download from Microsoft Store
+
+# Configure VS Code terminal
+"terminal.integrated.shell.windows": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe"
+```
+
+## Performance Optimization
+
+### Development Server Performance
+
+#### Memory Usage
+```bash
+# Monitor Node.js memory usage
+node --max-old-space-size=4096 dev-start.js
+
+# Alternative: Set environment variable
+set NODE_OPTIONS=--max-old-space-size=4096
+pnpm dev
+```
+
+#### Build Performance
+```bash
+# Use SWC instead of Babel (already configured)
+# Enable webpack caching (already configured)
+# Use incremental TypeScript compilation
+```
+
+### Database Performance
+
+#### SQLite Optimization
+```sql
+-- Enable WAL mode for better concurrency
+PRAGMA journal_mode = WAL;
+PRAGMA synchronous = NORMAL;
+PRAGMA cache_size = 1000000;
+PRAGMA temp_store = memory;
+```
+
+#### Connection Pooling
+```typescript
+// prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+```
+
+### System Resource Management
+
+#### Windows Task Manager
+- Monitor Node.js processes
+- Check memory usage
+- Kill orphaned processes
+
+#### macOS Activity Monitor
+- Monitor Node processes
+- Check CPU and memory usage
+
+#### Linux htop/ps
+```bash
+# Monitor Node.js processes
+ps aux | grep node
+
+# Kill by name
+pkill -f node
+```
+
+## Recovery Procedures
 
 ### Complete Environment Reset
 
@@ -309,220 +564,235 @@ npx prisma db pull  # Should show existing schema
 # 1. Stop everything
 pnpm dev:stop --all
 
-# 2. Clean dependencies (if needed)
+# 2. Clean all caches
+pnpm store prune
 rm -rf node_modules
-pnpm install
-
-# 3. Clean database (if corrupted)
-npx prisma migrate reset
-
-# 4. Restart fresh
-pnpm dev
-```
-
-### Network/Port Issues
-
-```bash
-# Check what's using your ports
-netstat -ano | findstr :4200
-netstat -ano | findstr :3001
-
-# Reset network stack (Administrator Command Prompt)
-netsh int ip reset
-netsh winsock reset
-# Restart computer after these commands
-```
-
-### Git Repository Issues
-
-```bash
-# Reset to known good state
-git status
-git stash  # Save any local changes
-git checkout develop
-git pull origin develop
-
-# If you have local commits to preserve:
-git checkout -b backup-branch  # Save current state
-git checkout develop
-git pull origin develop
-```
-
-## 📊 Health Check & Monitoring
-
-### Development Server Health
-
-The development environment includes comprehensive health monitoring:
-
-```bash
-# Check API server status
-curl http://localhost:3001/api/health
-
-# Check database connectivity
-curl http://localhost:3001/api/health/ready
-
-# Monitor process status
-# The dev scripts provide colored console output showing:
-# - Port cleanup status
-# - Server startup progress
-# - Health check results
-# - Error messages and warnings
-```
-
-### System Requirements Validation
-
-```bash
-# Check Node.js version (should be 20+)
-node --version
-
-# Check pnpm version (should be 8+)
-pnpm --version
-
-# Check available disk space (need ~2GB for node_modules)
-# Windows: dir
-# Linux/Mac: df -h
-
-# Check available memory (recommend 8GB+ RAM)
-# Windows: wmic OS get TotalVisibleMemorySize /value
-# Linux: free -h
-# Mac: vm_stat
-```
-
-## 🛠️ IDE Setup (VS Code)
-
-### Recommended Extensions
-
-The project includes VS Code workspace settings. Install these extensions:
-
-- **TypeScript and JavaScript Language Features** (built-in)
-- **ESLint** - Code linting
-- **Prettier** - Code formatting
-- **Tailwind CSS IntelliSense** - CSS class suggestions
-- **Prisma** - Database schema editing
-- **Jest** - Test running and debugging
-- **GitLens** - Enhanced Git capabilities
-
-### Workspace Configuration
-
-The project includes `.vscode/settings.json` with:
-- Prettier as default formatter
-- Auto-format on save
-- ESLint integration
-- File associations for better editing experience
-
-### Debugging Configuration
-
-VS Code debugging is configured for:
-- **API Debugging**: Debug NestJS application with breakpoints
-- **Jest Tests**: Debug unit tests with IDE integration
-- **Database Queries**: Prisma client debugging
-
-## 🎯 Performance Optimization
-
-### Development Performance
-
-If development is slow:
-
-```bash
-# Clear all caches
-pnpm dev:stop
-rm -rf node_modules/.cache
 rm -rf web/.next
 rm -rf dist
+rm -rf .nx/cache
 
-# Restart with clean slate
+# 3. Clean database
+rm dev.db
+rm test.db
+
+# 4. Reinstall dependencies
+pnpm install
+
+# 5. Reset database
+npx prisma migrate dev
+pnpm db:seed
+
+# 6. Restart
 pnpm dev
-
-# Monitor system resources
-# - Check CPU usage (Node.js processes)
-# - Check memory usage (should be <4GB total)
-# - Check disk I/O (antivirus scanning can slow things down)
 ```
 
-### Build Performance
+### Git Repository Recovery
 
 ```bash
-# Optimize for faster builds
-export NODE_OPTIONS="--max-old-space-size=8192"  # Increase Node.js memory
+# Reset local changes
+git stash
+git checkout develop
+git reset --hard origin/develop
 
-# Use faster builds (development only)
-# These settings are already configured in next.config.js
+# Clean untracked files
+git clean -fd
+
+# Re-pull latest changes
+git pull origin develop
 ```
 
-## 📞 Getting Help
-
-### Self-Service Debugging
-
-1. **Check Process Status**: Run `pnpm dev:stop` and verify no errors
-2. **Restart Terminal**: Close and reopen with administrator privileges if needed
-3. **Check Task Manager**: Look for orphaned Node.js processes
-4. **Review Logs**: Check console output for specific error messages
-5. **System Restart**: As last resort, restart Windows to clear all processes
-
-### Documentation Resources
-
-- **API Documentation**: http://localhost:3001/api/docs (when running)
-- **Project Structure**: `docs/PROJECT_STRUCTURE.md`
-- **Testing Guide**: `docs/TESTING_GUIDE.md`
-- **Development Guide**: `CLAUDE.md`
-
-### Common Error Patterns
-
-| Error Pattern | Quick Fix |
-|---------------|-----------|
-| Port already in use | `pnpm dev:stop` |
-| Permission denied | Run terminal as administrator |
-| Module not found | `pnpm install` |
-| Database error | `npx prisma migrate reset` |
-| Build cache issues | `pnpm dev:reset` |
-| Tailwind CSS errors | Already fixed in v1.6.1 |
-| Inspector port conflicts | Already fixed in v1.6.1 |
-
-## 🎉 Success Indicators
-
-Your development environment is working correctly when:
-
-- ✅ `pnpm dev` starts both servers without errors
-- ✅ http://localhost:3001/api returns welcome message
-- ✅ http://localhost:3001/api/docs shows Swagger UI
-- ✅ http://localhost:4200 loads Next.js application
-- ✅ No port conflict or permission errors in console
-- ✅ Database operations work (`npx prisma studio`)
-
-## 🔧 Advanced Configuration
-
-### Custom Port Configuration
-
-If you need to use different ports:
+### Configuration Recovery
 
 ```bash
-# Edit package.json scripts or create custom scripts
-# API_PORT=3002 WEB_PORT=4201 pnpm dev
+# Restore from examples
+cp .env.example .env.local
+cp .gitignore.example .gitignore
 
-# Update environment variables accordingly
-# PORT=3002 in .env.local
-# Update NEXT_PUBLIC_API_URL in web/.env.local
+# Reset Husky hooks
+pnpm husky install
+chmod +x .husky/pre-commit
 ```
 
-### Database Configuration
+## Development Best Practices
+
+### Daily Workflow
+
+1. **Start Development**:
+   ```bash
+   git checkout develop
+   git pull origin develop
+   git checkout -b feature/your-feature
+   pnpm dev
+   ```
+
+2. **During Development**:
+   - Make small, focused commits
+   - Test changes frequently
+   - Monitor console for errors
+
+3. **End of Day**:
+   ```bash
+   # Save work
+   git add .
+   git commit -m "feat: progress on feature"
+   git push origin feature/your-feature
+
+   # Clean shutdown
+   pnpm dev:stop
+   ```
+
+### Monitoring and Maintenance
+
+#### Daily Checks
+- [ ] Development servers start without errors
+- [ ] Database connections are working
+- [ ] No orphaned processes consuming resources
+- [ ] Git status is clean
+
+#### Weekly Maintenance
+- [ ] Update dependencies: `pnpm update`
+- [ ] Clear caches: `pnpm store prune`
+- [ ] Check disk space
+- [ ] Review and clean old feature branches
+
+#### Monthly Tasks
+- [ ] Review and update documentation
+- [ ] Check for security updates
+- [ ] Performance profiling
+- [ ] Backup important data
+
+## Getting Help
+
+### Diagnostic Information
+
+When reporting issues, include:
 
 ```bash
-# Switch to PostgreSQL (production-like)
-# 1. Install PostgreSQL locally
-# 2. Update DATABASE_URL in .env.local
-# 3. Run: npx prisma migrate reset
+# System information
+node --version
+pnpm --version
+git --version
+
+# Project status
+pnpm nx report
+
+# Current processes
+# Windows
+tasklist | findstr node
+netstat -ano | findstr :4200
+
+# macOS/Linux
+ps aux | grep node
+lsof -i :4200
 ```
 
-### Multi-Developer Setup
+### Log Analysis
 
+#### Development Server Logs
+- API logs: Console output from `pnpm nx serve api`
+- Web logs: Console output from `pnpm nx serve web`
+- Database logs: Prisma query logs
+
+#### Common Log Patterns
 ```bash
-# Each developer should use unique database
-# DATABASE_URL="file:./dev-[developer-name].db"
+# Success patterns
+"Nest application successfully started"
+"Ready in [X]ms"
+"✅ Web server ready"
 
-# Or use Docker for consistency
-# See docs/deployment/docker.md (when available)
+# Error patterns
+"EADDRINUSE"
+"Cannot resolve module"
+"Database connection failed"
+"Permission denied"
+```
+
+### Support Channels
+
+1. **Documentation**: Check existing guides first
+2. **GitHub Issues**: Create detailed bug reports
+3. **Team Chat**: For quick questions
+4. **Code Review**: Get help during PR reviews
+
+### Creating Bug Reports
+
+Include the following information:
+
+```markdown
+## Bug Report
+
+**Environment**:
+- OS: Windows 10/macOS 12/Ubuntu 20.04
+- Node.js: v18.x.x
+- pnpm: v8.x.x
+
+**Steps to Reproduce**:
+1. Run `pnpm dev`
+2. Navigate to http://localhost:4200
+3. Error occurs
+
+**Expected Behavior**:
+Application should load normally
+
+**Actual Behavior**:
+Error message: [paste exact error]
+
+**Logs**:
+```
+[paste relevant logs here]
+```
+
+**Additional Context**:
+- First time setup or existing project?
+- Any recent changes?
+- Antivirus software running?
 ```
 
 ---
 
-*This guide is continuously updated based on common issues and developer feedback. The enhanced development environment (v1.6.1) has resolved most persistent setup issues.*
+## Quick Reference
+
+### Essential Commands
+
+```bash
+# Start development
+pnpm dev
+
+# Stop development
+pnpm dev:stop
+
+# Reset everything
+pnpm dev:reset
+
+# Database management
+npx prisma studio
+pnpm db:seed
+
+# Check health
+curl http://localhost:3001/api/health
+```
+
+### Important URLs
+
+```bash
+Web App:         http://localhost:4200
+API:             http://localhost:3001/api
+API Docs:        http://localhost:3001/api/docs
+Database Studio: http://localhost:5555
+Health Check:    http://localhost:3001/api/health
+```
+
+### Emergency Procedures
+
+```bash
+# Kill all Node processes (use with caution)
+pnpm dev:stop --all
+
+# Reset development environment
+pnpm dev:reset
+
+# Complete project reset
+rm -rf node_modules && pnpm install && pnpm dev:reset
+```
+
+For additional support, refer to the [Testing Guide](./TESTING_GUIDE.md) or [Project Structure](./PROJECT_STRUCTURE.md) documentation.
