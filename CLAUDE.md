@@ -42,7 +42,8 @@ quality-platform/
 │   │       └── stores/     # Zustand stores
 ├── web-e2e/        # Web e2e tests
 ├── api-e2e/        # API e2e tests
-├── libs/           # Shared libraries (future)
+├── libs/           # Shared libraries
+│   └── shared/     # Common utilities, validation, and test helpers
 ├── tools/          # Development tools (future)
 ├── templates/      # Document templates (future)
 ├── examples/       # Test implementation examples (future)
