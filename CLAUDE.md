@@ -44,7 +44,7 @@ quality-platform/
 ├── api-e2e/        # API e2e tests
 ├── libs/           # Shared libraries
 │   └── shared/     # Common utilities, validation, and test helpers
-├── tools/          # Development tools (future)
+├── tools/          # Development tools and CLI framework ✅
 ├── templates/      # Document templates (future)
 ├── examples/       # Test implementation examples (future)
 └── docs/           # Project documentation
@@ -153,9 +153,16 @@ pnpm test:integration           # Run Supertest API integration tests
 pnpm test:e2e                   # Run Playwright end-to-end tests
 pnpm test:contract              # Run API contract validation tests
 
-# Legacy commands (to be implemented in future phases)
-pnpm quality:check        # Run all quality validations
-pnpm quality:report       # Generate executive summary
+# Quality Platform CLI Tools (Implemented ✅)
+pnpm quality:check        # Run comprehensive quality validations (linting, type checking, testing, security)
+pnpm quality:report       # Generate detailed quality reports with business metrics (console, JSON, HTML)
+pnpm tools:build          # Build the CLI tools framework
+pnpm tools:test           # Run CLI tools unit tests
+pnpm tools:lint           # Lint CLI tools codebase
+
+# Advanced quality commands (Future phases)
+pnpm quality:check --ci --fail-on=warning    # CI-optimized quality checks with strict criteria
+pnpm quality:report --format=html --output=./reports/quality.html  # Generate HTML quality reports
 pnpm risk:assess --pr=123 # Analyze PR for risk
 pnpm contract:validate    # Check for breaking changes
 pnpm flow:trace --flow=order-checkout # Visualize business flow
@@ -423,6 +430,10 @@ When implementing features, ensure they contribute to:
 - **Frontend**: Next.js 15 with React 19, TypeScript, and Tailwind CSS
 - **State Management**: Zustand with localStorage persistence
 - **Data Fetching**: TanStack React Query (@tanstack/react-query)
+- **CLI Tools**: Commander.js framework with chalk, ora, cli-table3 for rich terminal output
+- **Quality Automation**: Comprehensive CLI toolkit for linting, type checking, testing, security auditing
+- **Report Generation**: Multi-format outputs (console, JSON, HTML) with business-friendly metrics
+- **Configuration**: Flexible config system with environment variable overrides (cosmiconfig)
 - **Documentation**: Markdown + Swagger UI
 
 ## Environment Variables
