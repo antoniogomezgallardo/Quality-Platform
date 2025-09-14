@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: quality-platform-config
+  namespace: quality-platform
+data:
+  NODE_ENV: "production"
+  API_PORT: "3000"
+  WEB_PORT: "4200"
+  LOG_LEVEL: "info"
+  CORS_ORIGIN: "https://quality-platform.com"
+  RATE_LIMIT_MAX: "100"
+  RATE_LIMIT_WINDOW: "15m"
+  ENABLE_SWAGGER_UI: "false"
+  ENABLE_MONITORING: "true"
+  ENABLE_REDIS_CACHE: "true"
+  ENABLE_RATE_LIMITING: "true"

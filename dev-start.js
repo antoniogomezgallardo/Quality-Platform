@@ -179,8 +179,55 @@ function cleanDirectories() {
   }));
 }
 
+async function loadContextSummary() {
+  return new Promise((resolve) => {
+    log('🧠 Loading project context...', colors.cyan);
+
+    const { spawn } = require('child_process');
+    const contextProcess = spawn('node', ['scripts/context-helper.js', 'summary'], {
+      stdio: 'pipe',
+      shell: true
+    });
+
+    let output = '';
+    contextProcess.stdout.on('data', (data) => {
+      output += data.toString();
+    });
+
+    contextProcess.on('close', (code) => {
+      if (code === 0 && output) {
+        // Parse essential context information
+        const lines = output.split('\n');
+        const branchLine = lines.find(line => line.includes('Current Branch:'));
+        const changesLine = lines.find(line => line.includes('Has Changes:'));
+
+        if (branchLine) log(`📋 ${branchLine.trim()}`, colors.blue);
+        if (changesLine) log(`📋 ${changesLine.trim()}`, colors.blue);
+        log('✅ Context loaded', colors.green);
+      } else {
+        log('⚠️  Context loading failed, continuing...', colors.yellow);
+      }
+      resolve();
+    });
+
+    contextProcess.on('error', () => {
+      log('⚠️  Context loading error, continuing...', colors.yellow);
+      resolve();
+    });
+
+    // Timeout after 5 seconds
+    setTimeout(() => {
+      contextProcess.kill();
+      resolve();
+    }, 5000);
+  });
+}
+
 async function cleanupAndStart() {
   try {
+    // Load project context first
+    await loadContextSummary();
+
     log('🧹 Cleaning up existing processes...', colors.cyan);
 
     // Kill processes on all development ports

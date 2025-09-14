@@ -4,13 +4,52 @@ import { Command } from 'commander';
 import chalk from 'chalk';
 import { QualityCheckCommand } from './commands/quality-check';
 import { QualityReportCommand } from './commands/quality-report';
+import { ContextCommand } from './commands/context';
 import { SimpleConfigManager } from './config/simple-config';
 import { Logger } from './utils/logger';
+import { exec } from 'child_process';
+import { promisify } from 'util';
+
+const execAsync = promisify(exec);
 
 const program = new Command();
 const logger = new Logger();
 
+async function loadProjectContext(): Promise<void> {
+  try {
+    logger.info('🧠 Loading project context...');
+
+    const { stdout } = await execAsync('node scripts/context-helper.js git', {
+      timeout: 5000,
+      cwd: process.cwd()
+    });
+
+    const context = JSON.parse(stdout);
+
+    if (context.currentBranch) {
+      logger.info(`📋 Current branch: ${chalk.blue(context.currentBranch)}`);
+    }
+
+    if (context.hasChanges) {
+      logger.warn(`📋 Uncommitted changes: ${context.hasChanges ? 'Yes' : 'No'}`);
+    }
+
+    if (context.isFeatureBranch || context.isBugfixBranch || context.isReleaseBranch) {
+      const branchType = context.isFeatureBranch ? 'feature' :
+                        context.isBugfixBranch ? 'bugfix' : 'release';
+      logger.info(`📋 Branch type: ${chalk.green(branchType)}`);
+    }
+
+    logger.success('✅ Context loaded');
+  } catch (error) {
+    logger.debug('Context loading failed, continuing...', error instanceof Error ? error.message : String(error));
+  }
+}
+
 async function setupCLI(): Promise<Command> {
+  // Load project context first
+  await loadProjectContext();
+
   // Initialize configuration
   const configManager = new SimpleConfigManager();
   await configManager.loadConfig();
@@ -27,6 +66,10 @@ async function setupCLI(): Promise<Command> {
   // Quality Report Command
   const qualityReportCommand = new QualityReportCommand(configManager, logger);
   program.addCommand(qualityReportCommand.getCommand());
+
+  // Context Command
+  const contextCommand = new ContextCommand(configManager, logger);
+  program.addCommand(contextCommand.getCommand());
 
   // Global error handling
   program.exitOverride((err) => {

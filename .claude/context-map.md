@@ -10,6 +10,54 @@ This file provides Claude with efficient context navigation patterns for the Qua
 - Current git branch status
 - Current working directory and task focus
 
+## 🤖 Automatic Context Loading
+
+The project includes automatic context loading in several key locations:
+
+### **Development Server Integration** (`dev-start.js`)
+- **Trigger**: Every `pnpm dev` or `pnpm dev:clean` command
+- **Function**: `loadContextSummary()` calls `scripts/context-helper.js summary`
+- **Output**: Branch info, changes status, project overview
+- **Purpose**: Provides immediate development context awareness
+
+### **Pre-commit Hooks** (`.husky/pre-commit`)
+- **Trigger**: Every git commit attempt
+- **Function**: Loads git context via `scripts/context-helper.js git`
+- **Validation**: Branch naming, protected branch prevention
+- **Guidance**: Context-aware commit suggestions based on modified areas
+
+### **CLI Tools Startup** (`tools/src/lib/cli.ts`)
+- **Trigger**: CLI command execution (`pnpm quality:check`, `pnpm quality:report`)
+- **Function**: `loadProjectContext()` loads git context
+- **Display**: Branch type, changes status, formatted output
+- **Integration**: Available through CLI framework commands
+
+## 🛠️ Manual Context Commands
+
+### **Package.json Scripts** (Direct Access)
+```bash
+pnpm context:summary    # Complete project context
+pnpm context:feature <area>  # Feature-specific context (api|web|tools|shared)
+pnpm context:git        # Git status and branch information
+```
+
+### **CLI Framework Commands** (Advanced)
+```bash
+# Build tools first: pnpm tools:build
+node dist/tools/src/bin/quality-tools.js context summary           # Structured project summary
+node dist/tools/src/bin/quality-tools.js context feature api       # API development context
+node dist/tools/src/bin/quality-tools.js context feature web --files-only  # Web files only
+node dist/tools/src/bin/quality-tools.js context git --json        # Git context as JSON
+node dist/tools/src/bin/quality-tools.js context validate          # Validate context system
+```
+
+### **Direct Script Usage** (Development/Debugging)
+```bash
+node scripts/context-helper.js summary       # Raw context summary
+node scripts/context-helper.js feature <area>  # Raw feature context
+node scripts/context-helper.js git           # Raw git context
+```
+
 ### **Feature-Specific Context (Load on Demand)**
 
 #### **API Development**
@@ -152,4 +200,16 @@ When starting new conversation:
 - Reference recent commits for context on changes
 - Use conventional commit format for clarity
 
-This context map should be referenced at the start of each development session to establish efficient working patterns.
+## 📚 Additional Context Documentation
+
+### **Comprehensive Guides**
+- **[Context Management System](../docs/context-management.md)** - Complete system documentation with architecture, troubleshooting, and integration details
+- **[Context Usage Guide](../docs/context-usage-guide.md)** - Scenario-based usage examples, decision trees, and best practices for automatic vs manual context
+
+### **Quick Reference**
+- **Automatic Context**: Integrated into `pnpm dev`, git commits, and quality tools
+- **Manual Context**: Available via package scripts, CLI framework, and direct script access
+- **Validation**: Use `pnpm quality:check context validate` to verify system health
+- **Troubleshooting**: Check context documentation for common issues and solutions
+
+This context map should be referenced at the start of each development session to establish efficient working patterns. For detailed information about the context management system, refer to the comprehensive documentation linked above.
