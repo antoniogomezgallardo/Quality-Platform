@@ -16,7 +16,9 @@
       "Bash(taskkill:*)",
       "Bash(node dist/tools/src/bin/quality-tools.js context feature api:*)",
       "Bash(pnpm context:summary:*)",
-      "Bash(node dist/tools/src/bin/quality-tools.js context git:*)"
+      "Bash(node dist/tools/src/bin/quality-tools.js context git:*)",
+      "Bash(cat:*)",
+      "Bash(sed:*)"
     ],
     "deny": [],
     "ask": []
