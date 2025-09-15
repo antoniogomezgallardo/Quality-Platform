@@ -18,7 +18,10 @@
       "Bash(pnpm context:summary:*)",
       "Bash(node dist/tools/src/bin/quality-tools.js context git:*)",
       "Bash(cat:*)",
-      "Bash(sed:*)"
+      "Bash(sed:*)",
+      "Bash(pnpm dev:*)",
+      "Bash(pnpm nx test:*)",
+      "Bash(find:*)"
     ],
     "deny": [],
     "ask": []
