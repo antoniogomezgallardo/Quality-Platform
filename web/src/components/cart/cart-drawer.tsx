@@ -2,7 +2,6 @@
 
 import { useEffect } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { useCartStore } from '../../lib/stores/cart';
 
 export function CartDrawer() {
@@ -27,14 +26,8 @@ export function CartDrawer() {
 
   return (
     <>
-      {/* Backdrop */}
-      <div 
-        className="fixed inset-0 bg-black bg-opacity-50 z-40"
-        onClick={closeCart}
-      />
-      
       {/* Cart Drawer */}
-      <div className="fixed right-0 top-0 h-full w-96 bg-white shadow-xl z-50 overflow-hidden flex flex-col">
+      <div className="fixed right-0 top-0 h-full w-96 bg-white shadow-xl z-50 overflow-hidden flex flex-col border-l border-gray-200">
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b">
           <h2 className="text-lg font-semibold text-gray-900">
@@ -72,21 +65,12 @@ export function CartDrawer() {
               {items.map((item) => (
                 <div key={item.product.id} className="flex items-start space-x-4 bg-gray-50 p-3 rounded-lg">
                   <div className="relative w-16 h-16 bg-gray-200 rounded-md overflow-hidden flex-shrink-0">
-                    {item.product.imageUrl ? (
-                      <Image
-                        src={item.product.imageUrl}
-                        alt={item.product.name}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center">
-                        <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
-                        </svg>
-                      </div>
-                    )}
+                    <div className="w-full h-full flex items-center justify-center">
+                      <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                          d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      </svg>
+                    </div>
                   </div>
                   
                   <div className="flex-1 min-w-0">

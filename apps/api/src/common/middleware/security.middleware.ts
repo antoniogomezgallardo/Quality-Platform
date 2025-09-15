@@ -1,8 +1,8 @@
 import { Injectable, NestMiddleware } from '@nestjs/common';
 import { Request, Response, NextFunction } from 'express';
-import * as helmet from 'helmet';
-import * as compression from 'compression';
-import * as hpp from 'hpp';
+import helmet from 'helmet';
+import compression from 'compression';
+import hpp from 'hpp';
 import { ConfigService } from '@nestjs/config';
 
 @Injectable()
@@ -55,7 +55,7 @@ export class SecurityMiddleware implements NestMiddleware {
         if (req.headers['x-no-compression']) {
           return false;
         }
-        return compression.filter(req, res);
+        return true;
       },
       level: 6,
       threshold: 1024,

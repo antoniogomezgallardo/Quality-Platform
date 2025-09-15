@@ -2,6 +2,7 @@
 
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useProduct } from '../../../lib/hooks/use-products';
 import { useCartStore } from '../../../lib/stores/cart';
 
@@ -95,12 +96,25 @@ export default function ProductDetailPage() {
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8 p-8">
           {/* Product Image */}
-          <div className="aspect-w-1 aspect-h-1 bg-gray-200 rounded-lg overflow-hidden">
-            <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center">
-              <svg className="w-32 h-32 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} 
-                  d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
-              </svg>
+          <div className="aspect-w-1 aspect-h-1 bg-gray-200 rounded-lg overflow-hidden relative">
+            <div className="w-full h-96 relative">
+              {product.imageUrl ? (
+                <Image
+                  src={product.imageUrl}
+                  alt={product.name}
+                  fill
+                  className="object-cover rounded-lg"
+                  sizes="(max-width: 768px) 100vw, 50vw"
+                  priority
+                />
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-gray-200 to-gray-300 flex items-center justify-center rounded-lg">
+                  <svg className="w-32 h-32 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                      d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                  </svg>
+                </div>
+              )}
             </div>
           </div>
 
